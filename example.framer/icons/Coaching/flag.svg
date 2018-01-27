@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="90px" viewBox="0 0 90 90" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-7.1%" y="-7.1%" width="114.3%" height="114.3%" filterUnits="objectBoundingBox" id="filter-1">
+            <feGaussianBlur stdDeviation="2" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <path d="M7.24264069,0 L91,-4.4408921e-16 C92.6568542,-7.48448398e-16 94,1.34314575 94,3 L94,86.7573593 C94,88.4142136 92.6568542,89.7573593 91,89.7573593 C90.2043505,89.7573593 89.4412888,89.4412888 88.8786797,88.8786797 L5.12132034,5.12132034 C3.94974747,3.94974747 3.94974747,2.05025253 5.12132034,0.878679656 C5.68392948,0.316070521 6.44699122,5.91931816e-15 7.24264069,5.77315973e-15 Z" id="path-2"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(-4.000000, 0.000000)">
+            <path d="M11.2426407,6 L85,6 C86.6568542,6 88,7.34314575 88,9 L88,82.7573593 C88,84.4142136 86.6568542,85.7573593 85,85.7573593 C84.2043505,85.7573593 83.4412888,85.4412888 82.8786797,84.8786797 L9.12132034,11.1213203 C7.94974747,9.94974747 7.94974747,8.05025253 9.12132034,6.87867966 C9.68392948,6.31607052 10.4469912,6 11.2426407,6 Z" id="Shadow" fill-opacity="0.15" fill="#000000" filter="url(#filter-1)"></path>
+            <mask id="mask-3" fill="white">
+                <use xlink:href="#path-2"></use>
+            </mask>
+            <g id="BG"></g>
+            <g id="🎨-Colour" mask="url(#mask-3)" fill="#828282">
+                <g transform="translate(4.000000, 0.000000)" id="Rectangle-3">
+                    <rect x="0" y="0" width="90" height="90"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

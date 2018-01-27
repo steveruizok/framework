@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Global/Cards/Progress/Other/Done</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Global" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Global/Cards/Progress/Other/Done">
+            <g id="tick">
+                <circle id="Oval-3" fill="#87DB9E" cx="14" cy="14" r="14"></circle>
+                <polyline id="Rectangle-10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" transform="translate(14.380000, 13.213334) rotate(45.000000) translate(-14.380000, -13.213334) " points="16.6861113 7.83240787 16.6861113 18.5942594 12.0738893 18.5942594"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

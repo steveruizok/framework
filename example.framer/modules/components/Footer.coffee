@@ -1,0 +1,71 @@
+class Footer extends Layer
+	constructor: (options = {}) ->
+
+		_.defaults options,
+			name: 'Footer'
+			height: 46
+			width: Screen.width
+			clip: true
+			shadowY: -1
+			shadowColor: 'rgba(0,0,0,.16)'
+			backgroundColor: 'rgba(248, 248, 248, 1.000)'
+
+		_.assign @,
+			app: options.app
+			tint: '#007AFF'
+			offTint: '#C3C3C1'
+
+		super options
+
+		@onTap (event) -> event.stopPropagation()
+
+		@controls = new Layer
+			name: '.'
+			parent: @
+			backgroundColor: null
+			height: 27
+			width: @width
+			x: Align.center()
+			y: Align.center()
+			style:
+				lineHeight: 0
+
+		icons = [back, forward, share, bookmark, tabs].map (icon) =>
+			new Layer
+				parent: @
+				size: 27
+				y: Align.center()
+				backgroundColor: null
+				html: icon
+				style:
+					lineHeight: 0
+
+		Utils.distribute(icons, 'midX', 24, @width - 29)
+
+		@backIcon = icons[0]
+
+		# definitions
+
+		Utils.define @, 'hasPrevious', false, @_setArrow
+
+		# events
+		
+		@backIcon.onTap @_showPrevious
+
+	_setArrow: =>
+		color = if @hasPrevious then @tint else @offTint
+		@backIcon.html = """<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="back" fill="#{color}" fill-rule="nonzero"> <polygon id="back-button" points="8.54820638 13.0819643 8 13.6301707 8.54820638 14.1783771 18.3719186 24.0020893 19.4683313 22.9056765 9.64461914 13.0819643 9.64461914 14.1783771 19.7265834 4.09641276 18.6301707 3"></polygon> </g> </g> </svg>"""
+
+	_showPrevious: =>
+		return if not @hasPrevious
+		@app.showPrevious()
+
+
+
+exports.Footer = Footer
+
+back = """<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="back" fill="#C3C3C1" fill-rule="nonzero"> <polygon id="back-button" points="8.54820638 13.0819643 8 13.6301707 8.54820638 14.1783771 18.3719186 24.0020893 19.4683313 22.9056765 9.64461914 13.0819643 9.64461914 14.1783771 19.7265834 4.09641276 18.6301707 3"></polygon> </g> </g> </svg>"""
+forward = """<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="forward" fill="#C3C3C1" fill-rule="nonzero"> <polygon id="forward-button" points="18.0819643 14.1783771 18.0819643 13.0819643 8.25825212 22.9056765 9.35466488 24.0020893 19.1783771 14.1783771 19.7265834 13.6301707 19.1783771 13.0819643 9.09641276 3 8 4.09641276"></polygon> </g> </g> </svg>"""
+share = """<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="share" fill="#007AFF"> <path d="M13.3033708,1.76453933 L10.050809,5.01710112 L9.31997753,4.28626966 L13.8202247,-0.213977528 L18.3204719,4.28626966 L17.5896404,5.01710112 L14.3370787,1.76453933 L14.3370787,17.8314607 L13.3033708,17.8314607 L13.3033708,1.76453933 Z M23.6476854,27.3932584 L4,27.3932584 L4,7.75280899 L11.2359551,7.75280899 L11.2359551,8.78651685 L5.03370787,8.78651685 L5.03370787,26.3595506 L22.6139775,26.3595506 L22.6139775,8.78651685 L16.4044944,8.78651685 L16.4044944,7.75280899 L23.6476854,7.75280899 L23.6476854,27.3932584 Z" id="share"></path> </g> </g> </svg>"""
+bookmark = """<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="bookmark" fill="#007AFF"> <path d="M12.9213483,4.1011236 C12.9213483,2.95939326 11.9956629,2.03370787 10.8539326,2.03370787 L5.16853933,2.03370787 C5.08377528,2.03370787 5.00314607,2.04869663 4.92096629,2.05851685 C4.92768539,2.05076404 4.93285393,2.04146067 4.93957303,2.03370787 L2.58426966,2.03370787 C1.7278427,2.03370787 1.03370787,2.7278427 1.03370787,3.58426966 L1.03370787,20.1235955 C1.03370787,20.9800225 1.7278427,21.6741573 2.58426966,21.6741573 L10.8539326,21.6741573 C11.6482274,21.6741573 12.372723,21.9726932 12.9213483,22.4636939 L12.9213483,20.1235955 L12.9213483,4.1011236 Z M13.9550562,24.7752809 L13.9550562,25.2921348 L12.9213483,25.2921348 L12.9213483,24.7752809 C12.9213483,23.6335506 11.9956629,22.7078652 10.8539326,22.7078652 L2.58426966,22.7078652 C1.15723596,22.7078652 0,21.5511461 0,20.1235955 L0,3.58426966 C0,2.15723596 1.15723596,1 2.58426966,1 L10.8539326,1 C11.9326613,1 12.8826506,1.55062715 13.4382022,2.38618309 C13.9937539,1.55062715 14.9437432,1 16.0224719,1 L24.2921348,1 C25.7191685,1 26.8764045,2.15723596 26.8764045,3.58426966 L26.8764045,20.1235955 C26.8764045,21.5511461 25.7191685,22.7078652 24.2921348,22.7078652 L16.0224719,22.7078652 C14.8807416,22.7078652 13.9550562,23.6335506 13.9550562,24.7752809 Z M13.9550562,4.1011236 L13.9550562,20.1235955 L13.9550562,22.4636939 C14.5036815,21.9726932 15.2281771,21.6741573 16.0224719,21.6741573 L24.2921348,21.6741573 C25.1485618,21.6741573 25.8426966,20.9800225 25.8426966,20.1235955 L25.8426966,3.58426966 C25.8426966,2.7278427 25.1485618,2.03370787 24.2921348,2.03370787 L21.9368315,2.03370787 C21.9435506,2.04146067 21.9487191,2.05076404 21.9554382,2.05851685 C21.8732584,2.04869663 21.7926292,2.03370787 21.7078652,2.03370787 L16.0224719,2.03370787 C14.8807416,2.03370787 13.9550562,2.95939326 13.9550562,4.1011236 Z" id="bookmark"></path> </g> </g> </svg>"""
+tabs = """<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="tabs" fill="#007AFF" fill-rule="nonzero"> <path d="M1,25.8089888 L1,26.3258427 L1.51685393,26.3258427 L20.1235955,26.3258427 L20.6404494,26.3258427 L20.6404494,25.8089888 L20.6404494,7.20224719 L20.6404494,6.68539326 L20.1235955,6.68539326 L1.51685393,6.68539326 L1,6.68539326 L1,7.20224719 L1,25.8089888 Z M1.51685393,7.71910112 L20.1235955,7.71910112 L19.6067416,7.20224719 L19.6067416,25.8089888 L20.1235955,25.2921348 L1.51685393,25.2921348 L2.03370787,25.8089888 L2.03370787,7.20224719 L1.51685393,7.71910112 Z M7.71910112,1.51685393 L7.71910112,5.65168539 L6.68539326,5.65168539 L6.68539326,1.51685393 L6.68539326,1 L7.20224719,1 L25.8089888,1 L26.3258427,1 L26.3258427,1.51685393 L26.3258427,20.1235955 L26.3258427,20.6404494 L25.8089888,20.6404494 L21.6741573,20.6404494 L21.6741573,19.6067416 L25.8089888,19.6067416 L25.2921348,20.1235955 L25.2921348,1.51685393 L25.8089888,2.03370787 L7.20224719,2.03370787 L7.71910112,1.51685393 Z" id="tabs"></path> </g> </g> </svg>"""

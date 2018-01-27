@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Bonds/Icons/Coaching/Shape Up/Default</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="75" cy="75" r="75"></circle>
+        <path d="M-1.42108547e-14,0 L4.21,0 L4.21,4.84 L-1.42108547e-14,4.84 L-1.42108547e-14,0 Z M18.5,4.84 L18.5,0 L52.52,0 L52.52,4.84 L18.5,4.84 Z M66.5,0 L70.71,0 L70.71,4.84 L66.5,4.84 L66.5,0 Z" id="path-3"></path>
+        <path d="M70.1735582,15.5 L74.71,15.5 L74.71,22.34 L70.1715859,22.34 L70.17,27.84 L65.175,27.84 L65.175,34.91 L60.1842575,34.91 L60.185,37.71 L53.5,37.71 L53.5,22.34 L21.185,22.34 L21.185,37.71 L14.5,37.71 L14.5,34.91 L9.5,34.91 L9.5,27.84 L4.5,27.84 L4.5,22.34 L-1.42e-14,22.34 L-1.42e-14,15.5 L4.5,15.5 L4.5,10.5 L9.5,10.5 L9.5,3 L14.5,3 L14.5,0 L21.185,0 L21.185,15.5 L53.5,15.5 L53.5,0 L60.175,0 L60.1757955,3 L65.175,3 L65.175,10.5 L70.175,10.5 L70.1735582,15.5 Z M53.5,20.34 L53.5,17.5 L21.185,17.5 L21.185,20.34 L53.5,20.34 Z M16.51,35.71 L19.185,35.71 L19.185,2 L16.51,2 L16.51,35.71 Z M11.495,32.91 L14.17,32.91 L14.17,5 L11.5,5 L11.495,32.91 Z M6.5,25.84 L9.175,25.84 L9.175,12.5 L6.5,12.5 L6.5,25.84 Z M2,20.34 L4.21,20.34 L4.21,17.5 L2,17.5 L2,20.34 Z M55.51,35.71 L58.185,35.71 L58.185,2 L55.5,2 L55.51,35.71 Z M60.5,32.91 L63.175,32.91 L63.175,5 L60.5,5 L60.5,32.91 Z M65.495,25.84 L68.17,25.84 L68.17,12.5 L65.495,12.5 L65.495,25.84 Z M70.5,20.34 L72.71,20.34 L72.71,17.5 L70.5,17.5 L70.5,20.34 Z" id="path-5"></path>
+    </defs>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Bonds/Icons/Coaching/Shape-Up/Default">
+            <g id="BG">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Oval" stroke="#C4C8CB" fill-rule="nonzero" xlink:href="#path-1"></use>
+                <g id="Bonds/Colours/General/White" mask="url(#mask-2)" fill="#FFFFFF">
+                    <rect id="Rectangle-3" x="0" y="0" width="150" height="150"></rect>
+                </g>
+            </g>
+            <g id="Colour-2" transform="translate(39.500000, 72.500000)">
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <g id="Green" fill-rule="nonzero"></g>
+                <g id="Bonds/Colours/Icons/Green" mask="url(#mask-4)" fill="#68C2AC">
+                    <g transform="translate(-39.000000, -72.500000)" id="Rectangle-3">
+                        <rect x="0" y="0" width="150" height="150"></rect>
+                    </g>
+                </g>
+            </g>
+            <g id="Colour-1" transform="translate(37.500000, 56.000000)">
+                <mask id="mask-6" fill="white">
+                    <use xlink:href="#path-5"></use>
+                </mask>
+                <g id="Blue" fill-rule="nonzero"></g>
+                <g id="Bonds/Colours/Icons/Blue" mask="url(#mask-6)" fill="#547190">
+                    <g transform="translate(-37.500000, -56.000000)" id="Rectangle-3">
+                        <rect x="0" y="0" width="150" height="150"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
