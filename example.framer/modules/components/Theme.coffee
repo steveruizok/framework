@@ -137,46 +137,92 @@ exports.theme =
 			fontWeight: 500
 			letterSpacing: 0
 			color: black
+		Label:
+			name: 'Label'
+			style: 'Sans'
+			fontSize:  13
+			lineHeight: 2.5
+			fontWeight: 600
+			letterSpacing: 0
+			color: black40
+		Micro:
+			name: 'Micro'
+			style: 'Sans'
+			fontSize:  11
+			lineHeight: 1.6
+			fontWeight: 500
+			letterSpacing: 0
+			padding: {top: 4}
+			color: gray
 	
 	# --------------------------
+	
+	# Text Input
+	textInput:
+		default:
+			color: gray40
+			borderColor: gray40
+			backgroundColor: white
+			shadowBlur: 0
+			shadowColor: 'rgba(0,0,0,.16)'
+			borderWidth: 1
+			borderRadius: 2
+		hovered:
+			color: gray
+			borderColor: gray
+			backgroundColor: white
+			shadowBlur: 0
+			shadowColor: 'rgba(0,0,0,.16)'
+		focused:
+			color: black
+			borderColor: black20
+			backgroundColor: white
+			shadowBlur: 6
+			shadowColor: 'rgba(0,0,0,.16)'
+			
 	# Button
 	button:
 		light_primary:
 				default:
-					color: white
-					borderColor: null
-					backgroundColor: blue
-					opacity: 1
+					color: black
+					borderColor: yellow60
+					backgroundColor: yellow50
 					shadowColor: 'rgba(0,0,0,.16)'
 				disabled:
-					color: darkGray
-					borderColor: null
-					opacity: .5
-					backgroundColor: lightGray
+					color: new Color(black).alpha(.15)
+					borderColor: new Color(black).alpha(.15)
+					backgroundColor: new Color(yellow50).alpha(0)
+					shadowColor: 'rgba(0,0,0,0)'
+				touched:
+					color: black
+					borderColor: yellow70
+					backgroundColor: yellow70
 					shadowColor: 'rgba(0,0,0,0)'
 				hovered:
-					color: white
-					borderColor: null
-					opacity: 1
-					backgroundColor: mediumBlue
+					color: black
+					borderColor: yellow70
+					backgroundColor: yellow60
 					shadowColor: 'rgba(0,0,0,.16)'
 		light_secondary:
 				default:
-					color: blue
-					borderColor: blue
-					backgroundColor: null
-					opacity: 1
+					color: black
+					borderColor: beige60
+					backgroundColor: beige50
 					shadowColor: 'rgba(0,0,0,0)'
 				disabled:
-					color: lightGray
-					borderColor: lightGray
-					backgroundColor: null
+					color: new Color(black).alpha(.15)
+					borderColor: new Color(black).alpha(.15)
+					backgroundColor: new Color(beige50).alpha(0)
+					shadowColor: 'rgba(0,0,0,0)'
+				touched:
+					color: black
+					borderColor: beige70
+					backgroundColor: beige70
 					shadowColor: 'rgba(0,0,0,0)'
 				hovered:
-					color: mediumBlue
-					borderColor: mediumBlue
-					backgroundColor: null
-					opacity: 1
+					color: black
+					borderColor: beige70
+					backgroundColor: beige60
 					shadowColor: 'rgba(0,0,0,0)'
 		dark_primary:
 				default:
@@ -186,15 +232,21 @@ exports.theme =
 					opacity: 1
 					shadowColor: 'rgba(0,0,0,.16)'
 				disabled:
-					color: lightGray
+					color: gray40
 					borderColor: null
-					backgroundColor: highGray
+					backgroundColor: gray30
 					opacity: .5
 					shadowColor: 'rgba(0,0,0,0)'
-				hovered:
-					color: deepGray
+				touched:
+					color: black40
 					borderColor: null
-					backgroundColor: brightGray
+					backgroundColor: gray30
+					opacity: 1
+					shadowColor: 'rgba(0,0,0,.16)'
+				hovered:
+					color: black40
+					borderColor: null
+					backgroundColor: gray30
 					opacity: 1
 					shadowColor: 'rgba(0,0,0,.16)'
 		dark_secondary:
@@ -210,9 +262,15 @@ exports.theme =
 					backgroundColor: null
 					opacity: .5
 					shadowColor: 'rgba(0,0,0,0)'
+				touched:
+					color: gray40
+					borderColor: gray40
+					backgroundColor: null
+					opacity: 1
+					shadowColor: 'rgba(0,0,0,0)'
 				hovered:
-					color: lighterGray
-					borderColor: lighterGray
+					color: gray40
+					borderColor: gray40
 					backgroundColor: null
 					opacity: 1
 					shadowColor: 'rgba(0,0,0,0)'

@@ -3,16 +3,17 @@ require 'moreutils'
 require 'components/Colors'
 require 'components/Typography'
 
-{ Header } = require 'components/Header'
-{ Footer } = require 'components/Footer'
-{ Link } = require 'components/Link'
-{ Icon } = require 'components/Icon'
-{ View } = require 'components/View'
 { Button } = require 'components/Button'
 { Carousel } = require 'components/Carousel'
+{ Footer } = require 'components/Footer'
+{ Header } = require 'components/Header'
+{ Icon } = require 'components/Icon'
+{ TextInput } = require 'components/TextInput'
+{ Link } = require 'components/Link'
+{ PageTransitionComponent } = require 'components/PageTransitionComponent'
 { Separator } = require 'components/Separator'
 { TransitionPage } = require 'components/PageTransitionComponent'
-{ PageTransitionComponent } = require 'components/PageTransitionComponent'
+{ View } = require 'components/View'
 
 
 class window.App extends FlowComponent
@@ -28,15 +29,16 @@ class window.App extends FlowComponent
 
 		# Add general components to window
 		for componentName in [
-			'Header', 
-			'Link', 
-			'Icon', 
-			'View', 
 			'Button', 
-			'Separator', 
 			'Carousel', 
-			'TransitionPage', 
+			'Header', 
+			'Icon', 
+			'TextInput',
+			'Link', 
 			'PageTransitionComponent'
+			'Separator', 
+			'TransitionPage', 
+			'View', 
 		]
 			c = eval(componentName)
 			do (componentName, c) =>

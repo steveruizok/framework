@@ -151,8 +151,8 @@ _.assign Utils,
 	distribute: (layers = [], property, start, end, animate = false) ->
 		
 		animate ?= typeof start is 'boolean' and start is true
-		start ?= _.minBy(layers, property)?[property]
-		end ?= _.maxBy(layers, property)?[property]
+		start ?= _.minBy(array, property)?[property]
+		end ?= _.maxBy(array, property)?[property]
 		step = (end - start) / (layers.length - 1)
 		
 		if property is 'horizontal'
@@ -195,9 +195,10 @@ _.assign Utils,
 			if animate 
 				layer.animate {"#{property}": start + (i * step)}
 				continue
-			
+				
 			layer[property] = start + (i * step)
-			
+	
+	
 	# arrange layers in an array into a grid, using a set number of columns and row/column margins
 	# @example    Utils.grid(layers, 4)
 	grid: (array = [], cols = 4, rowMargin = 16, colMargin) ->
@@ -474,3 +475,17 @@ _.assign Utils,
 		
 		layerElement = findLayerElement(element)
 		return _.find(array, (l) -> l._element is layerElement) ? null
+
+	# Get an ordinal for a date
+	getOrdinal: (number) ->
+		switch number % 10	
+			when 1 then return 'st'	
+			when 2 then return 'nd'	
+			when 3 then return 'rd'	
+			else return 'th'
+
+	px: (num) ->
+		return (num * Framer.Device.context.scale) + 'px'
+
+	linkProperties: (layerA, layerB, prop) =>
+		layerA.on "change:#{prop}", => layerB[prop] = layerA[prop]

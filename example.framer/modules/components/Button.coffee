@@ -21,16 +21,19 @@ class exports.Button extends Layer
 			disabled: false
 			icon: undefined
 			select: => null
+			theme: 'default'
+			animationOptions:
+				time: .2
 
 		# light primary
 		if !options.dark and !options.secondary
-			@palette = theme.button.light_primary
+			@palette = 'light_primary'
 		else if !options.dark and options.secondary
-			@palette = theme.button.light_secondary
+			@palette = 'light_secondary'
 		else if options.dark and !options.secondary
-			@palette = theme.button.dark_primary
+			@palette = 'dark_primary'
 		else if options.dark and options.secondary
-			@palette = theme.button.dark_secondary
+			@palette = 'dark_secondary'
 
 		parent = options.parent
 		delete options.parent
@@ -95,20 +98,21 @@ class exports.Button extends Layer
 			@textLayer.color = @color
 			@iconLayer?.color = @color
 
-		@_setStateStyle('default')
 
 		# Definitions
 
-		Utils.define @, 'hovered', false, @_showHovered
-		Utils.define @, 'disabled', options.disabled, @_showDisabled
-		Utils.define @, 'select', options.select
-		Utils.define @, 'secondary', options.secondary
+		Utils.define @, 'theme', 'default', @_setTheme
 		Utils.define @, 'dark', options.dark
+		Utils.define @, 'secondary', options.secondary
+		Utils.define @, 'disabled', options.disabled, @_showDisabled
+		Utils.define @, 'hovered', false, @_showHovered
+		Utils.define @, 'select', options.select
+
 
 		# Events
 
-		@on "mouseenter", => @hovered = true
-		@on "mouseleave", => @hovered = false
+		@onMouseEnter => @hovered = true
+		@onMouseLeave => @hovered = false
 
 		@onTouchStart => @_showTouching(true)
 		@onTouchEnd => @_showTouching(false)
@@ -122,29 +126,29 @@ class exports.Button extends Layer
 
 	# private
 
-	_setStateStyle: (state) =>
-		@props = @palette[state]
+	_setTheme: (value) =>
+		@animate theme.button[@palette][value]
 
 	_showHovered: (bool) =>
 		return if @disabled
 
 		if bool
 			# show hovered
-			@_setStateStyle('hovered')
+			@theme = 'hovered'
 			return
 
 		# show not hovered
-		@_setStateStyle('default')
+		@theme = 'default'
 
 	_showDisabled: (bool) =>
 		if bool
 			# show disabled
-			@_setStateStyle('disabled')
+			@theme = 'disabled'
 			@ignoreEvents = true
 			return
 
 		# show not disabled
-		@_setStateStyle('default')
+		@theme = 'default'
 		@ignoreEvents = false
 
 	_doSelect: =>
@@ -154,16 +158,18 @@ class exports.Button extends Layer
 
 	_panOffTouch: (event) => 
 		return if @_isTouching is false
+		return if @disabled
 
 		if Math.abs(event.offset.x) > @width/2 or
 		Math.abs(event.offset.y) > @height/2
-			@_showTouching(false, true)
+			@theme = "default"
 
 	_showTapped: =>
+		return if @disabled
 		return if @_isTouching is true
 
-		@_showTouching(true)
-		Utils.delay .15, => @_showTouching(false)
+		@theme = "touched"
+		Utils.delay .15, => @theme = "default"
 
 
 	_showTouching: (isTouching, silent = false) =>
@@ -173,25 +179,12 @@ class exports.Button extends Layer
 		if isTouching
 			# show touching
 			@_isTouching = true
-
-			@py = @y + 2
-			@dy = @y
-
-			if !@secondary
-				@animate
-					# brightness: 90
-					shadowY: 0
-					y: @py
+			@theme = "touched"
 			return
 		
 		# show not touching
 		@_isTouching = false
-
-		if !@secondary
-			@animate
-				# brightness: 100
-				shadowY: 2
-				y: @dy
+		@theme = "default"
 
 		unless silent then @_doSelect()
 

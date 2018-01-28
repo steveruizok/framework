@@ -11,19 +11,20 @@
   "propertyPanelToggleStates" : {
 
   },
-  "projectId" : "3DCD3FDB-82EF-4E30-B32C-BB973CAF6EA0",
+  "projectId" : "956A8CDC-3F44-41C6-B386-90375535DB2B",
   "deviceOrientation" : 0,
   "selectedHand" : "",
   "showBezel" : true,
   "foldedCodeRanges" : [
     "{81, 41}",
     "{185, 122}",
-    "{338, 428}",
-    "{767, 554}",
-    "{1322, 532}",
-    "{1855, 828}",
-    "{2684, 895}",
-    "{3580, 326}"
+    "{355, 454}",
+    "{810, 578}",
+    "{1389, 547}",
+    "{1937, 849}",
+    "{2787, 660}",
+    "{3448, 1498}",
+    "{4947, 326}"
   ],
   "deviceScale" : "fit"
 }

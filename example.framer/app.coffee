@@ -22,12 +22,16 @@ user =
 app = new App
 	safari: false
 
+SHOW_ALL = true
+
 # Typography View
 
 typographyView = new View
 	title: 'Typography'
 
 Utils.bind typographyView.content, ->
+	return if not SHOW_ALL
+	
 	i = 0
 	for k, v of theme.typography
 		if window[k]
@@ -53,6 +57,7 @@ iconsView = new View
 	title: 'Icons'
 
 Utils.bind iconsView.content, ->
+	return if not SHOW_ALL
 	
 	i = 0
 	for ic in _.entries(theme.icons)[0..50]
@@ -88,10 +93,11 @@ colorsView = new View
 	title: 'Colors'
 
 Utils.bind colorsView.content, ->
-	colorList = require 'components/Colors'
+	return if not SHOW_ALL
+	{ colors } = require 'components/Colors'
 	
 	i = 0
-	for k, v of colorList.Colors
+	for k, v of colors
 		chip = new Layer
 			parent: @
 			name: '.'
@@ -121,6 +127,7 @@ buttonsView = new View
 	title: 'Buttons'
 
 Utils.bind buttonsView.content, ->
+	return if not SHOW_ALL
 	buttons = _.map _.range(8), (i) =>
 		button = new Button
 			name: '.'
@@ -157,9 +164,48 @@ Utils.bind buttonsView.content, ->
 		width: @width
 		y: buttons[4].y - 16
 		height: _.last(buttons).y - buttons[3].y
-		backgroundColor: deepGray
+		backgroundColor: black
 	
 	dark.sendToBack()
+
+# Fields View
+
+fieldsView = new View
+	title: 'Fields'
+
+Utils.bind fieldsView.content, ->
+	
+	label = new Label 
+		parent: @
+		text: 'First Name'
+		
+	input = new TextInput
+		parent: @
+		y: label.maxY
+		placeholder: 'Your first name'
+		
+	error = new Micro
+		parent: @
+		y: input.maxY
+		text: 'This website only accepts users named Sean.'
+		
+	input.on "change:value", (value) ->
+		error.color =
+			if value.toLowerCase() is 'sean'
+				submit.disabled = false
+				green
+			else if value is ""
+				submit.disabled = true
+				gray
+			else
+				submit.disabled = true
+				red
+				
+	submit = new Button
+		parent: @
+		y: error.maxY + 32
+		text: 'Submit'
+		disabled: true
 
 # Example View
 
@@ -167,11 +213,12 @@ exampleView = new View
 	title: 'Example'
 	
 Utils.bind exampleView, ->
+	return if not SHOW_ALL
 	
 	@header = new H2
 		parent: @content
 		x: Align.center
-		y: 96
+		y: 80
 		text: 'Framework'
 	
 	@lead = new Body
@@ -180,12 +227,20 @@ Utils.bind exampleView, ->
 		y: @header.maxY + 12
 		text: 'A Component Kit for Framer'
 		
+	@email = new TextInput
+		parent: @content
+		y: @lead.maxY + 160
+		width: 228
+		x: Align.center()
+		placeholder: 'Enter your e-mail'
+		
 	@signup = new Button
 		parent: @content
 		x: Align.center()
-		y: @lead.maxY + 160
+		y: @email.maxY + 16
 		text: 'Sign Up'
-		width: 200
+		width: 228
+		disabled: true
 	
 	@login = new Button
 		parent: @content
@@ -193,10 +248,23 @@ Utils.bind exampleView, ->
 		y: @signup.maxY + 16
 		secondary: true
 		text: 'Log In'
-		width: 200
+		width: 228
+		
+	@email.on "change:value", (value) =>
+		@signup.disabled = value.slice(-4) isnt '.com'
+		
+	@iconLayer = new Icon
+		parent: @content
+		icon: 'drawing-box'
+		x: Align.center
+		y: 208
+		height: 72
+		width: 72
+		color: red
+		opacity: 0
 
 exampleView.onLoad = ->
-	for child, i in @content.children
+	for child, i in _.dropRight(@content.children, 1)
 	
 		y = child.y
 		
@@ -206,7 +274,7 @@ exampleView.onLoad = ->
 			ignoreEvents: true
 		
 		delay = .5 + (.15 * i)
-		if i > 1 then delay += .5
+		if i > 1 then delay += .75
 		
 		child.animate
 			opacity: 1
@@ -218,6 +286,20 @@ exampleView.onLoad = ->
 		do (child) =>
 			Utils.delay 2, =>
 				child.ignoreEvents = false
+	
+	@email.value = ''
+	@signup.disabled = true
+	
+	@iconLayer.props =
+		opacity: 0
+		scale: .8
+	
+	@iconLayer.animate
+		opacity: 1
+		scale: 1
+		options:
+			delay: 1
+			time: .7
 
 # Home View
 
