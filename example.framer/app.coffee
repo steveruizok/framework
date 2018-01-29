@@ -4,6 +4,7 @@ require 'framework'
 # Setup
 
 Canvas.backgroundColor = '#000'
+Framer.Extras.Hints.disable()
 
 # ----------------
 # custom stuff
@@ -208,7 +209,8 @@ Utils.bind sortablesView.content, ->
 			parent: sortable
 			width: sortable.width
 			color: black
-			backgroundColor: green30
+			backgroundColor: Color.mix(yellow, blue, i/7)
+			text: 'Sortable ' + i
 
 # Inputs View
 
