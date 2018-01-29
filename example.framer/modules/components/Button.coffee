@@ -40,6 +40,8 @@ class exports.Button extends Layer
 		else if options.dark and options.secondary
 			@palette = 'dark_secondary'
 
+		@customTheme = if options.backgroundColor and options.color then @_getCustomTheme(options.color, options.backgroundColor) else undefined
+		
 		@customOptions =
 			color: options.color
 			backgroundColor: options.backgroundColor
@@ -132,8 +134,10 @@ class exports.Button extends Layer
 
 		delete @__instancing
 
-		# Events
 
+		# ---------------
+		# Events
+		
 		@onMouseEnter => @hovered = true
 		@onMouseLeave => @hovered = false
 
@@ -147,11 +151,36 @@ class exports.Button extends Layer
 			if !options.showNames
 				child.name = '.'
 
-	# private
+	# ---------------
+	# Private Methods
+
+	_getCustomTheme: (color, backgroundColor) ->
+		return {
+				default:
+						color: black
+						borderColor: new Color(backgroundColor).darken(10)
+						backgroundColor: backgroundColor
+						shadowColor: 'rgba(0,0,0,.16)'
+					disabled:
+						color: new Color(color).alpha(.15)
+						borderColor: new Color(color).alpha(.15)
+						backgroundColor: new Color(backgroundColor).alpha(0)
+						shadowColor: 'rgba(0,0,0,0)'
+					touched:
+						color: black
+						borderColor: new Color(backgroundColor).darken(20)
+						backgroundColor: new Color(backgroundColor).darken(20)
+						shadowColor: 'rgba(0,0,0,0)'
+					hovered:
+						color: black
+						borderColor: new Color(backgroundColor).darken(20)
+						backgroundColor: new Color(backgroundColor).darken(10)
+						shadowColor: 'rgba(0,0,0,.16)'
+			}
 
 	_setTheme: (value) =>
 		@animateStop()
-		props = _.defaults _.clone(@customOptions), theme.button[@palette][value]
+		props = @customTheme?[value] ? _.defaults _.clone(@customOptions), theme.button[@palette][value]
 		if @__instancing then @props = props else @animate props
 
 	_showHovered: (bool) =>
@@ -214,6 +243,7 @@ class exports.Button extends Layer
 
 		unless silent then @_doSelect()
 
-	# public
-
+	# ---------------
+	# Public Methods
+	
 	onSelect: (callback) => @select = callback

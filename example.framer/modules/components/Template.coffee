@@ -37,7 +37,7 @@ class exports.NewComponent extends Layer
 
 
 	# ---------------
-	# Private Functions
+	# Private Methods
 	
 	_adjustHeight: (value) => null
 
@@ -46,7 +46,7 @@ class exports.NewComponent extends Layer
 
 
 	# ---------------
-	# Public Functions
+	# Public Methods
 	
 	showSelected: (bool) =>
 		if bool

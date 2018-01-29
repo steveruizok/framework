@@ -1,3 +1,5 @@
+# set up colors
+
 exports.colors = colors =
 	black: '#252729'
 	gray: '#c1c1c2'
@@ -9,6 +11,8 @@ exports.colors = colors =
 	purple: '#5499c3'
 	beige: '#eae5e0'
 
+# Set up shades
+
 mods =
 	'80': (c) -> c.darken(30)
 	'70': (c) -> c.darken(20)
@@ -18,11 +22,13 @@ mods =
 	'30': (c) -> c.lighten(20)
 	'20': (c) -> c.lighten(30)
 
+
+# add shades to window (don't change this)
+
 for color, value of colors
+	window[color] = value
 	for mod, func of mods
 		newColor = func(new Color(value))
 		colors[color + mod] = newColor
+		window[color + mod] = newColor
 	
-# Colors
-for k,v of colors
-	window[k] = v

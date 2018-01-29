@@ -8,10 +8,11 @@ require 'components/Typography'
 { Footer } = require 'components/Footer'
 { Header } = require 'components/Header'
 { Icon } = require 'components/Icon'
-{ TextInput } = require 'components/TextInput'
 { Link } = require 'components/Link'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
 { Separator } = require 'components/Separator'
+{ Sortable } = require 'components/Sortable'
+{ TextInput } = require 'components/TextInput'
 { TransitionPage } = require 'components/PageTransitionComponent'
 { View } = require 'components/View'
 
@@ -37,6 +38,7 @@ class window.App extends FlowComponent
 			'Link', 
 			'PageTransitionComponent'
 			'Separator', 
+			'Sortable'
 			'TransitionPage', 
 			'View', 
 		]
