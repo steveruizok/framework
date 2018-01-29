@@ -187,6 +187,29 @@ Utils.bind buttonsView.content, ->
 	dark2.sendToBack()
 	dark3.sendToBack()
 
+# Sortables View
+
+sortablesView = new View
+	title: 'Sortables'
+
+Utils.bind sortablesView.content, ->
+	
+	positions = []
+	
+	for i in _.range(7)
+		sortable = new Sortable
+			parent: @
+			positions: positions
+			x: Align.center()
+			width: @width * .618
+			backgroundColor: null
+		
+		new Button
+			parent: sortable
+			width: sortable.width
+			color: black
+			backgroundColor: green30
+
 # Fields View
 
 fieldsView = new View
