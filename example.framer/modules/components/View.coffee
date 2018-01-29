@@ -2,44 +2,65 @@
 
 class exports.View extends ScrollComponent
 	constructor: (options = {}) ->
-		@app = options.app
 		
+		@app = options.app
+
+		# ---------------
+		# Options
+
 		_.defaults options,
+			backgroundColor: '#FFF'
+			contentInset:
+				top: 0
+				bottom: 64
+				
 			padding: {}
+			title: ''
+			load: -> null
 
 		_.assign options,
 			width: Screen.width
 			height: Screen.height
-			backgroundColor: '#FFF'
 			scrollHorizontal: false
-			contentInset:
-				top: @app.header.height
-				bottom: 64
+
+		options.contentInset.top = @app.header.height + (options.contentInset?.top ? 0)
 
 		super options
+
+		# ---------------
+		# Layers
 
 		@app.views.push(@)
 		@content.backgroundColor = @backgroundColor
 		@sendToBack()
 
-		# padding
+
+		# ---------------
+		# Definitions
 		
-		Utils.define @, 'padding', options.padding
+		Utils.defineValid @, 'title', options.title, _.isString, 'View.title must be a string.'
+		Utils.defineValid @, 'padding', options.padding, _.isObject, 'View.padding must be an object.'
+		Utils.defineValid @, 'load', options.load, _.isFunction, 'View.load must be a function.'
+		
+		# unless padding is specifically null, set padding defaults
+		if @padding?
+			_.defaults @padding,
+				left: 16,
+				right: 16,
+				top: 16,
 
-		# set padding defaults
-		_.defaults @padding,
-			left: 16,
-			right: 16,
-			top: 16,
 
+		# ---------------
+		# Events
+		
 		@content.on "change:children", @_fitChildrenToPadding
 
-		# definitions
 
-		Utils.define @, 'title', options.title
-
+	# ---------------
+	# Private Functions
 			
 	_fitChildrenToPadding: (children) =>
+		return if not @padding
 
 		w = @width - @padding.right - @padding.left
 
@@ -48,3 +69,15 @@ class exports.View extends ScrollComponent
 			if child.y < @padding.top then child.y = @padding.top
 			if child.width > w 
 				Utils.delay 0, -> child.width = w
+
+	# ---------------
+	# Private Functions			
+
+	_loadView: =>
+		@load()
+
+	# ---------------
+	# Public Functions
+
+	onLoad: (callback) -> 
+		@load = callback

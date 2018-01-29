@@ -128,17 +128,21 @@ buttonsView = new View
 
 Utils.bind buttonsView.content, ->
 	return if not SHOW_ALL
-	buttons = _.map _.range(8), (i) =>
+	buttons = _.map _.range(24), (i) =>
 		button = new Button
 			name: '.'
 			parent: @
 			secondary: i % 4 > 1
 			disabled: i % 2 is 1
-			dark: i >= 4
+			dark: Math.floor(i/4) % 2 is 1
+			icon: if i >= 8 then 'star'
 			y: 16 + (i * 80)
 			x: 32
+			text: if i >= 16 then '' else 'Getting Started'
 			
 		strings = []
+		if button.iconLayer?
+			strings.push 'icon: star'
 		if button.dark
 			strings.push 'dark: true'
 		if button.secondary
@@ -157,16 +161,31 @@ Utils.bind buttonsView.content, ->
 		label.midY = button.midY
 		
 		return button
-		
 	
 	dark = new Layer
 		parent: @
 		width: @width
 		y: buttons[4].y - 16
-		height: _.last(buttons).y - buttons[3].y
+		height: buttons[7].y - buttons[3].y
+		backgroundColor: black
+
+	dark2 = new Layer
+		parent: @
+		width: @width
+		y: buttons[12].y - 16
+		height: buttons[15].y - buttons[11].y
+		backgroundColor: black
+		
+	dark3 = new Layer
+		parent: @
+		width: @width
+		y: buttons[20].y - 16
+		height: buttons[23].y - buttons[19].y
 		backgroundColor: black
 	
 	dark.sendToBack()
+	dark2.sendToBack()
+	dark3.sendToBack()
 
 # Fields View
 
@@ -178,7 +197,7 @@ Utils.bind fieldsView.content, ->
 	label = new Label 
 		parent: @
 		text: 'First Name'
-		
+	
 	input = new TextInput
 		parent: @
 		y: label.maxY
@@ -188,7 +207,7 @@ Utils.bind fieldsView.content, ->
 		parent: @
 		y: input.maxY
 		text: 'This website only accepts users named Sean.'
-		
+	
 	input.on "change:value", (value) ->
 		error.color =
 			if value.toLowerCase() is 'sean'
@@ -263,7 +282,7 @@ Utils.bind exampleView, ->
 		color: red
 		opacity: 0
 
-exampleView.onLoad = ->
+exampleView.onLoad ->
 	for child, i in _.dropRight(@content.children, 1)
 	
 		y = child.y

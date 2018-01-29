@@ -3,7 +3,11 @@
 
 class exports.Button extends Layer
 	constructor: (options = {}) ->
+
 		@app = options.app
+
+		# ---------------
+		# Options
 		
 		_.defaults options,
 			width: 0
@@ -16,14 +20,15 @@ class exports.Button extends Layer
 				time: .125
 			shadowColor: 'rgba(0,0,0,.16)'
 			text: 'Get Started'
+			animationOptions:
+				time: .2
+
 			dark: false
 			secondary: false
 			disabled: false
 			icon: undefined
-			select: => null
 			theme: 'default'
-			animationOptions:
-				time: .2
+			select: => null
 
 		# light primary
 		if !options.dark and !options.secondary
@@ -35,15 +40,22 @@ class exports.Button extends Layer
 		else if options.dark and options.secondary
 			@palette = 'dark_secondary'
 
+		@customOptions =
+			color: options.color
+			backgroundColor: options.backgroundColor
+
 		parent = options.parent
 		delete options.parent
 
 		super options
+
+		# ---------------
+		# Layers
 			
 		@textLayer = new H5
 			textAlign: 'center'
 			color: @palette.color
-			text: options.text
+			text: options.text ? ''
 
 		# Show icon?
 
@@ -53,19 +65,25 @@ class exports.Button extends Layer
 				parent: @
 				width: 24
 				height: 24
+				y: Align.center()
 				color: @palette.color
 				icon: options.icon
-				
-			@textLayer.x = @iconLayer.maxX + 8
 			
-			if width
-				@width = width
-				contentWidth = @iconLayer.width + 8 + @textLayer.width
-				@iconLayer.x = (width - contentWidth / 2)
+			contentWidth = @iconLayer.width
+			if options.text?.length > 0 then contentWidth += 8 + @textLayer.width
+
+			if options.width
+				@width = options.width
+				@iconLayer.x = (@width - contentWidth / 2)
 				@textLayer.x = @iconLayer.maxX + 8
 			else
-				Utils.contain(@, {top: 16, bottom: 11, left: 20, right: 28})
+				@iconLayer.x = 20
+				@textLayer.x = @iconLayer.maxX + 8
+				@width = contentWidth + 40
 
+			_.assign @textLayer,
+				parent: @
+				y: Align.center()
 		else
 
 			unless options.width
@@ -80,7 +98,6 @@ class exports.Button extends Layer
 				_.assign @textLayer,
 					x: Align.center()
 					y: Align.center()
-
 		
 		# Fix position
 
@@ -92,22 +109,28 @@ class exports.Button extends Layer
 			parent: parent
 			x: options.x
 			y: options.y
-	
+
+		# must be set before theme changes
 
 		@on "change:color", => 
 			@textLayer.color = @color
 			@iconLayer?.color = @color
 
+		@_setTheme('default')
 
+		# ---------------
 		# Definitions
 
-		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.define @, 'dark', options.dark
-		Utils.define @, 'secondary', options.secondary
-		Utils.define @, 'disabled', options.disabled, @_showDisabled
-		Utils.define @, 'hovered', false, @_showHovered
-		Utils.define @, 'select', options.select
+		@__instancing = true
 
+		Utils.defineValid @, 'theme', null, _.isString, "Button.theme must be a string.", @_setTheme
+		Utils.defineValid @, 'dark', options.dark, _.isBoolean, "Button.dark must be a boolean (true or false).", 
+		Utils.defineValid @, 'secondary', options.secondary, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
+		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Button.disabled must be a boolean (true or false).", @_showDisabled
+		Utils.defineValid @, 'hovered', false, _.isBoolean, "Button.hovered must be a boolean (true or false).", @_showHovered
+		Utils.defineValid @, 'select', options.select, _.isFunction, "Button.select must be a function."
+
+		delete @__instancing
 
 		# Events
 
@@ -127,7 +150,9 @@ class exports.Button extends Layer
 	# private
 
 	_setTheme: (value) =>
-		@animate theme.button[@palette][value]
+		@animateStop()
+		props = _.defaults _.clone(@customOptions), theme.button[@palette][value]
+		if @__instancing then @props = props else @animate props
 
 	_showHovered: (bool) =>
 		return if @disabled
@@ -154,7 +179,8 @@ class exports.Button extends Layer
 	_doSelect: =>
 		return if @disabled
 
-		@select()
+		try @select()
+		@emit "select", @
 
 	_panOffTouch: (event) => 
 		return if @_isTouching is false

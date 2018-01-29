@@ -11,7 +11,7 @@
   "propertyPanelToggleStates" : {
 
   },
-  "projectId" : "956A8CDC-3F44-41C6-B386-90375535DB2B",
+  "projectId" : "2E2D9134-A9ED-4AA0-93A0-DDE22A69E859",
   "deviceOrientation" : 0,
   "selectedHand" : "",
   "showBezel" : true,
@@ -21,10 +21,10 @@
     "{355, 454}",
     "{810, 578}",
     "{1389, 547}",
-    "{1937, 849}",
-    "{2787, 660}",
-    "{3448, 1498}",
-    "{4947, 326}"
+    "{1937, 1310}",
+    "{3248, 658}",
+    "{3907, 1496}",
+    "{5404, 326}"
   ],
   "deviceScale" : "fit"
 }

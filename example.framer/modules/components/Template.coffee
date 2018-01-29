@@ -57,3 +57,7 @@ class exports.NewComponent extends Layer
 		# selected is false
 		# ...
 		return
+
+
+	# ---------------
+	# Special Definitions

@@ -69,16 +69,17 @@ class window.App extends FlowComponent
 
 	# Update the next View while transitioning
 	updateNext: (prev, next) =>
-		if next?.onLoad?
-			next.onLoad()
+		return if not next
+		
+		try next.load(@, next, prev)
 			
 		hasPrevious = prev? and next isnt @_stack[0]?.layer
 
 		if not @header.safari
 			@header.backIcon.visible = hasPrevious
 			@header.backText.visible = hasPrevious
-			if next?.title 
-				@header.updateTitle(next?.title)
+			if next.title 
+				@header.updateTitle(next.title)
 			return
 
 		@footer.hasPrevious = hasPrevious

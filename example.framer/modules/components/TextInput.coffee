@@ -1,28 +1,5 @@
 { theme } = require 'components/Theme'
 
-theme.textInput =
-	default:
-		color: gray40
-		borderColor: gray40
-		backgroundColor: white
-		shadowBlur: 0
-		shadowColor: 'rgba(0,0,0,.16)'
-		borderWidth: 1
-		borderRadius: 2
-	hovered:
-		color: gray
-		borderColor: gray
-		backgroundColor: white
-		shadowBlur: 0
-		shadowColor: 'rgba(0,0,0,.16)'
-	focused:
-		color: black
-		borderColor: black20
-		backgroundColor: white
-		shadowBlur: 6
-		shadowColor: 'rgba(0,0,0,.16)'
-
-
 class exports.TextInput extends Layer
 	constructor: (options = {}) ->
 
@@ -35,6 +12,8 @@ class exports.TextInput extends Layer
 			name: 'TextInput'
 			width: 260
 			theme: 'default'
+			hovered: false
+			focused: false
 			placeholder: "Placeholder"
 			animationOptions:
 				time: .15
@@ -44,6 +23,10 @@ class exports.TextInput extends Layer
 
 		_.assign options,
 			height: 48
+
+		@customOptions =
+			color: options.color
+			backgroundColor: options.backgroundColor
 		
 		super options
 
@@ -70,20 +53,25 @@ class exports.TextInput extends Layer
 			fontSize: Utils.px(13)
 			padding: "0 #{Utils.px(12)}"
 
+		# must be set before theme changes
+
+		Utils.linkProperties @, @_input, "color"
+
+		@_setTheme('default')
 
 		# ---------------
 		# Definitions
 
-		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.define @, 'hovered', options.hovered, @showHovered
-		Utils.define @, 'focused', options.focused, @showFocused
+		@__instancing = true
 
-		@theme = options.theme
+		Utils.defineValid @, 'theme', options.theme, _.isString, 'TextInput.theme must be a string.', @_setTheme
+		Utils.defineValid @, 'hovered', options.hovered, _.isBoolean, 'TextInput.hovered must be a boolean.', @showHovered
+		Utils.defineValid @, 'focused', options.focused, _.isBoolean, 'TextInput.focused must be a boolean.',  @showFocused
+
+		delete @__instancing
 
 		# ---------------
 		# Events
-		
-		Utils.linkProperties @, @_input, "color"
 		
 		@onMouseEnter => @hovered = true
 		@onMouseLeave => @hovered = false
@@ -99,7 +87,9 @@ class exports.TextInput extends Layer
 		@emit "change:value", value, @
 
 	_setTheme: (value) =>
-		 @animate theme.textInput[value]
+		@animateStop()
+		props = _.defaults _.clone(@customOptions), theme.textInput[value]
+		if @__instancing then @props = props else @animate props
 
 
 	# ---------------
