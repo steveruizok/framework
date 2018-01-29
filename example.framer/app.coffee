@@ -335,6 +335,7 @@ Utils.bind homeView.content, ->
 			x: Align.center()
 			y: 32 + i * 64
 			text: view.title
+			width: 200
 		
 		do (view) =>
 			button.onSelect =>
