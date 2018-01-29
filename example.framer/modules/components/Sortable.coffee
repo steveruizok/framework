@@ -25,7 +25,7 @@ class exports.Sortable extends Layer
 			animationOptions:
 				time: .3
 
-		@positions = options.positions ? throw 'Sortable needs a positions property (array).'
+		@positions = options.positions ? throw 'Sortable needs a positions property (an empty array).'
 
 		last = _.last(@positions)
 
@@ -58,9 +58,6 @@ class exports.Sortable extends Layer
 		# add it to the items array
 		@positions.push(@position)
 		
-		@timer = new Utils.timer(.25, @_getNewPosition)
-		@timer.pause()
-
 		Utils.defineValid @, 'theme', 'default', _.isString, "Button.theme must be a string.", @_setTheme
 		Utils.define @, 'currentPosition', @position, @_takePosition
 
@@ -68,14 +65,12 @@ class exports.Sortable extends Layer
 		# Events
 		
 		@onDragStart ->
-			@timer.restart()
 			@bringToFront()
 			@theme = "dragging"
 
-		# @onDrag @timer.restart
+		@onDrag @_getNewPosition
 				
 		@onDragEnd -> 
-			@timer.reset()
 			@_takePosition(@position)
 			@theme = 'default'
 	
@@ -84,12 +79,10 @@ class exports.Sortable extends Layer
 
 	_setTheme: (value) =>
 		props = _.defaults _.clone(@customOptions), theme.sortable[value]
-
-		if @__instancing then @props = props else @animate props
+		@animate props
 
 	
 	_getNewPosition: =>
-
 		above = @positions[ @position.index + 1 ]
 		below = @positions[ @position.index - 1 ]
 		
@@ -106,5 +99,11 @@ class exports.Sortable extends Layer
 	_takePosition: ( position, animate = true ) =>
 		@position = position
 		position.layer = @
-		if animate
+		if animate 
 			@animate { midY: position.midY }
+
+
+
+
+
+

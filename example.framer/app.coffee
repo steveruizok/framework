@@ -210,12 +210,14 @@ Utils.bind sortablesView.content, ->
 			color: black
 			backgroundColor: green30
 
-# Fields View
+# Inputs View
 
-fieldsView = new View
-	title: 'Fields'
+inputsView = new View
+	title: 'Inputs'
 
-Utils.bind fieldsView.content, ->
+Utils.bind inputsView.content, ->
+	
+	# text input
 	
 	label = new Label 
 		parent: @
@@ -234,20 +236,70 @@ Utils.bind fieldsView.content, ->
 	input.on "change:value", (value) ->
 		error.color =
 			if value.toLowerCase() is 'sean'
-				submit.disabled = false
 				green
 			else if value is ""
-				submit.disabled = true
 				gray
 			else
-				submit.disabled = true
 				red
 				
+		checkbox.disabled = value.toLowerCase() isnt 'sean'
+		checkSubmit()
+		
+	# radiobox
+	
+	radioBoxlabel = new Label
+		parent: @
+		x: 16
+		y: error.maxY + 16
+		text: 'Select your city'
+		
+	radioboxes = []
+	
+	lastY = radioBoxlabel.maxY
+	
+	for city, i in ['London', 'Chicago', 'DeKalb']
+		radioboxes[i] = new Radiobox
+			parent: @
+			group: radioboxes
+			x: 16
+			y: lastY
+
+		label = new Body2
+			parent: @
+			x: radioboxes[i].maxX + 8
+			y: lastY
+			text: city
+			
+		radioboxes[i].labelLayer = label
+		
+		lastY = radioboxes[i].maxY + 3
+	
+	# check box
+	
+	label = new Label
+		parent: @
+		text: 'Agree to Conditions'
+		y: _.last(radioboxes).maxY + 16
+		
+	checkbox = new Checkbox
+		parent: @
+		y: label.y + 7
+		x: label.maxX + 8
+		disabled: true
+	
+	checkbox.on "change:checked", (bool) ->
+		checkSubmit()
+	
+	# submit button
+	
 	submit = new Button
 		parent: @
-		y: error.maxY + 32
+		y: checkbox.maxY + 32
 		text: 'Submit'
 		disabled: true
+		
+	checkSubmit = ->
+		submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
 
 # Example View
 

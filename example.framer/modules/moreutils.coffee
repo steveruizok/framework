@@ -525,8 +525,10 @@ _.assign Utils,
 	#
 	# Utils.linkProperties(layerA, layerB, 'x')
 	#
-	linkProperties: (layerA, layerB, prop) =>
-		layerA.on "change:#{prop}", => layerB[prop] = layerA[prop]
+	linkProperties: (layerA, layerB, props...) =>
+		for prop in props
+			do (prop) =>
+				layerA.on "change:#{prop}", => layerB[prop] = layerA[prop]
 
 	# Create a timer instance to simplify intervals.
 	# Thanks to https://github.com/marckrenn.

@@ -5,6 +5,8 @@ require 'components/Typography'
 
 { Button } = require 'components/Button'
 { Carousel } = require 'components/Carousel'
+{ Radiobox } = require 'components/Radiobox'
+{ Checkbox } = require 'components/Checkbox'
 { Footer } = require 'components/Footer'
 { Header } = require 'components/Header'
 { Icon } = require 'components/Icon'
@@ -33,6 +35,8 @@ class window.App extends FlowComponent
 			'Button', 
 			'Carousel', 
 			'Header', 
+			'Radiobox',
+			'Checkbox',
 			'Icon', 
 			'TextInput',
 			'Link', 

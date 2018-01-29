@@ -179,7 +179,32 @@ exports.theme =
 			backgroundColor: white
 			shadowBlur: 6
 			shadowColor: 'rgba(0,0,0,.16)'
-			
+	radiobox:
+		default:
+			color: black
+			opacity: 1
+		disabled:
+			color: black
+			opacity: .1
+		hovered:
+			color: gray
+			opacity: 1
+		error:
+			color: red
+			opacity: 1
+	checkbox:
+		default:
+			color: black
+			opacity: 1
+		disabled:
+			color: black
+			opacity: .1
+		hovered:
+			color: gray
+			opacity: 1
+		error:
+			color: red
+			opacity: 1
 	# Button
 	button:
 		light_primary:

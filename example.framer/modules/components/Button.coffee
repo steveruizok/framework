@@ -156,26 +156,26 @@ class exports.Button extends Layer
 
 	_getCustomTheme: (color, backgroundColor) ->
 		return {
-				default:
-						color: black
-						borderColor: new Color(backgroundColor).darken(10)
-						backgroundColor: backgroundColor
-						shadowColor: 'rgba(0,0,0,.16)'
-					disabled:
-						color: new Color(color).alpha(.15)
-						borderColor: new Color(color).alpha(.15)
-						backgroundColor: new Color(backgroundColor).alpha(0)
-						shadowColor: 'rgba(0,0,0,0)'
-					touched:
-						color: black
-						borderColor: new Color(backgroundColor).darken(20)
-						backgroundColor: new Color(backgroundColor).darken(20)
-						shadowColor: 'rgba(0,0,0,0)'
-					hovered:
-						color: black
-						borderColor: new Color(backgroundColor).darken(20)
-						backgroundColor: new Color(backgroundColor).darken(10)
-						shadowColor: 'rgba(0,0,0,.16)'
+			default:
+				color: black
+				borderColor: new Color(backgroundColor).darken(10)
+				backgroundColor: backgroundColor
+				shadowColor: 'rgba(0,0,0,.16)'
+			disabled:
+				color: new Color(color).alpha(.15)
+				borderColor: new Color(color).alpha(.15)
+				backgroundColor: new Color(backgroundColor).alpha(0)
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: black
+				borderColor: new Color(backgroundColor).darken(20)
+				backgroundColor: new Color(backgroundColor).darken(20)
+				shadowColor: 'rgba(0,0,0,0)'
+			hovered:
+				color: black
+				borderColor: new Color(backgroundColor).darken(20)
+				backgroundColor: new Color(backgroundColor).darken(10)
+				shadowColor: 'rgba(0,0,0,.16)'
 			}
 
 	_setTheme: (value) =>
