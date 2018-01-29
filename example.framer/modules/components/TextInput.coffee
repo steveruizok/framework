@@ -65,8 +65,8 @@ class exports.TextInput extends Layer
 		@__instancing = true
 
 		Utils.defineValid @, 'theme', options.theme, _.isString, 'TextInput.theme must be a string.', @_setTheme
-		Utils.defineValid @, 'hovered', options.hovered, _.isBoolean, 'TextInput.hovered must be a boolean.', @showHovered
-		Utils.defineValid @, 'focused', options.focused, _.isBoolean, 'TextInput.focused must be a boolean.',  @showFocused
+		Utils.defineValid @, 'hovered', options.hovered, _.isBoolean, 'TextInput.hovered must be a boolean.', @_showHovered
+		Utils.defineValid @, 'focused', options.focused, _.isBoolean, 'TextInput.focused must be a boolean.',  @_showFocused
 
 		delete @__instancing
 
@@ -91,11 +91,8 @@ class exports.TextInput extends Layer
 		props = _.defaults _.clone(@customOptions), theme.textInput[value]
 		if @__instancing then @props = props else @animate props
 
-
-	# ---------------
-	# Public Functions
 	
-	showHovered: (bool) =>
+	_showHovered: (bool) =>
 		return if @focused
 
 		if bool # hovered is true
@@ -105,13 +102,16 @@ class exports.TextInput extends Layer
 		# hovered is false
 		@theme = "default"
 	
-	showFocused: (bool) =>
+	_showFocused: (bool) =>
 		if bool # focused is true
 			@theme = "focused"
 			return
 
 		# focused is false
 		@theme = "default"
+
+	# ---------------
+	# Special Definitions
 
 	@define "value",
 		get: -> return @_input.value
