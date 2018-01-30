@@ -59,6 +59,8 @@ class exports.Button extends Layer
 			color: @palette.color
 			text: options.text ? ''
 
+		Utils.linkProperties @, @textLayer, "color"
+
 		# Show icon?
 
 		if options.icon?
@@ -71,6 +73,8 @@ class exports.Button extends Layer
 				color: @palette.color
 				icon: options.icon
 			
+			Utils.linkProperties @, @iconLayer, "color"
+
 			contentWidth = @iconLayer.width
 			if options.text?.length > 0 then contentWidth += 8 + @textLayer.width
 
@@ -86,6 +90,7 @@ class exports.Button extends Layer
 			_.assign @textLayer,
 				parent: @
 				y: Align.center()
+
 		else
 
 			unless options.width
@@ -111,12 +116,6 @@ class exports.Button extends Layer
 			parent: parent
 			x: options.x
 			y: options.y
-
-		# must be set before theme changes
-
-		@on "change:color", => 
-			@textLayer.color = @color
-			@iconLayer?.color = @color
 
 		@_setTheme('default')
 
@@ -214,6 +213,7 @@ class exports.Button extends Layer
 	_panOffTouch: (event) => 
 		return if @_isTouching is false
 		return if @disabled
+		return if @theme is "default"
 
 		if Math.abs(event.offset.x) > @width/2 or
 		Math.abs(event.offset.y) > @height/2
@@ -224,7 +224,7 @@ class exports.Button extends Layer
 		return if @_isTouching is true
 
 		@theme = "touched"
-		Utils.delay .15, => @theme = "default"
+		Utils.delay .1, => @theme = "default"
 
 
 	_showTouching: (isTouching, silent = false) =>

@@ -52,6 +52,34 @@ Utils.bind typographyView.content, ->
 			
 			label.midY = textExample.midY
 
+Utils.bind typographyView, ->
+	whiteScrim = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	docs = new Icon
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .25
+	
+	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Typography')
+
 # Icons View
 
 iconsView = new View
@@ -88,6 +116,35 @@ Utils.bind iconsView.content, ->
 		text: "For full list, see\nhttp://www.materialdesignicons.com"
 		color: '#000'
 
+
+Utils.bind iconsView, ->
+	whiteScrim = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	docs = new Icon
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .25
+	
+	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Icon')
+
 # Colors View
 
 colorsView = new View
@@ -121,6 +178,34 @@ Utils.bind colorsView.content, ->
 		label.midY = chip.midY
 		
 		i++
+
+Utils.bind colorsView, ->
+	whiteScrim = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	docs = new Icon
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .25
+	
+	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Colors')
 
 # Buttons View
 
@@ -164,6 +249,7 @@ Utils.bind buttonsView.content, ->
 		return button
 	
 	dark = new Layer
+		name: '.'
 		parent: @
 		width: @width
 		y: buttons[4].y - 16
@@ -171,6 +257,7 @@ Utils.bind buttonsView.content, ->
 		backgroundColor: black
 
 	dark2 = new Layer
+		name: '.'
 		parent: @
 		width: @width
 		y: buttons[12].y - 16
@@ -178,6 +265,7 @@ Utils.bind buttonsView.content, ->
 		backgroundColor: black
 		
 	dark3 = new Layer
+		name: '.'
 		parent: @
 		width: @width
 		y: buttons[20].y - 16
@@ -187,6 +275,37 @@ Utils.bind buttonsView.content, ->
 	dark.sendToBack()
 	dark2.sendToBack()
 	dark3.sendToBack()
+
+Utils.bind buttonsView, ->
+	whiteScrim = new Layer
+		name: '.'
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		name: '.'
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	docs = new Icon
+		name: '.'
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .25
+	
+	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Button')
 
 # Sortables View
 
@@ -200,6 +319,7 @@ Utils.bind sortablesView.content, ->
 	for i in _.range(7)
 		sortable = new Sortable
 			parent: @
+			name: '.'
 			positions: positions
 			x: Align.center()
 			width: @width * .618
@@ -212,6 +332,37 @@ Utils.bind sortablesView.content, ->
 			backgroundColor: Color.mix(yellow, blue, i/7)
 			text: 'Sortable ' + i
 
+Utils.bind sortablesView, ->
+	whiteScrim = new Layer
+		name: '.'
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		name: '.'
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	docs = new Icon
+		name: '.'
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .25
+	
+	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Sortable')
+
 # Inputs View
 
 inputsView = new View
@@ -222,15 +373,18 @@ Utils.bind inputsView.content, ->
 	# text input
 	
 	label = new Label 
+		name: '.'
 		parent: @
 		text: 'First Name'
 	
 	input = new TextInput
+		name: '.'
 		parent: @
 		y: label.maxY
 		placeholder: 'Your first name'
 		
 	error = new Micro
+		name: '.'
 		parent: @
 		y: input.maxY
 		text: 'This website only accepts users named Sean.'
@@ -250,6 +404,7 @@ Utils.bind inputsView.content, ->
 	# radiobox
 	
 	radioBoxlabel = new Label
+		name: '.'
 		parent: @
 		x: 16
 		y: error.maxY + 16
@@ -261,12 +416,14 @@ Utils.bind inputsView.content, ->
 	
 	for city, i in ['London', 'Chicago', 'DeKalb']
 		radioboxes[i] = new Radiobox
+			name: '.'
 			parent: @
 			group: radioboxes
 			x: 16
 			y: lastY
 
 		label = new Body2
+			name: '.'
 			parent: @
 			x: radioboxes[i].maxX + 8
 			y: lastY
@@ -279,11 +436,13 @@ Utils.bind inputsView.content, ->
 	# check box
 	
 	label = new Label
+		name: '.'
 		parent: @
 		text: 'Agree to Conditions'
 		y: _.last(radioboxes).maxY + 16
 		
 	checkbox = new Checkbox
+		name: '.'
 		parent: @
 		y: label.y + 7
 		x: label.maxX + 8
@@ -295,6 +454,7 @@ Utils.bind inputsView.content, ->
 	# submit button
 	
 	submit = new Button
+		name: '.'
 		parent: @
 		y: checkbox.maxY + 32
 		text: 'Submit'
@@ -302,6 +462,37 @@ Utils.bind inputsView.content, ->
 		
 	checkSubmit = ->
 		submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
+
+Utils.bind inputsView, ->
+	whiteScrim = new Layer
+		name: '.'
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		name: '.'
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	docs = new Icon
+		name: '.'
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .25
+	
+	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Inputs')
 
 # Example View
 
@@ -312,18 +503,21 @@ Utils.bind exampleView, ->
 	return if not SHOW_ALL
 	
 	@header = new H2
+		name: 'Header H2'
 		parent: @content
 		x: Align.center
 		y: 80
 		text: 'Framework'
 	
 	@lead = new Body
+		name: 'Lead Body'
 		parent: @content
 		x: Align.center
 		y: @header.maxY + 12
 		text: 'A Component Kit for Framer'
 		
 	@email = new TextInput
+		name: 'Email Input'
 		parent: @content
 		y: @lead.maxY + 160
 		width: 228
@@ -331,6 +525,7 @@ Utils.bind exampleView, ->
 		placeholder: 'Enter your e-mail'
 		
 	@signup = new Button
+		name: 'Sign Up Button'
 		parent: @content
 		x: Align.center()
 		y: @email.maxY + 16
@@ -339,6 +534,7 @@ Utils.bind exampleView, ->
 		disabled: true
 	
 	@login = new Button
+		name: 'Login Button'
 		parent: @content
 		x: Align.center()
 		y: @signup.maxY + 16
@@ -350,6 +546,7 @@ Utils.bind exampleView, ->
 		@signup.disabled = value.slice(-4) isnt '.com'
 		
 	@iconLayer = new Icon
+		name: 'Logomark Icon'
 		parent: @content
 		icon: 'drawing-box'
 		x: Align.center
@@ -417,6 +614,34 @@ Utils.bind homeView.content, ->
 		do (view) =>
 			button.onSelect =>
 				app.showNext view
+
+Utils.bind homeView, ->
+	whiteScrim = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom()
+		height: 64
+		backgroundColor: white
+	
+	whiteFade = new Layer
+		parent: @
+		width: @width
+		y: Align.bottom(-64)
+		height: 32
+		gradient: 
+			start: white
+			end: 'rgba(255,255,255,0)'
+		
+	github = new Icon
+		parent: @
+		y: Align.bottom(-24)
+		x: Align.center()
+		size: 32
+		icon: 'github-circle'
+		color: black
+		opacity: .25
+	
+	github.onTap -> window.open('https://github.com/steveruizok/framework')
 
 
 app.showNext homeView

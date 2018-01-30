@@ -9,8 +9,7 @@ class exports.Icon extends Layer
 
 		_.defaults options,
 			name: 'Icon'
-			width: 24
-			height: 24
+			size: 24
 			icon: 'star'
 			backgroundColor: null
 			clip: true
@@ -43,6 +42,8 @@ class exports.Icon extends Layer
 		@on "change:size", @_setSize
 
 		@color = options.color
+
+		@_setSize()
 
 	# ---------------
 	# Private Methods
