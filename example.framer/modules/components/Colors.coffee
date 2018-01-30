@@ -22,13 +22,23 @@ mods =
 	'30': (c) -> c.lighten(20)
 	'20': (c) -> c.lighten(30)
 
-
-# add shades to window (don't change this)
+# add shades
 
 for color, value of colors
 	window[color] = value
 	for mod, func of mods
 		newColor = func(new Color(value))
 		colors[color + mod] = newColor
-		window[color + mod] = newColor
+
+# add backgrounds
+
+_.assign colors,
+	bg1: '#fcfcf9'
+	bg3: '#f8f8f5'
+	bg5: '#f4f4f1'
+
+# add values to window
+
+for color, value of colors
+	window[color] = value
 	
