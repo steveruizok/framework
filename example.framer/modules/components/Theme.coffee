@@ -153,23 +153,23 @@ exports.theme =
 			fontWeight: 500
 			letterSpacing: 0
 			padding: {top: 4}
-			color: gray
+			color: grey
 	
 	# --------------------------
 	
 	# Text Input
 	textInput:
 		default:
-			color: gray40
-			borderColor: gray40
+			color: grey40
+			borderColor: grey40
 			backgroundColor: white
 			shadowBlur: 0
 			shadowColor: 'rgba(0,0,0,.16)'
 			borderWidth: 1
 			borderRadius: 2
 		hovered:
-			color: gray
-			borderColor: gray
+			color: grey
+			borderColor: grey
 			backgroundColor: white
 			shadowBlur: 0
 			shadowColor: 'rgba(0,0,0,.16)'
@@ -187,7 +187,7 @@ exports.theme =
 			color: black
 			opacity: .1
 		hovered:
-			color: gray
+			color: grey
 			opacity: 1
 		error:
 			color: red
@@ -200,105 +200,149 @@ exports.theme =
 			color: black
 			opacity: .1
 		hovered:
-			color: gray
+			color: grey
 			opacity: 1
 		error:
 			color: red
 			opacity: 1
+	# toggle
+	toggle:
+		toggled:
+			default:
+				color: black
+				borderColor: yellow60
+				backgroundColor: yellow50
+				shadowColor: 'rgba(0,0,0,.16)'
+			disabled:
+				color: new Color(black).alpha(.15)
+				borderColor: new Color(black).alpha(.15)
+				backgroundColor: new Color(yellow50).alpha(0)
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: black
+				borderColor: yellow70
+				backgroundColor: yellow70
+				shadowColor: 'rgba(0,0,0,0)'
+			hovered:
+				color: black
+				borderColor: yellow70
+				backgroundColor: yellow60
+				shadowColor: 'rgba(0,0,0,.16)'
+		default:
+			default:
+				color: black
+				borderColor: grey40
+				backgroundColor: white
+				shadowColor: 'rgba(0,0,0,.16)'
+			disabled:
+				color: new Color(black).alpha(.15)
+				borderColor: new Color(black).alpha(.15)
+				backgroundColor: new Color(white).alpha(0)
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: black
+				borderColor: grey40
+				backgroundColor: white
+				shadowColor: 'rgba(0,0,0,.16)'
+			hovered:
+				color: black30
+				borderColor: grey40
+				backgroundColor: grey30
+				shadowColor: 'rgba(0,0,0,.16)'
 	# Button
 	button:
 		light_primary:
-				default:
-					color: black
-					borderColor: yellow60
-					backgroundColor: yellow50
-					shadowColor: 'rgba(0,0,0,.16)'
-				disabled:
-					color: new Color(black).alpha(.15)
-					borderColor: new Color(black).alpha(.15)
-					backgroundColor: new Color(yellow50).alpha(0)
-					shadowColor: 'rgba(0,0,0,0)'
-				touched:
-					color: black
-					borderColor: yellow70
-					backgroundColor: yellow70
-					shadowColor: 'rgba(0,0,0,0)'
-				hovered:
-					color: black
-					borderColor: yellow70
-					backgroundColor: yellow60
-					shadowColor: 'rgba(0,0,0,.16)'
+			default:
+				color: black
+				borderColor: yellow60
+				backgroundColor: yellow50
+				shadowColor: 'rgba(0,0,0,.16)'
+			disabled:
+				color: new Color(black).alpha(.15)
+				borderColor: new Color(black).alpha(.15)
+				backgroundColor: new Color(yellow50).alpha(0)
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: black
+				borderColor: yellow70
+				backgroundColor: yellow70
+				shadowColor: 'rgba(0,0,0,0)'
+			hovered:
+				color: black
+				borderColor: yellow70
+				backgroundColor: yellow60
+				shadowColor: 'rgba(0,0,0,.16)'
 		light_secondary:
-				default:
-					color: black
-					borderColor: beige60
-					backgroundColor: beige50
-					shadowColor: 'rgba(0,0,0,0)'
-				disabled:
-					color: new Color(black).alpha(.15)
-					borderColor: new Color(black).alpha(.15)
-					backgroundColor: new Color(beige50).alpha(0)
-					shadowColor: 'rgba(0,0,0,0)'
-				touched:
-					color: black
-					borderColor: beige70
-					backgroundColor: beige70
-					shadowColor: 'rgba(0,0,0,0)'
-				hovered:
-					color: black
-					borderColor: beige70
-					backgroundColor: beige60
-					shadowColor: 'rgba(0,0,0,0)'
+			default:
+				color: black
+				borderColor: beige60
+				backgroundColor: beige50
+				shadowColor: 'rgba(0,0,0,0)'
+			disabled:
+				color: new Color(black).alpha(.15)
+				borderColor: new Color(black).alpha(.15)
+				backgroundColor: new Color(beige50).alpha(0)
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: black
+				borderColor: beige70
+				backgroundColor: beige70
+				shadowColor: 'rgba(0,0,0,0)'
+			hovered:
+				color: black
+				borderColor: beige70
+				backgroundColor: beige60
+				shadowColor: 'rgba(0,0,0,0)'
 		dark_primary:
-				default:
-					color: black
-					borderColor: null
-					backgroundColor: white
-					opacity: 1
-					shadowColor: 'rgba(0,0,0,.16)'
-				disabled:
-					color: gray40
-					borderColor: null
-					backgroundColor: gray30
-					opacity: .5
-					shadowColor: 'rgba(0,0,0,0)'
-				touched:
-					color: black40
-					borderColor: null
-					backgroundColor: gray30
-					opacity: 1
-					shadowColor: 'rgba(0,0,0,.16)'
-				hovered:
-					color: black40
-					borderColor: null
-					backgroundColor: gray30
-					opacity: 1
-					shadowColor: 'rgba(0,0,0,.16)'
+			default:
+				color: black
+				borderColor: null
+				backgroundColor: white
+				opacity: 1
+				shadowColor: 'rgba(0,0,0,.16)'
+			disabled:
+				color: grey40
+				borderColor: null
+				backgroundColor: grey30
+				opacity: .5
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: black40
+				borderColor: null
+				backgroundColor: grey30
+				opacity: 1
+				shadowColor: 'rgba(0,0,0,.16)'
+			hovered:
+				color: black40
+				borderColor: null
+				backgroundColor: grey30
+				opacity: 1
+				shadowColor: 'rgba(0,0,0,.16)'
 		dark_secondary:
-				default:
-					color: white
-					borderColor: white
-					backgroundColor: null
-					opacity: 1
-					shadowColor: 'rgba(0,0,0,0)'
-				disabled:
-					color: gray
-					borderColor: gray
-					backgroundColor: null
-					opacity: .5
-					shadowColor: 'rgba(0,0,0,0)'
-				touched:
-					color: gray40
-					borderColor: gray40
-					backgroundColor: null
-					opacity: 1
-					shadowColor: 'rgba(0,0,0,0)'
-				hovered:
-					color: gray40
-					borderColor: gray40
-					backgroundColor: null
-					opacity: 1
-					shadowColor: 'rgba(0,0,0,0)'
+			default:
+				color: white
+				borderColor: white
+				backgroundColor: null
+				opacity: 1
+				shadowColor: 'rgba(0,0,0,0)'
+			disabled:
+				color: grey
+				borderColor: grey
+				backgroundColor: null
+				opacity: .5
+				shadowColor: 'rgba(0,0,0,0)'
+			touched:
+				color: grey40
+				borderColor: grey40
+				backgroundColor: null
+				opacity: 1
+				shadowColor: 'rgba(0,0,0,0)'
+			hovered:
+				color: grey40
+				borderColor: grey40
+				backgroundColor: null
+				opacity: 1
+				shadowColor: 'rgba(0,0,0,0)'
 	# --------------------------
 	# Icons
 	icons:

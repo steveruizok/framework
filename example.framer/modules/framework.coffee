@@ -9,6 +9,7 @@ require 'components/Typography'
 { Checkbox } = require 'components/Checkbox'
 { Footer } = require 'components/Footer'
 { Header } = require 'components/Header'
+{ Toggle } = require 'components/Toggle'
 { Icon } = require 'components/Icon'
 { Link } = require 'components/Link'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
@@ -37,6 +38,7 @@ class window.App extends FlowComponent
 			'Header', 
 			'Radiobox',
 			'Checkbox',
+			'Toggle',
 			'Icon', 
 			'TextInput',
 			'Link', 

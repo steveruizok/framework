@@ -2,7 +2,7 @@
 
 exports.colors = colors =
 	black: '#252729'
-	gray: '#c1c1c2'
+	grey: '#c1c1c2'
 	yellow: '#ffd16d'
 	white: '#FFF'
 	blue: '#5399c3'

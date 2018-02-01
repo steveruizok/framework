@@ -2,23 +2,8 @@ require 'framework'
 { theme } = require 'components/Theme' # not usually needed
 
 # Setup
-
-Canvas.backgroundColor = '#000'
+Canvas.backgroundColor = bg3
 Framer.Extras.Hints.disable()
-
-# ----------------
-# custom stuff
-
-# ----------------
-# data
-
-# User
-
-user =
-	name: 'Charlie Rogers'
-	age: 28
-	sex: Utils.randomChoice(['female', 'male', 'nonbinary'])
-	date: new Date
 
 app = new App
 	safari: false
@@ -53,32 +38,25 @@ Utils.bind typographyView.content, ->
 			label.midY = textExample.midY
 
 Utils.bind typographyView, ->
-	whiteScrim = new Layer
+	docsLinkCircle = new Layer
+		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	docs = new Icon
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+	docsIcon = new Icon
+		name: '.'
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'code-tags'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Typography')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Typography')
 
 # Icons View
 
@@ -118,32 +96,25 @@ Utils.bind iconsView.content, ->
 
 
 Utils.bind iconsView, ->
-	whiteScrim = new Layer
+	docsLinkCircle = new Layer
+		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	docs = new Icon
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+	docsIcon = new Icon
+		name: '.'
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'code-tags'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Icon')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Icon')
 
 # Colors View
 
@@ -180,32 +151,25 @@ Utils.bind colorsView.content, ->
 		i++
 
 Utils.bind colorsView, ->
-	whiteScrim = new Layer
+	docsLinkCircle = new Layer
+		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	docs = new Icon
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+	docsIcon = new Icon
+		name: '.'
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'code-tags'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Colors')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Colors')
 
 # Buttons View
 
@@ -277,35 +241,25 @@ Utils.bind buttonsView.content, ->
 	dark3.sendToBack()
 
 Utils.bind buttonsView, ->
-	whiteScrim = new Layer
+	docsLinkCircle = new Layer
 		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
+	docsIcon = new Icon
 		name: '.'
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	docs = new Icon
-		name: '.'
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'code-tags'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Button')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Button')
 
 # Sortables View
 
@@ -333,35 +287,119 @@ Utils.bind sortablesView.content, ->
 			text: 'Sortable ' + i
 
 Utils.bind sortablesView, ->
-	whiteScrim = new Layer
+	docsLinkCircle = new Layer
 		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
+	docsIcon = new Icon
 		name: '.'
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	docs = new Icon
-		name: '.'
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'code-tags'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Sortable')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Sortable')
+
+# Toggles View
+
+togglesView = new View
+	title: 'Toggles'
+	contentInset:
+		bottom: 128
+
+Utils.bind togglesView.content, ->
+	return if not SHOW_ALL
+	
+	# toggles
+	
+	label = new H4
+		parent: @
+		text: 'Toggle'
+		y: 16
+		
+	toggle = new Toggle 
+		name: 'Toggle'
+		parent: @ 
+		y: label.maxY + 32
+		
+	toggle = new Toggle 
+		parent: @ 
+		y: toggle.maxY + 32
+		toggled: true
+	
+	toggle = new Toggle 
+		parent: @ 
+		y: toggle.maxY + 32
+		options: ['Good', 'Evil']
+	
+	toggle = new Toggle 
+		parent: @ 
+		y: toggle.maxY + 32
+		options: ['pizza', 'apple']
+		icon: true
+	
+	toggle = new Toggle 
+		parent: @ 
+		y: toggle.maxY + 32
+		options: ['phone', 'email']
+		icon: true
+		color: black
+		backgroundColor: yellow
+	
+	toggle = new Toggle 
+		parent: @ 
+		y: toggle.maxY + 32
+		options: [' ', ' ']
+	
+	for layer in @children
+		if layer.constructor.name is 'Toggle'
+			strings = []
+			strings.push "toggled: {toggled}"
+			strings.push "icon: #{layer.icon}"
+			strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+			string = strings.join('\n')
+				
+			label = new Code
+				name: '.'
+				parent: @
+				x: 172
+				text: string
+				
+			label.template = layer.toggled
+			
+			do (label, layer) ->
+				layer.on "change:toggled", =>
+					label.template = layer.toggled
+				
+			label.midY = layer.midY
+			
+Utils.bind togglesView, ->
+	docsLinkCircle = new Layer
+		name: '.'
+		parent: @
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
+	
+	docsIcon = new Icon
+		name: '.'
+		parent: docsLinkCircle
+		point: Align.center()
+		size: 32
+		icon: 'code-tags'
+		color: black
+		opacity: .5
+	
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Toggle')
 
 # Inputs View
 
@@ -464,35 +502,27 @@ Utils.bind inputsView.content, ->
 		submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
 
 Utils.bind inputsView, ->
-	whiteScrim = new Layer
+			
+Utils.bind togglesView, ->
+	docsLinkCircle = new Layer
 		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
+	docsIcon = new Icon
 		name: '.'
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	docs = new Icon
-		name: '.'
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'code-tags'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	docs.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Inputs')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Inputs')
 
 # Example View
 
@@ -616,32 +646,25 @@ Utils.bind homeView.content, ->
 				app.showNext view
 
 Utils.bind homeView, ->
-	whiteScrim = new Layer
+	docsLinkCircle = new Layer
+		name: '.'
 		parent: @
-		width: @width
-		y: Align.bottom()
-		height: 64
-		backgroundColor: white
+		size: 40
+		borderRadius: 20
+		backgroundColor: bg3
+		x: Align.right(-8)
+		y: Align.bottom(-8)
 	
-	whiteFade = new Layer
-		parent: @
-		width: @width
-		y: Align.bottom(-64)
-		height: 32
-		gradient: 
-			start: white
-			end: 'rgba(255,255,255,0)'
-		
-	github = new Icon
-		parent: @
-		y: Align.bottom(-24)
-		x: Align.center()
+	docsIcon = new Icon
+		name: '.'
+		parent: docsLinkCircle
+		point: Align.center()
 		size: 32
 		icon: 'github-circle'
 		color: black
-		opacity: .25
+		opacity: .5
 	
-	github.onTap -> window.open('https://github.com/steveruizok/framework')
+	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework')
 
 
 app.showNext homeView

@@ -124,7 +124,7 @@ class exports.Button extends Layer
 
 		@__instancing = true
 
-		Utils.defineValid @, 'theme', null, _.isString, "Button.theme must be a string.", @_setTheme
+		Utils.defineValid @, 'theme', null, _.isString, "Button.theme must be a string.", (value) => @_setTheme(value)
 		Utils.defineValid @, 'dark', options.dark, _.isBoolean, "Button.dark must be a boolean (true or false).", 
 		Utils.defineValid @, 'secondary', options.secondary, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
 		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Button.disabled must be a boolean (true or false).", @_showDisabled
