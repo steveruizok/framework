@@ -10,6 +10,35 @@ app = new App
 
 SHOW_ALL = true
 
+# Add Docs Link
+
+addDocsLink = (view, url, icon = 'code-tags') ->
+	Utils.bind view, ->
+		docsLinkCircle = new Layer
+			name: '.'
+			parent: @
+			size: 40
+			borderRadius: 20
+			backgroundColor: white
+			x: Align.right(-12)
+			y: Align.bottom(-16)
+			borderWidth: 1
+			borderColor: grey50
+			shadowY: 3
+			shadowBlur: 4
+			shadowColor: "rgba(0,0,0,.16)"
+		
+		docsIcon = new Icon
+			name: '.'
+			parent: docsLinkCircle
+			point: Align.center(1)
+			size: 32
+			icon: icon
+			color: blue30
+		
+		do (url) ->
+			docsLinkCircle.onTap -> window.open("https://github.com/steveruizok/framework/#{url}")
+
 # Typography View
 
 typographyView = new View
@@ -37,26 +66,7 @@ Utils.bind typographyView.content, ->
 			
 			label.midY = textExample.midY
 
-Utils.bind typographyView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Typography')
+addDocsLink(typographyView, 'wiki/Typography')
 
 # Icons View
 
@@ -94,27 +104,9 @@ Utils.bind iconsView.content, ->
 		text: "For full list, see\nhttp://www.materialdesignicons.com"
 		color: '#000'
 
+	
+addDocsLink(iconsView, 'wiki/Icon')
 
-Utils.bind iconsView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Icon')
 
 # Colors View
 
@@ -150,26 +142,7 @@ Utils.bind colorsView.content, ->
 		
 		i++
 
-Utils.bind colorsView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Colors')
+addDocsLink(colorsView, 'wiki/Colors')
 
 # Buttons View
 
@@ -240,26 +213,7 @@ Utils.bind buttonsView.content, ->
 	dark2.sendToBack()
 	dark3.sendToBack()
 
-Utils.bind buttonsView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Button')
+addDocsLink(buttonsView, 'wiki/Button')
 
 # Sortables View
 
@@ -286,26 +240,8 @@ Utils.bind sortablesView.content, ->
 			backgroundColor: Color.mix(yellow, blue, i/7)
 			text: 'Sortable ' + i
 
-Utils.bind sortablesView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Sortable')
+
+addDocsLink(sortablesView, 'wiki/Sortable')
 
 # Toggles View
 
@@ -379,27 +315,9 @@ Utils.bind togglesView.content, ->
 					label.template = layer.toggled
 				
 			label.midY = layer.midY
-			
-Utils.bind togglesView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Toggle')
+
+
+addDocsLink(togglesView, 'wiki/Toggle')
 
 # Inputs View
 
@@ -501,28 +419,7 @@ Utils.bind inputsView.content, ->
 	checkSubmit = ->
 		submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
 
-Utils.bind inputsView, ->
-			
-Utils.bind togglesView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'code-tags'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework/wiki/Inputs')
+addDocsLink(inputsView, 'wiki/Inputs')
 
 # Example View
 
@@ -645,26 +542,7 @@ Utils.bind homeView.content, ->
 			button.onSelect =>
 				app.showNext view
 
-Utils.bind homeView, ->
-	docsLinkCircle = new Layer
-		name: '.'
-		parent: @
-		size: 40
-		borderRadius: 20
-		backgroundColor: bg3
-		x: Align.right(-8)
-		y: Align.bottom(-8)
-	
-	docsIcon = new Icon
-		name: '.'
-		parent: docsLinkCircle
-		point: Align.center()
-		size: 32
-		icon: 'github-circle'
-		color: black
-		opacity: .5
-	
-	docsLinkCircle.onTap -> window.open('https://github.com/steveruizok/framework')
+addDocsLink(homeView, '', 'github-circle')
 
 
 app.showNext homeView

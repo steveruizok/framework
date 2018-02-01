@@ -8,7 +8,6 @@ exports.colors = colors =
 	blue: '#5399c3'
 	red: '#d96161'
 	green: '#599FA0'
-	purple: '#5499c3'
 	beige: '#eae5e0'
 
 # Set up shades
