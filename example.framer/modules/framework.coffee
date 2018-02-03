@@ -9,11 +9,13 @@ require 'components/Typography'
 { Checkbox } = require 'components/Checkbox'
 { Footer } = require 'components/Footer'
 { Header } = require 'components/Header'
+{ Segment } = require 'components/Segment'
 { Toggle } = require 'components/Toggle'
 { Icon } = require 'components/Icon'
 { Link } = require 'components/Link'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
 { Separator } = require 'components/Separator'
+{ Stepper } = require 'components/Stepper'
 { Sortable } = require 'components/Sortable'
 { TextInput } = require 'components/TextInput'
 { TransitionPage } = require 'components/PageTransitionComponent'
@@ -24,9 +26,9 @@ class window.App extends FlowComponent
 	constructor: (options = {}) ->
 
 		_.defaults options,
-			backgroundColor: '#FFF'
+			backgroundColor: white
 			title: 'www.framework.com'
-			safari: true
+			safari: false
 
 		if not options.safari
 			options.title = ''
@@ -40,6 +42,8 @@ class window.App extends FlowComponent
 			'Checkbox',
 			'Toggle',
 			'Icon', 
+			'Stepper', 
+			'Segment',
 			'TextInput',
 			'Link', 
 			'PageTransitionComponent'
@@ -57,10 +61,12 @@ class window.App extends FlowComponent
 		super options
 
 		@views = []
-		@header = new Header
-			app: @
-			safari: options.safari
-			title: options.title
+
+		if options.header
+			@header = new Header
+				app: @
+				safari: options.safari
+				title: options.title
 		
 		if options.safari
 			@footer = new Footer 
@@ -83,14 +89,17 @@ class window.App extends FlowComponent
 			
 		hasPrevious = prev? and next isnt @_stack[0]?.layer
 
-		if not @header.safari
-			@header.backIcon.visible = hasPrevious
-			@header.backText.visible = hasPrevious
-			if next.title 
-				@header.updateTitle(next.title)
+		return if not @header
+
+		if @header.safari
+			@footer.hasPrevious = hasPrevious
 			return
 
-		@footer.hasPrevious = hasPrevious
+		@header.backIcon.visible = hasPrevious
+		@header.backText.visible = hasPrevious
+		if next.title 
+			@header.updateTitle(next.title)
+		return
 	
 	# Reset the previous View while transitioning
 	resetPrevious: (prev, next) =>

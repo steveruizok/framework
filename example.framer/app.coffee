@@ -5,10 +5,53 @@ require 'framework'
 Canvas.backgroundColor = bg3
 Framer.Extras.Hints.disable()
 
+# Row Link
+
+class RowLink extends Layer
+	constructor: (options = {}) ->
+		
+		_.defaults options,
+			text: 'Hello world'
+			width: Screen.width - 32
+			x: 16
+			link: null
+			backgroundColor: null
+		
+		super options
+		
+		_.assign @,
+			link: options.link
+			
+		# layers
+		
+		@textLayer = new H4
+			parent: @
+			x: 12
+			y: 12
+			text: options.text
+		
+		@height = @textLayer.maxY + 16
+			
+		if @link
+			@chevron = new Icon
+				icon: 'chevron-right'
+				color: black30
+				parent: @
+				x: Align.right(-16)
+				y: Align.center()
+				
+			@textLayer.color = yellow80
+			
+			@onTap (event) => 
+				return if Math.abs(event.offset.y) > 10
+				app.showNext(@link)
+		
+
 app = new App
-	safari: false
+	header: true
 
 SHOW_ALL = true
+SHOW_LAYER_TREE = false
 
 # Add Docs Link
 
@@ -153,7 +196,7 @@ Utils.bind buttonsView.content, ->
 	return if not SHOW_ALL
 	buttons = _.map _.range(24), (i) =>
 		button = new Button
-			name: '.'
+			name: 'Button'
 			parent: @
 			secondary: i % 4 > 1
 			disabled: i % 2 is 1
@@ -213,7 +256,70 @@ Utils.bind buttonsView.content, ->
 	dark2.sendToBack()
 	dark3.sendToBack()
 
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 addDocsLink(buttonsView, 'wiki/Button')
+
+# Steppers View
+
+steppersView = new View
+	title: 'Steppers'
+
+Utils.bind steppersView.content, ->
+	
+	stepper = new Stepper
+		parent: @
+	
+	stepper = new Stepper
+		parent: @
+		value: 0
+		
+	stepper = new Stepper
+		parent: @
+		value: 10
+		
+	stepper = new Stepper
+		parent: @
+		min: 50
+		max: 100
+		value: 42
+		
+	stepper = new Stepper
+		parent: @
+		options: ['Less', 'More']
+		icon: false
+	
+	for layer in @children
+		continue if layer.constructor.name isnt 'Stepper'
+		
+		layer.y = (last?.maxY ? 32) + 32
+	
+		strings = []
+		strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+		strings.push "icon: #{layer.icon}"
+		strings.push "min: #{layer.min}"
+		strings.push "max: #{layer.max}"
+		strings.push "value: {value}"
+		string = strings.join('\n')
+			
+		label = new Code
+			name: '.'
+			parent: @
+			x: layer.x
+			y: layer.maxY + 16
+			text: string
+			
+		label.template = layer.value
+		
+		do (label, layer) ->
+			layer.on "change:value", =>
+				label.template = layer.value
+		
+		last = label
+	
+	if not SHOW_LAYER_TREE
+		child.name = '.' for child in @children
+		
+addDocsLink(steppersView, 'wiki/Stepper')
 
 # Sortables View
 
@@ -227,7 +333,7 @@ Utils.bind sortablesView.content, ->
 	for i in _.range(7)
 		sortable = new Sortable
 			parent: @
-			name: '.'
+			name: 'Sortable'
 			positions: positions
 			x: Align.center()
 			width: @width * .618
@@ -240,8 +346,89 @@ Utils.bind sortablesView.content, ->
 			backgroundColor: Color.mix(yellow, blue, i/7)
 			text: 'Sortable ' + i
 
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
 addDocsLink(sortablesView, 'wiki/Sortable')
+
+# Segments View
+
+segmentsView = new View
+	title: 'Segments'
+	contentInset:
+		bottom: 128
+
+Utils.bind segmentsView.content, ->
+	return if not SHOW_ALL
+	
+	# Segments
+	
+	label = new H4
+		parent: @
+		text: 'Segment'
+		y: 16
+		
+	new Segment 
+		name: 'Segment'
+		parent: @ 
+		
+	new Segment 
+		name: 'Segment Active'
+		parent: @ 
+		active: 1
+	
+	new Segment 
+		name: 'Segment Three'
+		parent: @ 
+		options: ['Good', 'Nuetral', 'Evil']
+	
+	new Segment 
+		name: 'Segment Icons'
+		parent: @
+		options: ['phone', 'email', 'snapchat']
+		icon: true
+	
+	new Segment 
+		name: 'Segment Custom Colors'
+		parent: @ 
+		options: ['phone', 'email', 'snapchat']
+		icon: true
+		color: white
+		backgroundColor: blue60
+	
+	new Segment 
+		name: 'Segment Blank'
+		parent: @ 
+		options: [' ', ' ', ' ']
+	
+	for layer in @children
+		if layer.constructor.name is 'Segment'
+		
+			layer.y = (last?.maxY ? 32) + 32
+		
+			strings = []
+			strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+			strings.push "icon: #{layer.icon}"
+			strings.push "active: {active}"
+			string = strings.join('\n')
+				
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 16
+				text: string
+				
+			label.template = layer.active
+			
+			do (label, layer) ->
+				layer.on "change:active", =>
+					label.template = layer.active
+			
+			last = label
+
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+
+addDocsLink(segmentsView, 'wiki/Segment')
 
 # Toggles View
 
@@ -260,63 +447,67 @@ Utils.bind togglesView.content, ->
 		text: 'Toggle'
 		y: 16
 		
-	toggle = new Toggle 
+	new Toggle 
 		name: 'Toggle'
 		parent: @ 
-		y: label.maxY + 32
 		
-	toggle = new Toggle 
+	new Toggle 
+		name: 'Toggle Toggled'
 		parent: @ 
-		y: toggle.maxY + 32
 		toggled: true
 	
-	toggle = new Toggle 
+	new Toggle 
+		name: 'Toggle Options'
 		parent: @ 
-		y: toggle.maxY + 32
 		options: ['Good', 'Evil']
 	
-	toggle = new Toggle 
+	new Toggle 
+		name: 'Toggle Icons'
 		parent: @ 
-		y: toggle.maxY + 32
 		options: ['pizza', 'apple']
 		icon: true
 	
-	toggle = new Toggle 
+	new Toggle 
+		name: 'Toggle Custom Colors'
 		parent: @ 
-		y: toggle.maxY + 32
 		options: ['phone', 'email']
 		icon: true
-		color: black
+		color: white
 		backgroundColor: yellow
 	
-	toggle = new Toggle 
+	new Toggle 
+		name: 'Toggle Blank'
 		parent: @ 
-		y: toggle.maxY + 32
 		options: [' ', ' ']
 	
 	for layer in @children
 		if layer.constructor.name is 'Toggle'
+			layer.y = (last?.maxY ? 32) + 32
+		
 			strings = []
-			strings.push "toggled: {toggled}"
-			strings.push "icon: #{layer.icon}"
 			strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+			strings.push "icon: #{layer.icon}"
+			strings.push "toggled: {toggled}"
 			string = strings.join('\n')
 				
 			label = new Code
 				name: '.'
 				parent: @
-				x: 172
+				x: layer.x
+				y: layer.maxY + 16
 				text: string
 				
 			label.template = layer.toggled
 			
 			do (label, layer) ->
-				layer.on "change:toggled", =>
+				layer.on "change:active", =>
 					label.template = layer.toggled
-				
-			label.midY = layer.midY
+			
+			last = label
 
-
+	
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+	
 addDocsLink(togglesView, 'wiki/Toggle')
 
 # Inputs View
@@ -329,18 +520,15 @@ Utils.bind inputsView.content, ->
 	# text input
 	
 	label = new Label 
-		name: '.'
 		parent: @
 		text: 'First Name'
 	
 	input = new TextInput
-		name: '.'
 		parent: @
 		y: label.maxY
 		placeholder: 'Your first name'
 		
 	error = new Micro
-		name: '.'
 		parent: @
 		y: input.maxY
 		text: 'This website only accepts users named Sean.'
@@ -360,7 +548,6 @@ Utils.bind inputsView.content, ->
 	# radiobox
 	
 	radioBoxlabel = new Label
-		name: '.'
 		parent: @
 		x: 16
 		y: error.maxY + 16
@@ -372,14 +559,12 @@ Utils.bind inputsView.content, ->
 	
 	for city, i in ['London', 'Chicago', 'DeKalb']
 		radioboxes[i] = new Radiobox
-			name: '.'
 			parent: @
 			group: radioboxes
 			x: 16
 			y: lastY
 
 		label = new Body2
-			name: '.'
 			parent: @
 			x: radioboxes[i].maxX + 8
 			y: lastY
@@ -392,13 +577,11 @@ Utils.bind inputsView.content, ->
 	# check box
 	
 	label = new Label
-		name: '.'
 		parent: @
 		text: 'Agree to Conditions'
 		y: _.last(radioboxes).maxY + 16
 		
 	checkbox = new Checkbox
-		name: '.'
 		parent: @
 		y: label.y + 7
 		x: label.maxX + 8
@@ -410,7 +593,6 @@ Utils.bind inputsView.content, ->
 	# submit button
 	
 	submit = new Button
-		name: '.'
 		parent: @
 		y: checkbox.maxY + 32
 		text: 'Submit'
@@ -418,6 +600,8 @@ Utils.bind inputsView.content, ->
 		
 	checkSubmit = ->
 		submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
+
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
 addDocsLink(inputsView, 'wiki/Inputs')
 
@@ -493,7 +677,7 @@ exampleView.onLoad ->
 			y: y - 16
 			ignoreEvents: true
 		
-		delay = .5 + (.15 * i)
+		delay = .5 + (.2 * i)
 		if i > 1 then delay += .75
 		
 		child.animate
@@ -524,24 +708,117 @@ exampleView.onLoad ->
 # Home View
 
 homeView = new View
-	title: 'Framework Components'
+	title: 'Framework'
+
+
 
 Utils.bind homeView.content, ->
-	for view, i in app.views
-		continue if view is homeView
+	
+	# foundations
+	new H3
+		parent: @
+		text: 'Foundations'
+		padding: {top: 32, bottom: 16}
+	
+	new RowLink
+		parent: @
+		text: 'Theme'
 		
-		button = new Button
-			name: '.'
-			parent: @
-			x: Align.center()
-			y: 32 + i * 64
-			text: view.title
-			width: 200
+	new RowLink
+		parent: @
+		text: 'Colors'
+		link: colorsView
 		
-		do (view) =>
-			button.onSelect =>
-				app.showNext view
-
+	new RowLink
+		parent: @
+		text: 'Typography'
+		link: typographyView
+	
+	# structure
+	new H3
+		parent: @
+		text: 'Foundations'
+		padding: {top: 16, bottom: 16}
+	
+	new RowLink
+		parent: @
+		text: 'App'
+		
+	new RowLink
+		parent: @
+		text: 'View'
+		
+	new RowLink
+		parent: @
+		text: 'Header'
+		
+	
+	# components
+	new H3
+		parent: @
+		text: 'Components'
+		padding: {top: 16, bottom: 16}
+	
+	new RowLink
+		parent: @
+		text: 'Icon'
+		link: iconsView
+		
+	new RowLink
+		parent: @
+		text: 'Button'
+		link: buttonsView
+		
+	new RowLink
+		parent: @
+		text: 'Sortable'
+		link: sortablesView
+		
+	new RowLink
+		parent: @
+		text: 'Checkbox'
+		link: inputsView
+		
+	new RowLink
+		parent: @
+		text: 'Radiobox'
+		link: inputsView
+		
+	new RowLink
+		parent: @
+		text: 'Checkbox'
+		link: inputsView
+		
+	new RowLink
+		parent: @
+		text: 'TextInput'
+		link: inputsView
+		
+	new RowLink
+		parent: @
+		text: 'Segment'
+		link: segmentsView
+		
+	new RowLink
+		parent: @
+		text: 'Toggle'
+		link: togglesView
+		
+	new RowLink
+		parent: @
+		text: 'Stepper'
+		link: steppersView
+	
+	# set child positions
+	
+	for child in @children
+		child.y = last ? 0
+		
+		last = child.maxY
+	
+		if not SHOW_LAYER_TREE then child.name = '.'
+	
+homeView.updateContent()
 addDocsLink(homeView, '', 'github-circle')
 
 

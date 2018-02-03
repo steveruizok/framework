@@ -1,14 +1,6 @@
 { theme } = require 'components/Theme'
 
-theme.sortable =
-	default:
-		scale: 1
-		shadowY: 0
-		shadowBlur: 0
-	dragging: 
-		scale: 1.07
-		shadowY: 2
-		shadowBlur: 16
+MODEL = 'segment'
 
 class exports.Sortable extends Layer
 	constructor: ( options = {} ) ->
@@ -19,9 +11,6 @@ class exports.Sortable extends Layer
 		_.defaults options,
 			height: 48
 			padding: 16
-			lastY: 0
-			borderRadius: 999
-			shadowColor: 'rgba(0,0,0,.16)'
 			animationOptions:
 				time: .3
 
@@ -31,6 +20,8 @@ class exports.Sortable extends Layer
 
 		if last? 
 			delete options.y
+			delete options.midY
+			delete options.maxY
 			options.midY = last.midY + options.height + options.padding
 
 		@customOptions = {}
@@ -78,7 +69,7 @@ class exports.Sortable extends Layer
 	# Private Methods
 
 	_setTheme: (value) =>
-		props = _.defaults _.clone(@customOptions), theme.sortable[value]
+		props = _.defaults _.clone(@customOptions), theme[MODEL][value]
 		@animate props
 
 	

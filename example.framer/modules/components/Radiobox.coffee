@@ -70,7 +70,7 @@ class exports.Radiobox extends Layer
 		Utils.defineValid @, 'error', options.disabled, _.isBoolean, "Checkbox.error must be a boolean (true or false).", @_showError
 		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Checkbox.disabled must be a boolean (true or false).", @_showDisabled
 		Utils.defineValid @, 'labelLayer', options.labelLayer, isLayer, "Checkbox.labelLayer must be a Layer type.", @_setLabelLayer
-		
+	
 	# ---------------
 	# Private Methods
 
@@ -87,6 +87,8 @@ class exports.Radiobox extends Layer
 		if not bool
 			@iconLayer.icon = 'radiobox-blank'
 			return
+
+		@group.active = _.indexOf(@group, @)
 
 		for rb in _.without(@group, @)
 			rb.checked = false

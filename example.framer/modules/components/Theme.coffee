@@ -156,7 +156,6 @@ exports.theme =
 			color: grey
 	
 	# --------------------------
-	
 	# Text Input
 	textInput:
 		default:
@@ -179,6 +178,16 @@ exports.theme =
 			backgroundColor: white
 			shadowBlur: 6
 			shadowColor: 'rgba(0,0,0,.16)'
+		disabled:
+			color: grey40
+			borderColor: grey30
+			backgroundColor: white
+			shadowBlur: 0
+			shadowColor: 'rgba(0,0,0,0)'
+			borderWidth: 1
+			borderRadius: 2
+	# --------------------------
+	# Radiobox
 	radiobox:
 		default:
 			color: black
@@ -192,6 +201,8 @@ exports.theme =
 		error:
 			color: red
 			opacity: 1
+	# --------------------------
+	# Checkbox
 	checkbox:
 		default:
 			color: black
@@ -205,18 +216,19 @@ exports.theme =
 		error:
 			color: red
 			opacity: 1
-	# toggle
-	toggle:
-		toggled:
+	# --------------------------
+	# Segment
+	segment:
+		active:
 			default:
 				color: black
 				borderColor: yellow60
 				backgroundColor: yellow50
-				shadowColor: 'rgba(0,0,0,.16)'
+				shadowColor: 'rgba(0,0,0,0)'
 			disabled:
-				color: new Color(black).alpha(.15)
-				borderColor: new Color(black).alpha(.15)
-				backgroundColor: new Color(yellow50).alpha(0)
+				color: grey
+				borderColor: grey40
+				backgroundColor: grey30
 				shadowColor: 'rgba(0,0,0,0)'
 			touched:
 				color: black
@@ -227,28 +239,29 @@ exports.theme =
 				color: black
 				borderColor: yellow70
 				backgroundColor: yellow60
-				shadowColor: 'rgba(0,0,0,.16)'
+				shadowColor: 'rgba(0,0,0,0)'
 		default:
 			default:
 				color: black
 				borderColor: grey40
 				backgroundColor: white
-				shadowColor: 'rgba(0,0,0,.16)'
+				shadowColor: 'rgba(0,0,0,0)'
 			disabled:
-				color: new Color(black).alpha(.15)
-				borderColor: new Color(black).alpha(.15)
-				backgroundColor: new Color(white).alpha(0)
+				color: grey
+				borderColor: grey40
+				backgroundColor: grey30
 				shadowColor: 'rgba(0,0,0,0)'
 			touched:
 				color: black
 				borderColor: grey40
 				backgroundColor: white
-				shadowColor: 'rgba(0,0,0,.16)'
+				shadowColor: 'rgba(0,0,0,0)'
 			hovered:
 				color: black30
 				borderColor: grey40
 				backgroundColor: grey30
-				shadowColor: 'rgba(0,0,0,.16)'
+				shadowColor: 'rgba(0,0,0,0)'
+	# --------------------------
 	# Button
 	button:
 		light_primary:
@@ -343,6 +356,17 @@ exports.theme =
 				backgroundColor: null
 				opacity: 1
 				shadowColor: 'rgba(0,0,0,0)'
+	# --------------------------
+	# Sortable
+	sortable:
+		default:
+			scale: 1
+			shadowY: 0
+			shadowBlur: 0
+		dragging: 
+			scale: 1.07
+			shadowY: 2
+			shadowBlur: 16
 	# --------------------------
 	# Icons
 	icons:

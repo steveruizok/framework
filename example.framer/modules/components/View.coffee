@@ -23,7 +23,7 @@ class exports.View extends ScrollComponent
 			height: Screen.height
 			scrollHorizontal: false
 
-		options.contentInset.top = @app.header.height + (options.contentInset?.top ? 0)
+		options.contentInset.top = (@app.header?.height ? 0) + (options.contentInset?.top ? 0)
 
 		super options
 

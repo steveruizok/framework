@@ -1,5 +1,7 @@
 { theme } = require 'components/Theme'
 
+MODEL = 'textInput'
+
 class exports.TextInput extends Layer
 	constructor: (options = {}) ->
 
@@ -11,10 +13,9 @@ class exports.TextInput extends Layer
 		_.defaults options,
 			name: 'TextInput'
 			width: 260
-			theme: 'default'
-			hovered: false
-			focused: false
 			placeholder: "Placeholder"
+			disabled: false
+			value: ''
 			animationOptions:
 				time: .15
 
@@ -28,6 +29,8 @@ class exports.TextInput extends Layer
 			color: options.color
 			backgroundColor: options.backgroundColor
 		
+		@__constructor = true
+
 		super options
 
 		# ---------------
@@ -61,13 +64,15 @@ class exports.TextInput extends Layer
 
 		# ---------------
 		# Definitions
-
+		
 		@__instancing = true
 
-		Utils.defineValid @, 'theme', options.theme, _.isString, 'TextInput.theme must be a string.', @_setTheme
-		Utils.defineValid @, 'hovered', options.hovered, _.isBoolean, 'TextInput.hovered must be a boolean.', @_showHovered
-		Utils.defineValid @, 'focused', options.focused, _.isBoolean, 'TextInput.focused must be a boolean.',  @_showFocused
-
+		Utils.defineValid @, 'theme', 'default', _.isString, 'TextInput.theme must be a string.', @_setTheme
+		Utils.defineValid @, 'hovered', false, _.isBoolean, 'TextInput.hovered must be a boolean.', @_showHovered
+		Utils.defineValid @, 'focused', false, _.isBoolean, 'TextInput.focused must be a boolean.',  @_showFocused
+		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, 'TextInput.disabled must be a boolean.',  @_showDisabled
+		
+		delete @__constructor
 		delete @__instancing
 
 		# ---------------
@@ -79,6 +84,8 @@ class exports.TextInput extends Layer
 		@_input.onblur = => @focused = false
 		@_input.onfocus = => @focused = true
 
+		@value = options.value
+
 	# ---------------
 	# Private Functions
 	
@@ -88,12 +95,11 @@ class exports.TextInput extends Layer
 
 	_setTheme: (value) =>
 		@animateStop()
-		props = _.defaults _.clone(@customOptions), theme.textInput[value]
+		props = _.defaults _.clone(@customOptions), theme[MODEL][value]
 		if @__instancing then @props = props else @animate props
 
-	
 	_showHovered: (bool) =>
-		return if @focused
+		return if @disabled or @focused
 
 		if bool # hovered is true
 			@theme = "hovered"
@@ -103,6 +109,8 @@ class exports.TextInput extends Layer
 		@theme = "default"
 	
 	_showFocused: (bool) =>
+		return if @disabled
+
 		if bool # focused is true
 			@theme = "focused"
 			return
@@ -110,11 +118,26 @@ class exports.TextInput extends Layer
 		# focused is false
 		@theme = "default"
 
+	_showDisabled: (bool) =>
+		if bool # disabled is true
+			@theme = "disabled"
+			@ignoreEvents = true
+			@_input.disabled = true
+			return
+
+		# focused is false
+		@theme = "default"
+		@ignoreEvents = false
+		@_input.disabled = false
+
+
 	# ---------------
 	# Special Definitions
 
 	@define "value",
 		get: -> return @_input.value
 		set: (value) ->
+			return if @__constructor
+			
 			@_input.value = value
 			@emit "change:value", value, @
