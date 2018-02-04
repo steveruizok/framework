@@ -48,7 +48,6 @@ class RowLink extends Layer
 		
 
 app = new App
-	header: true
 
 SHOW_ALL = true
 SHOW_LAYER_TREE = false
@@ -62,11 +61,11 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 			parent: @
 			size: 40
 			borderRadius: 20
-			backgroundColor: white
+			backgroundColor: blue
 			x: Align.right(-12)
 			y: Align.bottom(-16)
 			borderWidth: 1
-			borderColor: grey50
+			borderColor: blue60
 			shadowY: 3
 			shadowBlur: 4
 			shadowColor: "rgba(0,0,0,.16)"
@@ -77,7 +76,7 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 			point: Align.center(1)
 			size: 32
 			icon: icon
-			color: blue30
+			color: white
 		
 		do (url) ->
 			docsLinkCircle.onTap -> window.open("https://github.com/steveruizok/framework/#{url}")
@@ -94,20 +93,22 @@ Utils.bind typographyView.content, ->
 	for k, v of theme.typography
 		if window[k]
 			textExample = new window[k]
-				name: '.'
 				parent: @
-				y: (textExample?.maxY ? 0) + 16
+				y: (last ? 32)
 				text: k
-				x: 64
+				x: 16
 			
 			label = new Code
 				parent: @
 				name: '.'
-				x: Screen.width * 3/5
+				x: 16
+				y: textExample.maxY + 4
 				text: "new #{k}"
-				color: '#000'
-			
-			label.midY = textExample.midY
+				color: black
+				
+			last = label.maxY + 32
+
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
 addDocsLink(typographyView, 'wiki/Typography')
 
@@ -187,6 +188,94 @@ Utils.bind colorsView.content, ->
 
 addDocsLink(colorsView, 'wiki/Colors')
 
+# Links View
+
+linksView = new View
+	title: 'Typography'
+
+Utils.bind linksView.content, ->
+	return if not SHOW_ALL
+	
+	new H2Link
+		parent: @
+		text: 'Click here'
+		x: 16
+		
+	new H2Link
+		parent: @
+		text: 'Click here'
+		x: 16
+		select: => print "Clicked!"
+		
+	new H2Link
+		parent: @
+		text: 'Click here'
+		x: 16
+		disabled: true
+		select: => print "Clicked!"
+		
+	new H2Link
+		parent: @
+		text: 'Click here'
+		x: 16
+		color: red
+		select: => print "Clicked!"
+		
+	for layer, i in @children
+		continue if layer.constructor.name isnt 'Link'
+		
+		layer.y = (last ? 32)
+		
+		s = if i is 0 then "null" else "print 'Clicked!'"
+		c = if i is 3 then 'red' else 'black'
+	
+		string = [
+			"new H2Link",
+			"text: #{layer.text}",
+			"color: #{c}",
+			"disabled: #{layer.disabled}",
+			"select: -> #{s}"
+			].join('\n\t')
+			
+		label = new Code
+			name: '.'
+			parent: @
+			x: layer.x
+			y: layer.maxY + 16
+			text: string
+			
+		label.template = layer.value
+		
+		do (label, layer) ->
+			layer.on "change:value", =>
+				label.template = layer.value
+		
+		last = label.maxY + 32
+	
+	
+	i = 0
+	for k, v of theme.typography
+		if window[k + 'Link']
+			textExample = new window[k + 'Link']
+				parent: @
+				y: (last ? 0)
+				text: k + 'Link'
+				x: 16
+			
+			label = new Code
+				parent: @
+				name: '.'
+				x: 16
+				y: textExample.maxY + 4
+				text: "new #{k}Link"
+				color: black
+			
+			last = label.maxY + 32
+
+	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+	
+addDocsLink(linksView, 'wiki/Link')
+
 # Buttons View
 
 buttonsView = new View
@@ -202,7 +291,7 @@ Utils.bind buttonsView.content, ->
 			disabled: i % 2 is 1
 			dark: Math.floor(i/4) % 2 is 1
 			icon: if i >= 8 then 'star'
-			y: 16 + (i * 80)
+			y: 32 + (i * 80)
 			x: 32
 			text: if i >= 16 then '' else 'Getting Started'
 			
@@ -287,19 +376,23 @@ Utils.bind steppersView.content, ->
 		parent: @
 		options: ['Less', 'More']
 		icon: false
+		
+	# set positions and create code labels
 	
 	for layer in @children
 		continue if layer.constructor.name isnt 'Stepper'
 		
 		layer.y = (last?.maxY ? 32) + 32
 	
-		strings = []
-		strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-		strings.push "icon: #{layer.icon}"
-		strings.push "min: #{layer.min}"
-		strings.push "max: #{layer.max}"
-		strings.push "value: {value}"
-		string = strings.join('\n')
+	
+		string = [
+			"new Stepper",
+			"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]",
+			"icon: #{layer.icon}",
+			"min: #{layer.min}",
+			"max: #{layer.max}",
+			"value: {value}"
+			].join('\n\t')
 			
 		label = new Code
 			name: '.'
@@ -336,6 +429,7 @@ Utils.bind sortablesView.content, ->
 			name: 'Sortable'
 			positions: positions
 			x: Align.center()
+			y: 32
 			width: @width * .618
 			backgroundColor: null
 		
@@ -399,17 +493,20 @@ Utils.bind segmentsView.content, ->
 		name: 'Segment Blank'
 		parent: @ 
 		options: [' ', ' ', ' ']
+		
+	# set positions and create code labels
 	
 	for layer in @children
 		if layer.constructor.name is 'Segment'
 		
 			layer.y = (last?.maxY ? 32) + 32
 		
-			strings = []
-			strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-			strings.push "icon: #{layer.icon}"
-			strings.push "active: {active}"
-			string = strings.join('\n')
+			string = [
+				"new Segment",
+				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+				"icon: #{layer.icon}"
+				"active: {active}"
+				].join('\n\t')
 				
 			label = new Code
 				name: '.'
@@ -473,23 +570,26 @@ Utils.bind togglesView.content, ->
 		options: ['phone', 'email']
 		icon: true
 		color: white
-		backgroundColor: yellow
+		backgroundColor: blue60
 	
 	new Toggle 
 		name: 'Toggle Blank'
 		parent: @ 
 		options: [' ', ' ']
+		
+	# set positions and create code labels
 	
 	for layer in @children
 		if layer.constructor.name is 'Toggle'
 			layer.y = (last?.maxY ? 32) + 32
 		
-			strings = []
-			strings.push "options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-			strings.push "icon: #{layer.icon}"
-			strings.push "toggled: {toggled}"
-			string = strings.join('\n')
-				
+			string = [
+				"new Topggle",
+				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+				"icon: #{layer.icon}"
+				"toggled: {toggled}"
+				].join('\n\t')
+							
 			label = new Code
 				name: '.'
 				parent: @
@@ -718,7 +818,7 @@ Utils.bind homeView.content, ->
 	new H3
 		parent: @
 		text: 'Foundations'
-		padding: {top: 32, bottom: 16}
+		padding: {top: 24, bottom: 16}
 	
 	new RowLink
 		parent: @
@@ -737,7 +837,7 @@ Utils.bind homeView.content, ->
 	# structure
 	new H3
 		parent: @
-		text: 'Foundations'
+		text: 'Structure'
 		padding: {top: 16, bottom: 16}
 	
 	new RowLink
@@ -763,6 +863,11 @@ Utils.bind homeView.content, ->
 		parent: @
 		text: 'Icon'
 		link: iconsView
+		
+	new RowLink
+		parent: @
+		text: 'Link'
+		link: linksView
 		
 	new RowLink
 		parent: @

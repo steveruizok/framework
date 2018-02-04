@@ -5,3 +5,7 @@ for className, style of theme.typography
 		window[className] = (options = {}) =>
 			_.defaults options, _.assign(theme.typography[style.style], style)
 			return new TextLayer(options)
+
+		window[className + 'Link'] = (options = {}) =>
+			_.defaults options, _.assign(theme.typography[style.style], style)
+			return new Link(options)

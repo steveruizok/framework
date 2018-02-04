@@ -51,9 +51,9 @@ class exports.Segment extends Layer
 				x: 0
 				y: 0
 				color: options.color
+				backgroundColor: options.backgroundColor
 				text: if @icon then '' else option
 				icon: if @icon then option
-				backgroundColor: options.backgroundColor
 
 			radius = switch i
 				when 0 then "#{Utils.px(button.borderRadius)} 0px 0px #{Utils.px(button.borderRadius)}"
@@ -113,7 +113,7 @@ class exports.Segment extends Layer
 	# Private Methods
 
 	_getCustomTheme: (color, backgroundColor) ->
-		return {
+		customTheme =
 			default:
 				color: color
 				borderColor: new Color(backgroundColor).darken(10)
@@ -134,7 +134,8 @@ class exports.Segment extends Layer
 				borderColor: new Color(backgroundColor).darken(20)
 				backgroundColor: new Color(backgroundColor).darken(10)
 				shadowColor: 'rgba(0,0,0,0)'
-			}
+		
+		return customTheme
 
 	_showActive: (button) =>
 		return if not button

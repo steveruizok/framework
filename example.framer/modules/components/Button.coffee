@@ -1,4 +1,3 @@
-# Button
 { theme } = require "components/Theme"
 MODEL = 'button'
 
@@ -28,7 +27,6 @@ class exports.Button extends Layer
 			secondary: false
 			disabled: false
 			icon: undefined
-			theme: 'default'
 			select: => null
 
 		# light primary
@@ -41,7 +39,7 @@ class exports.Button extends Layer
 		else if options.dark and options.secondary
 			@palette = 'dark_secondary'
 
-		@customTheme = if options.backgroundColor and options.color then @_getCustomTheme(options.color, options.backgroundColor) else undefined
+		@customTheme = if options.backgroundColor? and options.color? then @_getCustomTheme(options.color, options.backgroundColor) else undefined
 		
 		@customOptions =
 			color: options.color
@@ -125,7 +123,7 @@ class exports.Button extends Layer
 
 		@__instancing = true
 
-		Utils.defineValid @, 'theme', null, _.isString, "Button.theme must be a string.", (value) => @_setTheme(value)
+		Utils.defineValid @, 'theme', 'default', _.isString, "Button.theme must be a string.", (value) => @_setTheme(value)
 		Utils.defineValid @, 'dark', options.dark, _.isBoolean, "Button.dark must be a boolean (true or false).", 
 		Utils.defineValid @, 'secondary', options.secondary, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
 		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Button.disabled must be a boolean (true or false).", @_showDisabled
@@ -155,32 +153,36 @@ class exports.Button extends Layer
 	# Private Methods
 
 	_getCustomTheme: (color, backgroundColor) ->
-		return {
+		color = new Color(color)
+		bg = new Color(backgroundColor)
+
+		customTheme =
 			default:
 				color: color
-				borderColor: new Color(backgroundColor).darken(10)
-				backgroundColor: backgroundColor
+				borderColor: bg.darken(10)
+				backgroundColor: bg
 				shadowColor: 'rgba(0,0,0,.16)'
 			disabled:
-				color: new Color(color).alpha(.15)
-				borderColor: new Color(color).alpha(.15)
-				backgroundColor: new Color(backgroundColor).alpha(0)
+				color: color.alpha(.15)
+				borderColor: color.alpha(.15)
+				backgroundColor: bg.alpha(0)
 				shadowColor: 'rgba(0,0,0,0)'
 			touched:
 				color: color
-				borderColor: new Color(backgroundColor).darken(20)
-				backgroundColor: new Color(backgroundColor).darken(20)
+				borderColor: bg.darken(20)
+				backgroundColor: bg.darken(20)
 				shadowColor: 'rgba(0,0,0,0)'
 			hovered:
 				color: color
-				borderColor: new Color(backgroundColor).darken(20)
-				backgroundColor: new Color(backgroundColor).darken(10)
+				borderColor: bg.darken(20)
+				backgroundColor: bg.darken(10)
 				shadowColor: 'rgba(0,0,0,.16)'
-			}
+		
+		return customTheme
 
 	_setTheme: (value) =>
 		@animateStop()
-		props = @customTheme?[value] ? _.defaults _.clone(@customOptions), theme[MODEL][@palette][value]
+		props = @customTheme?[value] ? _.defaults(_.clone(@customOptions), theme[MODEL][@palette][value])
 		if @__instancing then @props = props else @animate props
 
 	_showHovered: (bool) =>

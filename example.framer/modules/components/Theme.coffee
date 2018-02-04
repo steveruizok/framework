@@ -137,6 +137,9 @@ exports.theme =
 			fontWeight: 500
 			letterSpacing: 0
 			color: black
+			fontFamily: 'Menlo'
+			style:
+				'tab-size': '4'
 		Label:
 			name: 'Label'
 			style: 'Sans'
@@ -154,7 +157,17 @@ exports.theme =
 			letterSpacing: 0
 			padding: {top: 4}
 			color: grey
-	
+	# --------------------------
+	# Link
+	link:
+		default:
+			color: black
+		hovered:
+			color: grey80
+		touched:
+			color: grey60
+		disabled:
+			color: grey30
 	# --------------------------
 	# Text Input
 	textInput:
@@ -367,6 +380,7 @@ exports.theme =
 			scale: 1.07
 			shadowY: 2
 			shadowBlur: 16
+	
 	# --------------------------
 	# Icons
 	icons:

@@ -1,6 +1,6 @@
 { theme } = require 'components/Theme'
 
-MODEL = 'segment'
+MODEL = 'sortable'
 
 class exports.Sortable extends Layer
 	constructor: ( options = {} ) ->

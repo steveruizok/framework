@@ -1,6 +1,7 @@
 require 'moreutils'
 
 require 'components/Colors'
+require 'components/Theme'
 require 'components/Typography'
 
 { Button } = require 'components/Button'
@@ -28,7 +29,7 @@ class window.App extends FlowComponent
 		_.defaults options,
 			backgroundColor: white
 			title: 'www.framework.com'
-			safari: false
+			chrome: 'ios'
 
 		if not options.safari
 			options.title = ''
@@ -60,29 +61,31 @@ class window.App extends FlowComponent
 
 		super options
 
+		@chrome = options.chrome
+
 		@views = []
 
-		if options.header
+		if @chrome
 			@header = new Header
 				app: @
-				safari: options.safari
+				safari: @chrome is 'safari'
 				title: options.title
 		
-		if options.safari
+		if @chrome is 'safari'
 			@footer = new Footer 
 				app: @
 
 		# when transition starts, change the header's title
-		@onTransitionStart @updateNext
+		@onTransitionStart @_updateNext
 		
 		# when transition ends, reset the previous view
-		@onTransitionEnd @resetPrevious
+		@onTransitionEnd @_resetPrevious
 
 		Screen.on Events.EdgeSwipeLeftEnd, @showPrevious
 	
 
 	# Update the next View while transitioning
-	updateNext: (prev, next) =>
+	_updateNext: (prev, next) =>
 		return if not next
 		
 		try next.load(@, next, prev)
@@ -102,6 +105,6 @@ class window.App extends FlowComponent
 		return
 	
 	# Reset the previous View while transitioning
-	resetPrevious: (prev, next) =>
+	_resetPrevious: (prev, next) =>
 		if prev?.reset?
 			prev.reset()
