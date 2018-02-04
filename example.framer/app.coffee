@@ -1,7 +1,11 @@
 require 'framework'
-{ theme } = require 'components/Theme' # not usually needed
+
+SHOW_ALL = true
+SHOW_LAYER_TREE = false
 
 # Setup
+{ theme } = require 'components/Theme' # not usually needed
+
 Canvas.backgroundColor = bg3
 Framer.Extras.Hints.disable()
 
@@ -33,26 +37,14 @@ class RowLink extends Layer
 			x: 12
 			text: options.text
 			color: if @link then yellow80
-# 			width: @width
 		
 		@height = @linkLayer.height
 			
 		if @link?
-# 			@chevron = new Icon
-# 				icon: 'chevron-right'
-# 				color: black30
-# 				parent: @
-# 				x: Align.right(-16)
-# 				y: Align.center()
 			
 			@linkLayer.onSelect (event) =>
 				app.showNext(@link)
 		
-
-app = new App
-
-SHOW_ALL = true
-SHOW_LAYER_TREE = false
 
 # Add Docs Link
 
@@ -83,6 +75,11 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 		do (url) ->
 			docsLinkCircle.onTap -> window.open("https://github.com/steveruizok/framework/#{url}")
 
+# ----------------
+# App
+
+app = new App
+
 # Copy Input
 
 copyElement = document.createElement "textarea"
@@ -96,10 +93,11 @@ copyTextLayerToClipboard = (layer) ->
 	copyElement.blur()
 	
 
+
 # ----------------
 # Foundations
 
-# Theme View
+# Theme
 
 # Colors View
 
@@ -225,7 +223,11 @@ iconsView.onUnload ->
 # ----------------
 # Structure
 
+# App
 
+# View
+
+# Header
 
 # ----------------
 # Buttons
@@ -633,9 +635,9 @@ selectsView.onUnload ->
 	for child in @content.children
 		child.destroy()
 
-# Checkbox View
+# Checkbox
 
-# Radiobox view
+# Radiobox
 
 # Steppers View
 
@@ -1100,7 +1102,8 @@ sortablesView.onUnload ->
 	for child in @content.children
 		child.destroy()
 
-# CarouselComponent View
+# CarouselComponent
+
 
 # ----------------
 # Miscellaneous
