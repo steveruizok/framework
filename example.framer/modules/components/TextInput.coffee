@@ -33,6 +33,9 @@ class exports.TextInput extends Layer
 
 		super options
 
+		_.assign @,
+			placeholder: options.placeholder
+
 		# ---------------
 		# Layers
 		
@@ -58,7 +61,7 @@ class exports.TextInput extends Layer
 
 		# must be set before theme changes
 
-		Utils.linkProperties @, @_input, "color"
+		Utils.linkProperties @, @_input.style, "color"
 
 		@_setTheme('default')
 

@@ -17,6 +17,7 @@ require 'components/Typography'
 { Link } = require 'components/Link'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
 { Separator } = require 'components/Separator'
+{ Select } = require 'components/Select'
 { Stepper } = require 'components/Stepper'
 { Sortable } = require 'components/Sortable'
 { TextInput } = require 'components/TextInput'
@@ -44,6 +45,7 @@ class window.App extends FlowComponent
 			'Checkbox',
 			'Toggle',
 			'Tooltip',
+			'Select',
 			'Icon', 
 			'Stepper', 
 			'Segment',

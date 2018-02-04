@@ -12,6 +12,14 @@ Utils.insertCSS("""
  	input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
  	  -webkit-text-fill-color: rgba(0,0,0,.5);
  	}
+ 	
+ 	*/
+ 	@font-face {
+ 		font-family: 'Aktiv Grotesk';
+ 		font-weight: 200;
+ 		src: url('modules/cs-components/fonts/AktivGrotesk_W_Hair.woff'); 
+ 	/*
+ 	}
 """)
 
 # --------------------------
@@ -19,11 +27,7 @@ Utils.insertCSS("""
 
 # Utils.insertCSS("""
 #
-# 	@font-face {
-# 		font-family: 'Aktiv Grotesk';
-# 		font-weight: 200;
-# 		src: url('modules/cs-components/fonts/AktivGrotesk_W_Hair.woff'); 
-# 	}
+
 # """)
 
 exports.theme = 
@@ -172,7 +176,7 @@ exports.theme =
 	# Text Input
 	textInput:
 		default:
-			color: grey40
+			color: black
 			borderColor: grey40
 			backgroundColor: white
 			shadowBlur: 0
@@ -180,7 +184,7 @@ exports.theme =
 			borderWidth: 1
 			borderRadius: 2
 		hovered:
-			color: grey
+			color: black30
 			borderColor: grey
 			backgroundColor: white
 			shadowBlur: 0
@@ -192,13 +196,56 @@ exports.theme =
 			shadowBlur: 6
 			shadowColor: 'rgba(0,0,0,.16)'
 		disabled:
-			color: grey40
+			color: grey20
 			borderColor: grey30
 			backgroundColor: white
 			shadowBlur: 0
 			shadowColor: 'rgba(0,0,0,0)'
 			borderWidth: 1
 			borderRadius: 2
+	# --------------------------
+	# Select
+	select:
+		default:
+			color: black
+			borderColor: grey40
+			backgroundColor: white
+			shadowBlur: 0
+			shadowColor: 'rgba(0,0,0,.16)'
+			borderWidth: 1
+			borderRadius: 2
+		hovered:
+			color: black30
+			borderColor: grey
+			backgroundColor: white
+			shadowBlur: 0
+			shadowColor: 'rgba(0,0,0,.16)'
+		focused:
+			color: black
+			borderColor: black20
+			backgroundColor: white
+			shadowBlur: 6
+			shadowColor: 'rgba(0,0,0,.16)'
+		disabled:
+			color: grey30
+			borderColor: grey30
+			backgroundColor: white
+			shadowBlur: 0
+			shadowColor: 'rgba(0,0,0,0)'
+			borderWidth: 1
+			borderRadius: 2
+	# --------------------------
+	# Option
+	option:
+		default:
+			color: grey40
+			borderColor: grey40
+			backgroundColor: white
+			shadowBlur: 0
+		hovered:
+			color: grey
+			borderColor: grey
+			backgroundColor: grey30
 	# --------------------------
 	# Tooltip
 	tooltip:

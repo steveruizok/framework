@@ -48,6 +48,7 @@ class exports.Button extends Layer
 		# Layers
 			
 		@textLayer = new H5
+			name: '.'
 			textAlign: 'center'
 			color: @palette.color
 			text: options.text ? ''
@@ -60,6 +61,7 @@ class exports.Button extends Layer
 			
 			@iconLayer = new Icon
 				parent: @
+				name: '.'
 				width: 24
 				height: 24
 				y: Align.center()

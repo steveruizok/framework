@@ -81,6 +81,66 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 		do (url) ->
 			docsLinkCircle.onTap -> window.open("https://github.com/steveruizok/framework/#{url}")
 
+# Copy Input
+
+copyElement = document.createElement "textarea"
+app.header._element.appendChild(copyElement)
+copyElement.style.opacity = 0
+
+copyTextLayerToClipboard = (layer) ->
+	copyElement.value = layer.text
+	copyElement.select()
+	document.execCommand('copy')
+	copyElement.blur()
+	
+
+# ----------------
+# Foundations
+
+# Theme View
+
+# Colors View
+
+colorsView = new View
+	title: 'Colors'
+	
+colorsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		{ colors } = require 'components/Colors'
+		
+		i = 0
+		for k, v of colors
+			chip = new Layer
+				parent: @
+				name: '.'
+				width: (Screen.width * .618) - 24
+				height: 64
+				x: 16
+				y: 32 + (i * 72)
+				borderRadius: 2
+				backgroundColor: v
+				borderWidth: 1
+				borderColor: new Color(v).darken(10)
+			
+			label = new Code
+				parent: @
+				name: '.'
+				x: chip.maxX + 16
+				text: "#{k}"
+				color: '#000'
+				
+			label.midY = chip.midY
+			
+			i++
+
+addDocsLink(colorsView, 'wiki/Colors')
+
+colorsView.onUnload ->
+	for child in @content.children
+		child.destroy()
+
 # Typography View
 
 typographyView = new View
@@ -160,52 +220,18 @@ iconsView.onUnload ->
 	for child in @content.children
 		child.destroy()
 
-# Colors View
+# ----------------
+# Structure
 
-colorsView = new View
-	title: 'Colors'
-	
-colorsView.onLoad ->
-	Utils.bind @content, ->
-		return if not SHOW_ALL
-		
-		{ colors } = require 'components/Colors'
-		
-		i = 0
-		for k, v of colors
-			chip = new Layer
-				parent: @
-				name: '.'
-				width: (Screen.width * .618) - 24
-				height: 64
-				x: 16
-				y: 32 + (i * 72)
-				borderRadius: 2
-				backgroundColor: v
-				borderWidth: 1
-				borderColor: new Color(v).darken(10)
-			
-			label = new Code
-				parent: @
-				name: '.'
-				x: chip.maxX + 16
-				text: "#{k}"
-				color: '#000'
-				
-			label.midY = chip.midY
-			
-			i++
 
-addDocsLink(colorsView, 'wiki/Colors')
 
-colorsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+# ----------------
+# Buttons
 
 # Links View
 
 linksView = new View
-	title: 'Typography'
+	title: 'Links'
 	
 linksView.onLoad ->
 	Utils.bind @content, ->
@@ -213,17 +239,20 @@ linksView.onLoad ->
 		
 		new H2Link
 			parent: @
+			name: 'Default Link'
 			text: 'Click here'
 			x: 16
 			
 		new H2Link
 			parent: @
+			name: 'Link with Select'
 			text: 'Click here'
 			x: 16
 			select: => print "Clicked!"
 			
 		new H2Link
 			parent: @
+			name: 'Disabled Link'
 			text: 'Click here'
 			x: 16
 			disabled: true
@@ -231,6 +260,7 @@ linksView.onLoad ->
 			
 		new H2Link
 			parent: @
+			name: 'Link with Custom Color'
 			text: 'Click here'
 			x: 16
 			color: red
@@ -239,7 +269,22 @@ linksView.onLoad ->
 		for layer, i in @children
 			continue if layer.constructor.name isnt 'Link'
 			
-			layer.y = (last ? 32)
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
+			
+			layer.y = title.maxY + 24
 			
 			s = if i is 0 then "null" else "print 'Clicked!'"
 			c = if i is 3 then 'red' else 'black'
@@ -265,15 +310,32 @@ linksView.onLoad ->
 				layer.on "change:value", =>
 					label.template = layer.value
 			
-			last = label.maxY + 32
+			last = label
 		
+		# other links 
+		title = new H4
+			name: '.'
+			parent: @
+			y: (last?.maxY ? 0) + 56
+			text: "All Links"
+			
+		div = new Layer
+			name: '.'
+			parent: @
+			x: title.maxX + 16
+			y: title.y + 10
+			width: @width - (title.maxX + 16) - 16
+			backgroundColor: grey40
+			height: 1
+		
+		last = undefined
 		
 		i = 0
 		for k, v of theme.typography
 			if window[k + 'Link']
 				textExample = new window[k + 'Link']
 					parent: @
-					y: (last ? 0)
+					y: (last?.maxY ? title.maxY) + 24
 					text: k + 'Link'
 					x: 16
 				
@@ -285,7 +347,7 @@ linksView.onLoad ->
 					text: "new #{k}Link"
 					color: black
 				
-				last = label.maxY + 32
+				last = label
 	
 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 	
@@ -374,6 +436,205 @@ buttonsView.onUnload ->
 	for child in @content.children
 		child.destroy()
 
+
+# ----------------
+# Inputs
+
+# TextInputs View
+
+textInputsView = new View
+	title: 'TextInputs'
+
+textInputsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		new TextInput
+			name: 'Default TextInput'
+			parent: @
+		
+		new TextInput
+			name: 'TextInput with Placeholder'
+			parent: @
+			placeholder: 'Favorite naturalists'
+		
+		new TextInput
+			name: 'TextInput with Value'
+			parent: @
+			value: 'Alexander von Humboldt'
+			
+		new TextInput
+			name: 'Disabled TextInput'
+			parent: @
+			value: 'Dame Jane Morris Goodall'
+			disabled: true
+	
+		for layer in @children
+			continue if layer.constructor.name isnt 'TextInput'
+			
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
+			
+			layer.y = title.maxY + 24
+		
+			string = [
+				"new TextInput",
+				"placeholder: '#{layer.placeholder}'"
+				"value: '{value}'"
+				"disabled: #{layer.disabled}"
+				].join('\n\t')
+			
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 24
+				text: string
+			
+			copyIcon = new Icon
+				parent: @
+				y: label.midY - 12
+				x: Align.right(-16)
+				icon: 'content-copy'
+				color: grey
+				
+			do (layer, label, copyIcon) ->
+				
+				copyIcon.onTap ->
+					copyTextLayerToClipboard(label)
+				
+				layer.on "change:value", (value) -> 
+					label.template =
+						value: value
+			
+				label.template =
+					value: layer.value
+			
+			last = label
+		
+# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+
+addDocsLink(textInputsView, 'wiki/TextInput')
+
+textInputsView.onUnload ->
+	for child in @content.children
+		child.destroy()
+
+# Selects View
+
+selectsView = new View
+	title: 'Selects'
+
+selectsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		new Select
+			name: 'Default Select'
+			parent: @
+		
+		new Select
+			name: 'Select with Selected Index'
+			parent: @
+			selectedIndex: 2
+		
+		new Select
+			name: 'Select with Options'
+			parent: @
+			options: ['Red', 'Orange', 'Yellow', 'Green', 'Blue']
+			
+		new Select
+			name: 'Disabled Select'
+			parent: @
+			disabled: true
+	
+		for layer in @children
+			continue if layer.constructor.name isnt 'Select'
+			
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
+			
+			layer.y = title.maxY + 24
+		
+			string = [
+				"new Select",
+				"options: [\n\t\t#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), '\n\t\t')}\n\t\t]"
+				"selectedIndex: {index}"
+				"value: {value}"
+				"disabled: {disabled}"
+				].join('\n\t')
+			
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 24
+				text: string
+			
+			copyIcon = new Icon
+				parent: @
+				y: label.midY - 12
+				x: Align.right(-16)
+				icon: 'content-copy'
+				color: grey
+				
+			do (layer, label, copyIcon) ->
+				
+				copyIcon.onTap ->
+					copyTextLayerToClipboard(label)
+					
+				layer.on "change:disabled", (bool) -> 
+					label.template =
+						disabled: bool
+					
+				layer.on "change:selectedIndex", (selectedIndex) -> 
+					label.template =
+						index: layer.selectedIndex
+						value: layer.value
+			
+				label.template =
+					index: layer.selectedIndex
+					value: layer.value
+					disabled: layer.disabled
+			
+			last = label
+		
+# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+
+addDocsLink(selectsView, 'wiki/Select')
+
+selectsView.onUnload ->
+	for child in @content.children
+		child.destroy()
+
+# Checkbox View
+
+# Radiobox view
+
 # Steppers View
 
 steppersView = new View
@@ -384,23 +645,28 @@ steppersView.onLoad ->
 		return if not SHOW_ALL
 	
 		stepper = new Stepper
+			name: 'Default Stepper'
 			parent: @
 		
 		stepper = new Stepper
+			name: 'Stepper at Mininum Value'
 			parent: @
 			value: 0
 			
 		stepper = new Stepper
+			name: 'Stepper at Maximum Value'
 			parent: @
 			value: 10
 			
 		stepper = new Stepper
+			name: 'Stepper with Min, Max and Value'
 			parent: @
 			min: 50
 			max: 100
 			value: 42
 			
 		stepper = new Stepper
+			name: 'Stepper with Custom Options'
 			parent: @
 			options: ['Less', 'More']
 			icon: false
@@ -410,8 +676,22 @@ steppersView.onLoad ->
 		for layer in @children
 			continue if layer.constructor.name isnt 'Stepper'
 			
-			layer.y = (last?.maxY ? 32) + 32
-		
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
+			
+			layer.y = title.maxY + 24
 		
 			string = [
 				"new Stepper",
@@ -426,12 +706,23 @@ steppersView.onLoad ->
 				name: '.'
 				parent: @
 				x: layer.x
-				y: layer.maxY + 16
+				y: layer.maxY + 24
 				text: string
 				
 			label.template = layer.value
 			
-			do (label, layer) ->
+			copyIcon = new Icon
+				parent: @
+				y: label.midY - 12
+				x: Align.right(-16)
+				icon: 'content-copy'
+				color: grey
+				
+			do (layer, label, copyIcon) ->
+				
+				copyIcon.onTap ->
+					copyTextLayerToClipboard(label)
+					
 				layer.on "change:value", =>
 					label.template = layer.value
 			
@@ -443,43 +734,6 @@ steppersView.onLoad ->
 addDocsLink(steppersView, 'wiki/Stepper')
 
 steppersView.onUnload ->
-	for child in @content.children
-		child.destroy()
-
-# Sortables View
-
-sortablesView = new View
-	title: 'Sortables'
-
-sortablesView.onLoad ->
-	Utils.bind @content, ->
-		return if not SHOW_ALL
-		
-		positions = []
-		
-		for i in _.range(7)
-			sortable = new Sortable
-				parent: @
-				name: 'Sortable'
-				positions: positions
-				x: Align.center()
-				y: 32
-				width: @width * .618
-				backgroundColor: null
-			
-			new Button
-				parent: sortable
-				width: sortable.width
-				color: black
-				backgroundColor: Color.mix(yellow, blue, i/7)
-				text: 'Sortable ' + i
-				borderRadius: 4
-				
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-	
-	addDocsLink(sortablesView, 'wiki/Sortable')
-
-sortablesView.onUnload ->
 	for child in @content.children
 		child.destroy()
 
@@ -495,34 +749,29 @@ segmentsView.onLoad ->
 		return if not SHOW_ALL
 	
 		# Segments
-		
-		label = new H4
-			parent: @
-			text: 'Segment'
-			y: 16
 			
 		new Segment 
-			name: 'Segment'
+			name: 'Default Segment'
 			parent: @ 
 			
 		new Segment 
-			name: 'Segment Active'
+			name: 'Segment with Active'
 			parent: @ 
 			active: 1
 		
 		new Segment 
-			name: 'Segment Three'
+			name: 'Segment with Three Options'
 			parent: @ 
 			options: ['Good', 'Nuetral', 'Evil']
 		
 		new Segment 
-			name: 'Segment Icons'
+			name: 'Segment with Icons'
 			parent: @
 			options: ['phone', 'email', 'snapchat']
 			icon: true
 		
 		new Segment 
-			name: 'Segment Custom Colors'
+			name: 'Segment with Custom Colors'
 			parent: @ 
 			options: ['phone', 'email', 'snapchat']
 			icon: true
@@ -530,38 +779,64 @@ segmentsView.onLoad ->
 			backgroundColor: blue60
 		
 		new Segment 
-			name: 'Segment Blank'
+			name: 'Segment with Blank Options'
 			parent: @ 
 			options: [' ', ' ', ' ']
 			
 		# set positions and create code labels
 		
 		for layer in @children
-			if layer.constructor.name is 'Segment'
+			continue if layer.constructor.name isnt 'Segment'
 			
-				layer.y = (last?.maxY ? 32) + 32
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
 			
-				string = [
-					"new Segment",
-					"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-					"icon: #{layer.icon}"
-					"active: {active}"
-					].join('\n\t')
-					
-				label = new Code
-					name: '.'
-					parent: @
-					x: layer.x
-					y: layer.maxY + 16
-					text: string
-					
-				label.template = layer.active
+			layer.y = title.maxY + 24
+		
+			string = [
+				"new Segment",
+				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+				"icon: #{layer.icon}"
+				"active: {active}"
+				].join('\n\t')
 				
-				do (label, layer) ->
-					layer.on "change:active", =>
-						label.template = layer.active
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 24
+				text: string
 				
-				last = label
+			label.template = layer.active
+			
+			copyIcon = new Icon
+				parent: @
+				y: label.midY - 12
+				x: Align.right(-16)
+				icon: 'content-copy'
+				color: grey
+				
+			do (layer, label, copyIcon) ->
+				
+				copyIcon.onTap ->
+					copyTextLayerToClipboard(label)
+					
+				layer.on "change:active", =>
+					label.template = layer.active
+			
+			last = label
 	
 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
@@ -584,33 +859,28 @@ togglesView.onLoad ->
 	
 		# toggles
 		
-		label = new H4
-			parent: @
-			text: 'Toggle'
-			y: 16
-			
 		new Toggle 
 			name: 'Toggle'
 			parent: @ 
 			
 		new Toggle 
-			name: 'Toggle Toggled'
+			name: 'Toggled Toggle'
 			parent: @ 
 			toggled: true
 		
 		new Toggle 
-			name: 'Toggle Options'
+			name: 'Toggle with Options'
 			parent: @ 
 			options: ['Good', 'Evil']
 		
 		new Toggle 
-			name: 'Toggle Icons'
+			name: 'Toggle with Icons'
 			parent: @ 
 			options: ['pizza', 'apple']
 			icon: true
 		
 		new Toggle 
-			name: 'Toggle Custom Colors'
+			name: 'Toggle with Custom Colors'
 			parent: @ 
 			options: ['phone', 'email']
 			icon: true
@@ -618,37 +888,64 @@ togglesView.onLoad ->
 			backgroundColor: blue60
 		
 		new Toggle 
-			name: 'Toggle Blank'
+			name: 'Blank Toggle'
 			parent: @ 
 			options: [' ', ' ']
 			
 		# set positions and create code labels
 		
 		for layer in @children
-			if layer.constructor.name is 'Toggle'
-				layer.y = (last?.maxY ? 32) + 32
+			continue if layer.constructor.name isnt 'Toggle'
 			
-				string = [
-					"new Topggle",
-					"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-					"icon: #{layer.icon}"
-					"toggled: {toggled}"
-					].join('\n\t')
-								
-				label = new Code
-					name: '.'
-					parent: @
-					x: layer.x
-					y: layer.maxY + 16
-					text: string
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
+			
+			layer.y = title.maxY + 24
+		
+			string = [
+				"new Topggle",
+				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+				"icon: #{layer.icon}"
+				"toggled: {toggled}"
+				].join('\n\t')
+							
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 24
+				text: string
+				
+			label.template = layer.toggled
+			
+			copyIcon = new Icon
+				parent: @
+				y: label.midY - 12
+				x: Align.right(-16)
+				icon: 'content-copy'
+				color: grey
+				
+			do (layer, label, copyIcon) ->
+				
+				copyIcon.onTap ->
+					copyTextLayerToClipboard(label)
 					
-				label.template = layer.toggled
-				
-				do (label, layer) ->
-					layer.on "change:active", =>
-						label.template = layer.toggled
-				
-				last = label
+				layer.on "change:active", =>
+					label.template = layer.toggled
+			
+			last = label
 	
 		
 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
@@ -760,6 +1057,52 @@ inputsView.onUnload ->
 	for child in @content.children
 		child.destroy()
 
+
+# ----------------
+# Components
+
+# Sortables View
+
+sortablesView = new View
+	title: 'Sortables'
+
+sortablesView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		positions = []
+		
+		for i in _.range(7)
+			sortable = new Sortable
+				parent: @
+				name: 'Sortable'
+				positions: positions
+				x: Align.center()
+				y: 32
+				width: @width * .618
+				backgroundColor: null
+			
+			new Button
+				parent: sortable
+				width: sortable.width
+				color: black
+				backgroundColor: Color.mix(yellow, blue, i/7)
+				text: 'Sortable ' + i
+				borderRadius: 4
+				
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+	
+	addDocsLink(sortablesView, 'wiki/Sortable')
+
+sortablesView.onUnload ->
+	for child in @content.children
+		child.destroy()
+
+# CarouselComponent View
+
+# ----------------
+# Miscellaneous
+
 # Tooltips View
 
 tooltipsView = new View
@@ -805,7 +1148,22 @@ tooltipsView.onLoad ->
 		for layer in @children
 			continue if layer.constructor.name isnt 'Tooltip'
 			
-			layer.y = (last?.maxY ? 0) + 32
+			title = new H4
+				name: '.'
+				parent: @
+				y: (last?.maxY ? 0) + 32
+				text: layer.name
+				
+			div = new Layer
+				name: '.'
+				parent: @
+				x: title.maxX + 16
+				y: title.y + 10
+				width: @width - (title.maxX + 16) - 16
+				backgroundColor: grey40
+				height: 1
+			
+			layer.y = title.maxY + 24
 		
 			string = [
 				"new Tooltip",
@@ -817,14 +1175,27 @@ tooltipsView.onLoad ->
 				name: '.'
 				parent: @
 				x: layer.x
-				y: layer.maxY + 16
+				y: layer.maxY + 24
 				text: string
+			
+			copyIcon = new Icon
+				parent: @
+				y: label.midY - 12
+				x: Align.right(-16)
+				icon: 'content-copy'
+				color: grey
+				
+			do (layer, label, copyIcon) ->
+				
+				copyIcon.onTap ->
+					copyTextLayerToClipboard(label)
+					
 			
 			last = label
 		
 # 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
-addDocsLink(tooltipsView, 'wiki/Tooltips')
+addDocsLink(tooltipsView, 'wiki/Tooltip')
 
 tooltipsView.onUnload ->
 	for child in @content.children
@@ -955,13 +1326,18 @@ Utils.bind homeView.content, ->
 		
 	new RowLink
 		parent: @
-		text: 'Colors'
+		text: 'Color'
 		link: colorsView
 		
 	new RowLink
 		parent: @
 		text: 'Typography'
 		link: typographyView
+	
+	new RowLink
+		parent: @
+		text: 'Icon'
+		link: iconsView
 	
 	
 	# structure
@@ -981,18 +1357,12 @@ Utils.bind homeView.content, ->
 	new RowLink
 		parent: @
 		text: 'Header'
-		
 	
-	# components
+	# buttons
 	new H3
 		parent: @
-		text: 'Components'
+		text: 'Buttons'
 		padding: {top: 16, bottom: 16}
-	
-	new RowLink
-		parent: @
-		text: 'Icon'
-		link: iconsView
 		
 	new RowLink
 		parent: @
@@ -1003,11 +1373,22 @@ Utils.bind homeView.content, ->
 		parent: @
 		text: 'Button'
 		link: buttonsView
+	
+	# inputs
+	new H3
+		parent: @
+		text: 'Inputs'
+		padding: {top: 16, bottom: 16}
 		
 	new RowLink
 		parent: @
-		text: 'Sortable'
-		link: sortablesView
+		text: 'TextInput'
+		link: textInputsView
+		
+	new RowLink
+		parent: @
+		text: 'Select'
+		link: selectsView
 		
 	new RowLink
 		parent: @
@@ -1021,18 +1402,8 @@ Utils.bind homeView.content, ->
 		
 	new RowLink
 		parent: @
-		text: 'Checkbox'
-		link: inputsView
-		
-	new RowLink
-		parent: @
-		text: 'TextInput'
-		link: inputsView
-		
-	new RowLink
-		parent: @
-		text: 'Tooltip'
-		link: tooltipsView
+		text: 'Stepper'
+		link: steppersView
 		
 	new RowLink
 		parent: @
@@ -1043,11 +1414,33 @@ Utils.bind homeView.content, ->
 		parent: @
 		text: 'Toggle'
 		link: togglesView
+	
+	
+	# components
+	new H3
+		parent: @
+		text: 'Components'
+		padding: {top: 16, bottom: 16}
 		
 	new RowLink
 		parent: @
-		text: 'Stepper'
-		link: steppersView
+		text: 'Sortable'
+		link: sortablesView
+		
+	new RowLink
+		parent: @
+		text: 'Carousel'
+	
+	# misc
+	new H3
+		parent: @
+		text: 'Miscellaneous'
+		padding: {top: 16, bottom: 16}
+		
+	new RowLink
+		parent: @
+		text: 'Tooltip'
+		link: tooltipsView
 	
 	# set child positions
 	
