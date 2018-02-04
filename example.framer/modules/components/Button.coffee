@@ -135,8 +135,8 @@ class exports.Button extends Layer
 		@onMouseEnter => @hovered = true
 		@onMouseLeave => @hovered = false
 
-		@onTouchStart => @_showTouching(true)
-		@onTouchEnd => @_showTouching(false)
+		@onTouchStart (event) => @_showTouching(true, null, event)
+		@onTouchEnd (event) => @_showTouching(false, null, event)
 
 		@onTap @_showTapped
 		@onPan @_panOffTouch
@@ -203,10 +203,10 @@ class exports.Button extends Layer
 		@theme = 'default'
 		@ignoreEvents = false
 
-	_doSelect: =>
+	_doSelect: (event) =>
 		return if @disabled
 
-		try @select()
+		try @select(event, @)
 		@emit "select", @
 
 	_panOffTouch: (event) => 
@@ -226,7 +226,7 @@ class exports.Button extends Layer
 		Utils.delay .1, => @theme = "default"
 
 
-	_showTouching: (isTouching, silent = false) =>
+	_showTouching: (isTouching, silent = false, event) =>
 		return if @disabled
 		@animateStop()
 		
@@ -240,7 +240,7 @@ class exports.Button extends Layer
 		@_isTouching = false
 		@theme = "default"
 
-		unless silent then @_doSelect()
+		unless silent then @_doSelect(event)
 
 	# ---------------
 	# Public Methods

@@ -65,10 +65,14 @@ class window.App extends FlowComponent
 
 		super options
 
+		_.assign @,
+			chrome: options.chrome
+			views: []
+
 		# layers
 
 		@loadingLayer = new Layer 
-			name: 'Loading'
+			name: '.'
 			size: 48
 			backgroundColor: grey
 			borderRadius: 16
@@ -94,9 +98,7 @@ class window.App extends FlowComponent
 				fill: white
 
 
-		@chrome = options.chrome
-
-		@views = []
+		# header
 
 		if @chrome
 			@header = new Header

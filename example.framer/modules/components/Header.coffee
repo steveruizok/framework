@@ -9,11 +9,11 @@ class exports.Header extends Layer
 			shadowBlur: 6
 			shadowColor: 'rgba(0,0,0,.16)'
 		
-
 		_.defaults options, 
 			name: 'Header'
 			backgroundColor: '#fff'
 			title: 'www.framework.com'
+			showLayers: true
 
 		_.assign @,
 			app: options.app,
@@ -82,14 +82,6 @@ class exports.Header extends Layer
 			width: Screen.width
 			textAlign: 'center'
 			text: 'test'
-
-		@hitArea = new Layer
-			name: unless options.showLayers then '.' else 'Hit Area'
-			height: @height - 20
-			width: @width / 3
-			x: 0
-			y: 20
-			backgroundColor: null
 		
 		@backIcon = new Icon
 			name: unless options.showLayers then '.' else 'Back Icon'
@@ -115,9 +107,18 @@ class exports.Header extends Layer
 			icon: if options.safari then 'close' else 'dots-vertical'
 			rotation: 90
 
+		@hitArea = new Layer
+			name: unless options.showLayers then '.' else 'Hit Area'
+			parent: @
+			height: @height - 20
+			width: @width / 3
+			x: 0
+			y: 20
+			backgroundColor: null
+
 		# events
 		
-		@hitArea.onTap @_showPrevious
+		@hitArea.onTouchEnd @_showPrevious
 		@on "change:color", => Utils.align @children, 'color', @color
 
 		# definitions
@@ -151,10 +152,6 @@ class exports.Header extends Layer
 
 
 leftContent = """<svg width="57px" height="11px" viewBox="0 0 57 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
-	<title>Group</title>
-	<desc>Created with Sketch.</desc>
-	<defs></defs>
 	<g id="Bars/Status/Black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-6.000000, -5.000000)">
 		<g id="Group" transform="translate(6.000000, 3.000000)">
 			<text id="Carrier" font-family="Arial" font-size="12" font-weight="normal" fill="#030303">
@@ -168,10 +165,6 @@ leftContent = """<svg width="57px" height="11px" viewBox="0 0 57 11" version="1.
 
 rightContent = """
 <svg width="72px" height="12px" viewBox="0 0 72 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
-	<title>Pin Right</title>
-	<desc>Created with Sketch.</desc>
-	<defs></defs>
 	<g id="Bars/Status/Black" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-298.000000, -4.000000)">
 		<g id="Pin-Right" transform="translate(298.000000, 3.000000)">
 			<g id="Battery" transform="translate(9.000000, 0.000000)">

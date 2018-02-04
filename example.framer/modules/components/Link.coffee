@@ -51,8 +51,8 @@ class exports.Link extends TextLayer
 		@onMouseEnter => @hovered = true
 		@onMouseLeave => @hovered = false
 
-		@onTouchStart => @_showTouching(true)
-		@onTouchEnd => @_showTouching(false)
+		@onTouchStart (event) => @_showTouching(true, null, event)
+		@onTouchEnd (event) => @_showTouching(false, null, event)
 
 		@onTap @_showTapped
 		@onPan @_panOffTouch
@@ -105,10 +105,10 @@ class exports.Link extends TextLayer
 		@theme = 'default'
 		@ignoreEvents = false
 
-	_doSelect: =>
+	_doSelect: (event) =>
 		return if @disabled
 
-		try @select()
+		try @select(event, @)
 		@emit "select", @
 
 	_panOffTouch: (event) => 
@@ -128,7 +128,7 @@ class exports.Link extends TextLayer
 		Utils.delay .1, => @theme = "default"
 
 
-	_showTouching: (isTouching, silent = false) =>
+	_showTouching: (isTouching, silent = false, event) =>
 		return if @disabled
 		@animateStop()
 		
@@ -142,7 +142,7 @@ class exports.Link extends TextLayer
 		@_isTouching = false
 		@theme = "default"
 
-		unless silent then @_doSelect()
+		unless silent then @_doSelect(event)
 
 	# ---------------
 	# Public Methods

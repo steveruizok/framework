@@ -5,6 +5,10 @@ require 'framework'
 Canvas.backgroundColor = bg3
 Framer.Extras.Hints.disable()
 
+# dumb thing that blocks events in the upper left-hand corner
+dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
+dumbthing.style.width = "0px"
+
 # Row Link
 
 class RowLink extends Layer
@@ -24,26 +28,24 @@ class RowLink extends Layer
 			
 		# layers
 		
-		@textLayer = new H4
+		@linkLayer = new H4Link
 			parent: @
 			x: 12
-			y: 12
 			text: options.text
+			color: if @link then yellow80
+			width: @width
 		
-		@height = @textLayer.maxY + 16
+		@height = @linkLayer.height
 			
-		if @link
+		if @link?
 			@chevron = new Icon
 				icon: 'chevron-right'
 				color: black30
 				parent: @
 				x: Align.right(-16)
 				y: Align.center()
-				
-			@textLayer.color = yellow80
 			
-			@onTap (event) => 
-				return if Math.abs(event.offset.y) > 10
+			@linkLayer.onSelect (event) =>
 				app.showNext(@link)
 		
 
