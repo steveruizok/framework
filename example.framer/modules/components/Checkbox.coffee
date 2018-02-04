@@ -48,8 +48,8 @@ class exports.Checkbox extends Layer
 		# Events
 
 		@onTap => @checked = !@checked
-		@onMouseEnter => @hovered = true
-		@onMouseLeave => @hovered = false
+		@onMouseOver => @hovered = true
+		@onMouseOut => @hovered = false
 
 
 		# ---------------

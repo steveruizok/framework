@@ -33,17 +33,17 @@ class RowLink extends Layer
 			x: 12
 			text: options.text
 			color: if @link then yellow80
-			width: @width
+# 			width: @width
 		
 		@height = @linkLayer.height
 			
 		if @link?
-			@chevron = new Icon
-				icon: 'chevron-right'
-				color: black30
-				parent: @
-				x: Align.right(-16)
-				y: Align.center()
+# 			@chevron = new Icon
+# 				icon: 'chevron-right'
+# 				color: black30
+# 				parent: @
+# 				x: Align.right(-16)
+# 				y: Align.center()
 			
 			@linkLayer.onSelect (event) =>
 				app.showNext(@link)

@@ -132,8 +132,8 @@ class exports.Button extends Layer
 		# ---------------
 		# Events
 		
-		@onMouseEnter => @hovered = true
-		@onMouseLeave => @hovered = false
+		@onMouseOver => @hovered = true
+		@onMouseOut => @hovered = false
 
 		@onTouchStart (event) => @_showTouching(true, null, event)
 		@onTouchEnd (event) => @_showTouching(false, null, event)

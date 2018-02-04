@@ -81,8 +81,8 @@ class exports.TextInput extends Layer
 		# ---------------
 		# Events
 		
-		@onMouseEnter => @hovered = true
-		@onMouseLeave => @hovered = false
+		@onMouseOver => @hovered = true
+		@onMouseOut => @hovered = false
 		@_input.oninput = @_setValue
 		@_input.onblur = => @focused = false
 		@_input.onfocus = => @focused = true

@@ -55,8 +55,8 @@ class exports.Radiobox extends Layer
 		# Events
 
 		@onTap => @checked = true
-		@onMouseEnter => @hovered = true
-		@onMouseLeave => @hovered = false
+		@onMouseOver => @hovered = true
+		@onMouseOut => @hovered = false
 
 
 		# ---------------

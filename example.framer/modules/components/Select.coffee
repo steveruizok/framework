@@ -125,8 +125,8 @@ class exports.Select extends Layer
 		# ---------------
 		# Events
 		
-		@onMouseEnter => @hovered = true
-		@onMouseLeave => @hovered = false
+		@onMouseOver => @hovered = true
+		@onMouseOut => @hovered = false
 		@_input.oninput = @_setValue
 		@_input.onblur = => @focused = false; @opened = false
 		@_input.onfocus = => @focused = true; @opened = true
@@ -292,8 +292,8 @@ class Option extends Layer
 		# ---------------
 		# Events
 
-		@onMouseEnter => @hovered = true
-		@onMouseLeave => @hovered = false
+		@onMouseOver => @hovered = true
+		@onMouseOut => @hovered = false
 		
 		@onTap (event) =>
 			return if Math.abs(event.offset.x > 12) or Math.abs(event.offset.y > 12)
