@@ -14,6 +14,7 @@ class exports.Checkbox extends Layer
 			width: 32
 			animationOptions:
 				time: .2
+				colorModel: 'husl'
 
 			checked: false
 			disabled: false

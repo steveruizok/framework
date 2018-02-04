@@ -16,6 +16,7 @@ class exports.Link extends TextLayer
 			select: => null
 			animationOptions:
 				time: .15
+				colorModel: 'husl'
 
 		@customTheme = if options.color then @_getCustomTheme(options.color) else undefined
 		

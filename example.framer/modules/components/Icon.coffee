@@ -16,6 +16,7 @@ class exports.Icon extends Layer
 			lineHeight: 0
 			animationOptions:
 				time: .25
+				colorModel: 'husl'
 
 		super options
 

@@ -13,13 +13,10 @@ class exports.Toggle extends Layer
 		_.defaults options,
 			name: 'Toggle'
 			height: 48
-			borderRadius: 4
-			shadowY: 2
-			shadowBlur: 6
-			shadowColor: 'rgba(0,0,0,.16)'
 			clip: true
 			animationOptions:
 				time: .2
+				colorModel: 'husl'
 
 			options: ["Off", "On"]
 			icon: false

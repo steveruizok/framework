@@ -12,16 +12,10 @@ class exports.Button extends Layer
 		_.defaults options,
 			width: 0
 			height: 48
-			borderRadius: 4
-			borderWidth: 1
-			shadowY: 2
-			shadowBlur: 6
-			animationOptions:
-				time: .125
-			shadowColor: 'rgba(0,0,0,.16)'
 			text: 'Get Started'
 			animationOptions:
 				time: .2
+				colorModel: 'husl'
 
 			dark: false
 			secondary: false

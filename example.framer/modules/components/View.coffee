@@ -17,6 +17,7 @@ class exports.View extends ScrollComponent
 			padding: {}
 			title: ''
 			load: -> null
+			unload: -> null
 
 		_.assign options,
 			width: Screen.width
@@ -49,7 +50,6 @@ class exports.View extends ScrollComponent
 				right: 16,
 				top: 16,
 
-
 		# ---------------
 		# Events
 		
@@ -75,9 +75,15 @@ class exports.View extends ScrollComponent
 
 	_loadView: =>
 		@load()
+	
+	_unloadView: =>
+		@unload()
 
 	# ---------------
 	# Public Functions
 
 	onLoad: (callback) -> 
 		@load = callback
+
+	onUnload: (callback) -> 
+		@unload = callback

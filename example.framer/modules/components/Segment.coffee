@@ -13,10 +13,6 @@ class exports.Segment extends Layer
 		_.defaults options,
 			name: 'Segment'
 			height: 48
-			borderRadius: 4
-			shadowY: 2
-			shadowBlur: 6
-			shadowColor: 'rgba(0,0,0,.16)'
 			clip: true
 			animationOptions:
 				time: .2

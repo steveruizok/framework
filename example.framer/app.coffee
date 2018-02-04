@@ -86,363 +86,402 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 typographyView = new View
 	title: 'Typography'
 
-Utils.bind typographyView.content, ->
-	return if not SHOW_ALL
-	
-	i = 0
-	for k, v of theme.typography
-		if window[k]
-			textExample = new window[k]
-				parent: @
-				y: (last ? 32)
-				text: k
-				x: 16
-			
-			label = new Code
-				parent: @
-				name: '.'
-				x: 16
-				y: textExample.maxY + 4
-				text: "new #{k}"
-				color: black
+typographyView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		i = 0
+		for k, v of theme.typography
+			if window[k]
+				textExample = new window[k]
+					parent: @
+					y: (last ? 32)
+					text: k
+					x: 16
 				
-			last = label.maxY + 32
-
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+				label = new Code
+					parent: @
+					name: '.'
+					x: 16
+					y: textExample.maxY + 4
+					text: "new #{k}"
+					color: black
+					
+				last = label.maxY + 32
+	
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
 addDocsLink(typographyView, 'wiki/Typography')
+
+typographyView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Icons View
 
 iconsView = new View
 	title: 'Icons'
 
-Utils.bind iconsView.content, ->
-	return if not SHOW_ALL
-	
-	i = 0
-	for ic in _.entries(theme.icons)[0..50]
-		icon = new Icon
-			name: '.'
-			icon: ic[0]
-			parent: @
-			x: 48
-			y: 16 + (i * 50)
-			i++
+iconsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		i = 0
+		for ic in _.entries(theme.icons)[0..50]
+			icon = new Icon
+				name: '.'
+				icon: ic[0]
+				parent: @
+				x: 48
+				y: 16 + (i * 50)
+				i++
+				
+			label = new Code
+				parent: @
+				name: '.'
+				x: icon.maxX + 48
+				text: "'#{ic[0]}'"
+				color: black
 			
-		label = new Code
+			label.midY = icon.midY
+			
+		label = new Body
 			parent: @
 			name: '.'
-			x: icon.maxX + 48
-			text: "'#{ic[0]}'"
-			color: '#000'
-		
-		label.midY = icon.midY
-		
-	label = new Body
-		parent: @
-		name: '.'
-		y: label.maxY + 48
-		x: Align.center
-		textAlign: 'center'
-		text: "For full list, see\nhttp://www.materialdesignicons.com"
-		color: '#000'
-
+			y: label.maxY + 48
+			x: Align.center
+			textAlign: 'center'
+			text: "For full list, see\nhttp://www.materialdesignicons.com"
+			color: black
 	
 addDocsLink(iconsView, 'wiki/Icon')
 
+iconsView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Colors View
 
 colorsView = new View
 	title: 'Colors'
-
-Utils.bind colorsView.content, ->
-	return if not SHOW_ALL
-	{ colors } = require 'components/Colors'
 	
-	i = 0
-	for k, v of colors
-		chip = new Layer
-			parent: @
-			name: '.'
-			width: (Screen.width / 2) - 16
-			height: 64
-			x: 16
-			y: 16 + (i * 72)
-			borderRadius: 2
-			backgroundColor: v
-			borderWidth: 1
-			borderColor: new Color(v).darken(10)
+colorsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 		
-		label = new Code
-			parent: @
-			name: '.'
-			x: chip.maxX + 32
-			text: "'#{k}'"
-			color: '#000'
+		{ colors } = require 'components/Colors'
+		
+		i = 0
+		for k, v of colors
+			chip = new Layer
+				parent: @
+				name: '.'
+				width: (Screen.width * .618) - 24
+				height: 64
+				x: 16
+				y: 32 + (i * 72)
+				borderRadius: 2
+				backgroundColor: v
+				borderWidth: 1
+				borderColor: new Color(v).darken(10)
 			
-		label.midY = chip.midY
-		
-		i++
+			label = new Code
+				parent: @
+				name: '.'
+				x: chip.maxX + 16
+				text: "#{k}"
+				color: '#000'
+				
+			label.midY = chip.midY
+			
+			i++
 
 addDocsLink(colorsView, 'wiki/Colors')
+
+colorsView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Links View
 
 linksView = new View
 	title: 'Typography'
-
-Utils.bind linksView.content, ->
-	return if not SHOW_ALL
 	
-	new H2Link
-		parent: @
-		text: 'Click here'
-		x: 16
+linksView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 		
-	new H2Link
-		parent: @
-		text: 'Click here'
-		x: 16
-		select: => print "Clicked!"
-		
-	new H2Link
-		parent: @
-		text: 'Click here'
-		x: 16
-		disabled: true
-		select: => print "Clicked!"
-		
-	new H2Link
-		parent: @
-		text: 'Click here'
-		x: 16
-		color: red
-		select: => print "Clicked!"
-		
-	for layer, i in @children
-		continue if layer.constructor.name isnt 'Link'
-		
-		layer.y = (last ? 32)
-		
-		s = if i is 0 then "null" else "print 'Clicked!'"
-		c = if i is 3 then 'red' else 'black'
-	
-		string = [
-			"new H2Link",
-			"text: #{layer.text}",
-			"color: #{c}",
-			"disabled: #{layer.disabled}",
-			"select: -> #{s}"
-			].join('\n\t')
-			
-		label = new Code
-			name: '.'
+		new H2Link
 			parent: @
-			x: layer.x
-			y: layer.maxY + 16
-			text: string
+			text: 'Click here'
+			x: 16
 			
-		label.template = layer.value
-		
-		do (label, layer) ->
-			layer.on "change:value", =>
-				label.template = layer.value
-		
-		last = label.maxY + 32
-	
-	
-	i = 0
-	for k, v of theme.typography
-		if window[k + 'Link']
-			textExample = new window[k + 'Link']
-				parent: @
-				y: (last ? 0)
-				text: k + 'Link'
-				x: 16
+		new H2Link
+			parent: @
+			text: 'Click here'
+			x: 16
+			select: => print "Clicked!"
 			
+		new H2Link
+			parent: @
+			text: 'Click here'
+			x: 16
+			disabled: true
+			select: => print "Clicked!"
+			
+		new H2Link
+			parent: @
+			text: 'Click here'
+			x: 16
+			color: red
+			select: => print "Clicked!"
+			
+		for layer, i in @children
+			continue if layer.constructor.name isnt 'Link'
+			
+			layer.y = (last ? 32)
+			
+			s = if i is 0 then "null" else "print 'Clicked!'"
+			c = if i is 3 then 'red' else 'black'
+		
+			string = [
+				"new H2Link",
+				"text: #{layer.text}",
+				"color: #{c}",
+				"disabled: #{layer.disabled}",
+				"select: -> #{s}"
+				].join('\n\t')
+				
 			label = new Code
-				parent: @
 				name: '.'
-				x: 16
-				y: textExample.maxY + 4
-				text: "new #{k}Link"
-				color: black
+				parent: @
+				x: layer.x
+				y: layer.maxY + 16
+				text: string
+				
+			label.template = layer.value
+			
+			do (label, layer) ->
+				layer.on "change:value", =>
+					label.template = layer.value
 			
 			last = label.maxY + 32
-
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		
+		
+		i = 0
+		for k, v of theme.typography
+			if window[k + 'Link']
+				textExample = new window[k + 'Link']
+					parent: @
+					y: (last ? 0)
+					text: k + 'Link'
+					x: 16
+				
+				label = new Code
+					parent: @
+					name: '.'
+					x: 16
+					y: textExample.maxY + 4
+					text: "new #{k}Link"
+					color: black
+				
+				last = label.maxY + 32
+	
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 	
 addDocsLink(linksView, 'wiki/Link')
+
+linksView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Buttons View
 
 buttonsView = new View
 	title: 'Buttons'
-
-Utils.bind buttonsView.content, ->
-	return if not SHOW_ALL
-	buttons = _.map _.range(24), (i) =>
-		button = new Button
-			name: 'Button'
-			parent: @
-			secondary: i % 4 > 1
-			disabled: i % 2 is 1
-			dark: Math.floor(i/4) % 2 is 1
-			icon: if i >= 8 then 'star'
-			y: 32 + (i * 80)
-			x: 32
-			text: if i >= 16 then '' else 'Getting Started'
+	
+buttonsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		buttons = _.map _.range(24), (i) =>
+			button = new Button
+				name: 'Button'
+				parent: @
+				secondary: i % 4 > 1
+				disabled: i % 2 is 1
+				dark: Math.floor(i/4) % 2 is 1
+				icon: if i >= 8 then 'star'
+				y: 32 + (i * 80)
+				x: 32
+				text: if i >= 16 then '' else 'Getting Started'
+				
+			strings = []
+			if button.iconLayer?
+				strings.push 'icon: star'
+			if button.dark
+				strings.push 'dark: true'
+			if button.secondary
+				strings.push 'secondary: true'
+			if button.disabled
+				strings.push 'disabled: true'
+			string = strings.join('\n')
+				
+			label = new Code
+				name: '.'
+				parent: @
+				x: button.maxX + 32
+				text: string
+				color: if button.dark then '#FFF' else '#000'
+				
+			label.midY = button.midY
 			
-		strings = []
-		if button.iconLayer?
-			strings.push 'icon: star'
-		if button.dark
-			strings.push 'dark: true'
-		if button.secondary
-			strings.push 'secondary: true'
-		if button.disabled
-			strings.push 'disabled: true'
-		string = strings.join('\n')
-			
-		label = new Code
+			return button
+		
+		dark = new Layer
 			name: '.'
 			parent: @
-			x: button.maxX + 32
-			text: string
-			color: if button.dark then '#FFF' else '#000'
+			width: @width
+			y: buttons[4].y - 16
+			height: buttons[7].y - buttons[3].y
+			backgroundColor: black
+	
+		dark2 = new Layer
+			name: '.'
+			parent: @
+			width: @width
+			y: buttons[12].y - 16
+			height: buttons[15].y - buttons[11].y
+			backgroundColor: black
 			
-		label.midY = button.midY
+		dark3 = new Layer
+			name: '.'
+			parent: @
+			width: @width
+			y: buttons[20].y - 16
+			height: buttons[23].y - buttons[19].y
+			backgroundColor: black
 		
-		return button
+		dark.sendToBack()
+		dark2.sendToBack()
+		dark3.sendToBack()
 	
-	dark = new Layer
-		name: '.'
-		parent: @
-		width: @width
-		y: buttons[4].y - 16
-		height: buttons[7].y - buttons[3].y
-		backgroundColor: black
-
-	dark2 = new Layer
-		name: '.'
-		parent: @
-		width: @width
-		y: buttons[12].y - 16
-		height: buttons[15].y - buttons[11].y
-		backgroundColor: black
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 		
-	dark3 = new Layer
-		name: '.'
-		parent: @
-		width: @width
-		y: buttons[20].y - 16
-		height: buttons[23].y - buttons[19].y
-		backgroundColor: black
-	
-	dark.sendToBack()
-	dark2.sendToBack()
-	dark3.sendToBack()
-
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 addDocsLink(buttonsView, 'wiki/Button')
+
+buttonsView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Steppers View
 
 steppersView = new View
 	title: 'Steppers'
 
-Utils.bind steppersView.content, ->
+steppersView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 	
-	stepper = new Stepper
-		parent: @
-	
-	stepper = new Stepper
-		parent: @
-		value: 0
-		
-	stepper = new Stepper
-		parent: @
-		value: 10
-		
-	stepper = new Stepper
-		parent: @
-		min: 50
-		max: 100
-		value: 42
-		
-	stepper = new Stepper
-		parent: @
-		options: ['Less', 'More']
-		icon: false
-		
-	# set positions and create code labels
-	
-	for layer in @children
-		continue if layer.constructor.name isnt 'Stepper'
-		
-		layer.y = (last?.maxY ? 32) + 32
-	
-	
-		string = [
-			"new Stepper",
-			"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]",
-			"icon: #{layer.icon}",
-			"min: #{layer.min}",
-			"max: #{layer.max}",
-			"value: {value}"
-			].join('\n\t')
-			
-		label = new Code
-			name: '.'
+		stepper = new Stepper
 			parent: @
-			x: layer.x
-			y: layer.maxY + 16
-			text: string
+		
+		stepper = new Stepper
+			parent: @
+			value: 0
 			
-		label.template = layer.value
+		stepper = new Stepper
+			parent: @
+			value: 10
+			
+		stepper = new Stepper
+			parent: @
+			min: 50
+			max: 100
+			value: 42
+			
+		stepper = new Stepper
+			parent: @
+			options: ['Less', 'More']
+			icon: false
+			
+		# set positions and create code labels
 		
-		do (label, layer) ->
-			layer.on "change:value", =>
-				label.template = layer.value
+		for layer in @children
+			continue if layer.constructor.name isnt 'Stepper'
+			
+			layer.y = (last?.maxY ? 32) + 32
 		
-		last = label
-	
-	if not SHOW_LAYER_TREE
-		child.name = '.' for child in @children
+		
+			string = [
+				"new Stepper",
+				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]",
+				"icon: #{layer.icon}",
+				"min: #{layer.min}",
+				"max: #{layer.max}",
+				"value: {value}"
+				].join('\n\t')
+				
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 16
+				text: string
+				
+			label.template = layer.value
+			
+			do (label, layer) ->
+				layer.on "change:value", =>
+					label.template = layer.value
+			
+			last = label
+		
+		if not SHOW_LAYER_TREE
+			child.name = '.' for child in @children
 		
 addDocsLink(steppersView, 'wiki/Stepper')
+
+steppersView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Sortables View
 
 sortablesView = new View
 	title: 'Sortables'
 
-Utils.bind sortablesView.content, ->
-	
-	positions = []
-	
-	for i in _.range(7)
-		sortable = new Sortable
-			parent: @
-			name: 'Sortable'
-			positions: positions
-			x: Align.center()
-			y: 32
-			width: @width * .618
-			backgroundColor: null
+sortablesView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 		
-		new Button
-			parent: sortable
-			width: sortable.width
-			color: black
-			backgroundColor: Color.mix(yellow, blue, i/7)
-			text: 'Sortable ' + i
+		positions = []
+		
+		for i in _.range(7)
+			sortable = new Sortable
+				parent: @
+				name: 'Sortable'
+				positions: positions
+				x: Align.center()
+				y: 32
+				width: @width * .618
+				backgroundColor: null
+			
+			new Button
+				parent: sortable
+				width: sortable.width
+				color: black
+				backgroundColor: Color.mix(yellow, blue, i/7)
+				text: 'Sortable ' + i
+				borderRadius: 4
+				
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+	
+	addDocsLink(sortablesView, 'wiki/Sortable')
 
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-
-addDocsLink(sortablesView, 'wiki/Sortable')
+sortablesView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Segments View
 
@@ -451,81 +490,86 @@ segmentsView = new View
 	contentInset:
 		bottom: 128
 
-Utils.bind segmentsView.content, ->
-	return if not SHOW_ALL
+segmentsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 	
-	# Segments
-	
-	label = new H4
-		parent: @
-		text: 'Segment'
-		y: 16
+		# Segments
 		
-	new Segment 
-		name: 'Segment'
-		parent: @ 
-		
-	new Segment 
-		name: 'Segment Active'
-		parent: @ 
-		active: 1
-	
-	new Segment 
-		name: 'Segment Three'
-		parent: @ 
-		options: ['Good', 'Nuetral', 'Evil']
-	
-	new Segment 
-		name: 'Segment Icons'
-		parent: @
-		options: ['phone', 'email', 'snapchat']
-		icon: true
-	
-	new Segment 
-		name: 'Segment Custom Colors'
-		parent: @ 
-		options: ['phone', 'email', 'snapchat']
-		icon: true
-		color: white
-		backgroundColor: blue60
-	
-	new Segment 
-		name: 'Segment Blank'
-		parent: @ 
-		options: [' ', ' ', ' ']
-		
-	# set positions and create code labels
-	
-	for layer in @children
-		if layer.constructor.name is 'Segment'
-		
-			layer.y = (last?.maxY ? 32) + 32
-		
-			string = [
-				"new Segment",
-				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-				"icon: #{layer.icon}"
-				"active: {active}"
-				].join('\n\t')
-				
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 16
-				text: string
-				
-			label.template = layer.active
+		label = new H4
+			parent: @
+			text: 'Segment'
+			y: 16
 			
-			do (label, layer) ->
-				layer.on "change:active", =>
-					label.template = layer.active
+		new Segment 
+			name: 'Segment'
+			parent: @ 
 			
-			last = label
-
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		new Segment 
+			name: 'Segment Active'
+			parent: @ 
+			active: 1
+		
+		new Segment 
+			name: 'Segment Three'
+			parent: @ 
+			options: ['Good', 'Nuetral', 'Evil']
+		
+		new Segment 
+			name: 'Segment Icons'
+			parent: @
+			options: ['phone', 'email', 'snapchat']
+			icon: true
+		
+		new Segment 
+			name: 'Segment Custom Colors'
+			parent: @ 
+			options: ['phone', 'email', 'snapchat']
+			icon: true
+			color: white
+			backgroundColor: blue60
+		
+		new Segment 
+			name: 'Segment Blank'
+			parent: @ 
+			options: [' ', ' ', ' ']
+			
+		# set positions and create code labels
+		
+		for layer in @children
+			if layer.constructor.name is 'Segment'
+			
+				layer.y = (last?.maxY ? 32) + 32
+			
+				string = [
+					"new Segment",
+					"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+					"icon: #{layer.icon}"
+					"active: {active}"
+					].join('\n\t')
+					
+				label = new Code
+					name: '.'
+					parent: @
+					x: layer.x
+					y: layer.maxY + 16
+					text: string
+					
+				label.template = layer.active
+				
+				do (label, layer) ->
+					layer.on "change:active", =>
+						label.template = layer.active
+				
+				last = label
+	
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
 addDocsLink(segmentsView, 'wiki/Segment')
+
+segmentsView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Toggles View
 
@@ -534,240 +578,323 @@ togglesView = new View
 	contentInset:
 		bottom: 128
 
-Utils.bind togglesView.content, ->
-	return if not SHOW_ALL
+togglesView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 	
-	# toggles
-	
-	label = new H4
-		parent: @
-		text: 'Toggle'
-		y: 16
+		# toggles
 		
-	new Toggle 
-		name: 'Toggle'
-		parent: @ 
+		label = new H4
+			parent: @
+			text: 'Toggle'
+			y: 16
+			
+		new Toggle 
+			name: 'Toggle'
+			parent: @ 
+			
+		new Toggle 
+			name: 'Toggle Toggled'
+			parent: @ 
+			toggled: true
 		
-	new Toggle 
-		name: 'Toggle Toggled'
-		parent: @ 
-		toggled: true
-	
-	new Toggle 
-		name: 'Toggle Options'
-		parent: @ 
-		options: ['Good', 'Evil']
-	
-	new Toggle 
-		name: 'Toggle Icons'
-		parent: @ 
-		options: ['pizza', 'apple']
-		icon: true
-	
-	new Toggle 
-		name: 'Toggle Custom Colors'
-		parent: @ 
-		options: ['phone', 'email']
-		icon: true
-		color: white
-		backgroundColor: blue60
-	
-	new Toggle 
-		name: 'Toggle Blank'
-		parent: @ 
-		options: [' ', ' ']
+		new Toggle 
+			name: 'Toggle Options'
+			parent: @ 
+			options: ['Good', 'Evil']
 		
-	# set positions and create code labels
-	
-	for layer in @children
-		if layer.constructor.name is 'Toggle'
-			layer.y = (last?.maxY ? 32) + 32
+		new Toggle 
+			name: 'Toggle Icons'
+			parent: @ 
+			options: ['pizza', 'apple']
+			icon: true
 		
-			string = [
-				"new Topggle",
-				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-				"icon: #{layer.icon}"
-				"toggled: {toggled}"
-				].join('\n\t')
-							
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 16
-				text: string
+		new Toggle 
+			name: 'Toggle Custom Colors'
+			parent: @ 
+			options: ['phone', 'email']
+			icon: true
+			color: white
+			backgroundColor: blue60
+		
+		new Toggle 
+			name: 'Toggle Blank'
+			parent: @ 
+			options: [' ', ' ']
+			
+		# set positions and create code labels
+		
+		for layer in @children
+			if layer.constructor.name is 'Toggle'
+				layer.y = (last?.maxY ? 32) + 32
+			
+				string = [
+					"new Topggle",
+					"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
+					"icon: #{layer.icon}"
+					"toggled: {toggled}"
+					].join('\n\t')
+								
+				label = new Code
+					name: '.'
+					parent: @
+					x: layer.x
+					y: layer.maxY + 16
+					text: string
+					
+				label.template = layer.toggled
 				
-			label.template = layer.toggled
-			
-			do (label, layer) ->
-				layer.on "change:active", =>
-					label.template = layer.toggled
-			
-			last = label
-
+				do (label, layer) ->
+					layer.on "change:active", =>
+						label.template = layer.toggled
+				
+				last = label
 	
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 	
 addDocsLink(togglesView, 'wiki/Toggle')
+
+togglesView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Inputs View
 
 inputsView = new View
 	title: 'Inputs'
 
-Utils.bind inputsView.content, ->
-	
-	# text input
-	
-	label = new Label 
-		parent: @
-		text: 'First Name'
-	
-	input = new TextInput
-		parent: @
-		y: label.maxY
-		placeholder: 'Your first name'
+inputsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
 		
-	error = new Micro
-		parent: @
-		y: input.maxY
-		text: 'This website only accepts users named Sean.'
-	
-	input.on "change:value", (value) ->
-		error.color =
-			if value.toLowerCase() is 'sean'
-				green
-			else if value is ""
-				gray
-			else
-				red
-				
-		checkbox.disabled = value.toLowerCase() isnt 'sean'
-		checkSubmit()
+		# text input
 		
-	# radiobox
-	
-	radioBoxlabel = new Label
-		parent: @
-		x: 16
-		y: error.maxY + 16
-		text: 'Select your city'
-		
-	radioboxes = []
-	
-	lastY = radioBoxlabel.maxY
-	
-	for city, i in ['London', 'Chicago', 'DeKalb']
-		radioboxes[i] = new Radiobox
+		label = new Label 
 			parent: @
-			group: radioboxes
-			x: 16
-			y: lastY
-
-		label = new Body2
+			text: 'First Name'
+		
+		input = new TextInput
 			parent: @
-			x: radioboxes[i].maxX + 8
-			y: lastY
-			text: city
+			y: label.maxY
+			placeholder: 'Your first name'
 			
-		radioboxes[i].labelLayer = label
+		error = new Micro
+			parent: @
+			y: input.maxY
+			text: 'This website only accepts users named Sean.'
 		
-		lastY = radioboxes[i].maxY + 3
-	
-	# check box
-	
-	label = new Label
-		parent: @
-		text: 'Agree to Conditions'
-		y: _.last(radioboxes).maxY + 16
+		input.on "change:value", (value) ->
+			error.color =
+				if value.toLowerCase() is 'sean'
+					green
+				else if value is ""
+					gray
+				else
+					red
+					
+			checkbox.disabled = value.toLowerCase() isnt 'sean'
+			checkSubmit()
+			
+		# radiobox
 		
-	checkbox = new Checkbox
-		parent: @
-		y: label.y + 7
-		x: label.maxX + 8
-		disabled: true
-	
-	checkbox.on "change:checked", (bool) ->
-		checkSubmit()
-	
-	# submit button
-	
-	submit = new Button
-		parent: @
-		y: checkbox.maxY + 32
-		text: 'Submit'
-		disabled: true
+		radioBoxlabel = new Label
+			parent: @
+			x: 16
+			y: error.maxY + 16
+			text: 'Select your city'
+			
+		radioboxes = []
 		
-	checkSubmit = ->
-		submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
-
-	if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		lastY = radioBoxlabel.maxY
+		
+		for city, i in ['London', 'Chicago', 'DeKalb']
+			radioboxes[i] = new Radiobox
+				parent: @
+				group: radioboxes
+				x: 16
+				y: lastY
+	
+			label = new Body2
+				parent: @
+				x: radioboxes[i].maxX + 8
+				y: lastY
+				text: city
+				
+			radioboxes[i].labelLayer = label
+			
+			lastY = radioboxes[i].maxY + 3
+		
+		# check box
+		
+		label = new Label
+			parent: @
+			text: 'Agree to Conditions'
+			y: _.last(radioboxes).maxY + 16
+			
+		checkbox = new Checkbox
+			parent: @
+			y: label.y + 7
+			x: label.maxX + 8
+			disabled: true
+		
+		checkbox.on "change:checked", (bool) ->
+			checkSubmit()
+		
+		# submit button
+		
+		submit = new Button
+			parent: @
+			y: checkbox.maxY + 32
+			text: 'Submit'
+			disabled: true
+			
+		checkSubmit = ->
+			submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
+	
+# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
 addDocsLink(inputsView, 'wiki/Inputs')
+
+inputsView.onUnload ->
+	for child in @content.children
+		child.destroy()
+
+# Tooltips View
+
+tooltipsView = new View
+	title: 'Tooltips'
+
+tooltipsView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		new Tooltip
+			name: 'Default Tooltip'
+			parent: @
+			
+		new Tooltip
+			name: 'Tooltip Text'
+			parent: @
+			text: 'Context for the hovered element'
+		
+		new Tooltip
+			name: 'Tooltip Above'
+			parent: @
+			text: 'Tooltip above an element'
+			direction: 'above'
+		
+		new Tooltip
+			name: 'Tooltip Right'
+			parent: @
+			text: 'Tooltip right of an element'
+			direction: 'right'
+		
+		new Tooltip
+			name: 'Tooltip Below'
+			parent: @
+			text: 'Tooltip below an element'
+			direction: 'below'
+		
+		new Tooltip
+			name: 'Tooltip Left'
+			parent: @
+			text: 'Tooltip left of an element'
+			direction: 'left'
+	
+		for layer in @children
+			continue if layer.constructor.name isnt 'Tooltip'
+			
+			layer.y = (last?.maxY ? 0) + 32
+		
+			string = [
+				"new Tooltip",
+				"direction: '#{layer.direction}'",
+				"text: '#{layer.text}'",
+				].join('\n\t')
+				
+			label = new Code
+				name: '.'
+				parent: @
+				x: layer.x
+				y: layer.maxY + 16
+				text: string
+			
+			last = label
+		
+# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+
+addDocsLink(tooltipsView, 'wiki/Tooltips')
+
+tooltipsView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # Example View
 
 exampleView = new View
 	title: 'Example'
-	
-Utils.bind exampleView, ->
-	return if not SHOW_ALL
-	
-	@header = new H2
-		name: 'Header H2'
-		parent: @content
-		x: Align.center
-		y: 80
-		text: 'Framework'
-	
-	@lead = new Body
-		name: 'Lead Body'
-		parent: @content
-		x: Align.center
-		y: @header.maxY + 12
-		text: 'A Component Kit for Framer'
-		
-	@email = new TextInput
-		name: 'Email Input'
-		parent: @content
-		y: @lead.maxY + 160
-		width: 228
-		x: Align.center()
-		placeholder: 'Enter your e-mail'
-		
-	@signup = new Button
-		name: 'Sign Up Button'
-		parent: @content
-		x: Align.center()
-		y: @email.maxY + 16
-		text: 'Sign Up'
-		width: 228
-		disabled: true
-	
-	@login = new Button
-		name: 'Login Button'
-		parent: @content
-		x: Align.center()
-		y: @signup.maxY + 16
-		secondary: true
-		text: 'Log In'
-		width: 228
-		
-	@email.on "change:value", (value) =>
-		@signup.disabled = value.slice(-4) isnt '.com'
-		
-	@iconLayer = new Icon
-		name: 'Logomark Icon'
-		parent: @content
-		icon: 'drawing-box'
-		x: Align.center
-		y: 208
-		height: 72
-		width: 72
-		color: red
-		opacity: 0
 
 exampleView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		@header = new H2
+			name: 'Header H2'
+			parent: @content
+			x: Align.center
+			y: 80
+			text: 'Framework'
+		
+		@lead = new Body
+			name: 'Lead Body'
+			parent: @content
+			x: Align.center
+			y: @header.maxY + 12
+			text: 'A Component Kit for Framer'
+			
+		@email = new TextInput
+			name: 'Email Input'
+			parent: @content
+			y: @lead.maxY + 160
+			width: 228
+			x: Align.center()
+			placeholder: 'Enter your e-mail'
+			
+		@signup = new Button
+			name: 'Sign Up Button'
+			parent: @content
+			x: Align.center()
+			y: @email.maxY + 16
+			text: 'Sign Up'
+			width: 228
+			disabled: true
+		
+		@login = new Button
+			name: 'Login Button'
+			parent: @content
+			x: Align.center()
+			y: @signup.maxY + 16
+			secondary: true
+			text: 'Log In'
+			width: 228
+			
+		@email.on "change:value", (value) =>
+			@signup.disabled = value.slice(-4) isnt '.com'
+			
+		@iconLayer = new Icon
+			name: 'Logomark Icon'
+			parent: @content
+			icon: 'drawing-box'
+			x: Align.center
+			y: 208
+			height: 72
+			width: 72
+			color: red
+			opacity: 0
+
+	# opening animations
+	
 	for child, i in _.dropRight(@content.children, 1)
 	
 		y = child.y
@@ -805,12 +932,14 @@ exampleView.onLoad ->
 			delay: 1
 			time: .7
 
+exampleView.onUnload ->
+	for child in @content.children
+		child.destroy()
+
 # Home View
 
 homeView = new View
 	title: 'Framework'
-
-
 
 Utils.bind homeView.content, ->
 	
@@ -833,6 +962,7 @@ Utils.bind homeView.content, ->
 		parent: @
 		text: 'Typography'
 		link: typographyView
+	
 	
 	# structure
 	new H3
@@ -898,6 +1028,11 @@ Utils.bind homeView.content, ->
 		parent: @
 		text: 'TextInput'
 		link: inputsView
+		
+	new RowLink
+		parent: @
+		text: 'Tooltip'
+		link: tooltipsView
 		
 	new RowLink
 		parent: @

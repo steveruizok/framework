@@ -200,6 +200,12 @@ exports.theme =
 			borderWidth: 1
 			borderRadius: 2
 	# --------------------------
+	# Tooltip
+	tooltip:
+		default:
+			backgroundColor: black
+			borderRadius: 3
+	# --------------------------
 	# Radiobox
 	radiobox:
 		default:
@@ -238,6 +244,10 @@ exports.theme =
 				borderColor: yellow60
 				backgroundColor: yellow50
 				shadowColor: 'rgba(0,0,0,0)'
+				borderRadius: 4
+				borderWidth: 1
+				shadowY: 2
+				shadowBlur: 6
 			disabled:
 				color: grey
 				borderColor: grey40
@@ -259,6 +269,10 @@ exports.theme =
 				borderColor: grey40
 				backgroundColor: white
 				shadowColor: 'rgba(0,0,0,0)'
+				borderRadius: 4
+				borderWidth: 1
+				shadowY: 2
+				shadowBlur: 6
 			disabled:
 				color: grey
 				borderColor: grey40
@@ -283,6 +297,10 @@ exports.theme =
 				borderColor: yellow60
 				backgroundColor: yellow50
 				shadowColor: 'rgba(0,0,0,.16)'
+				borderRadius: 4
+				borderWidth: 1
+				shadowY: 2
+				shadowBlur: 6
 			disabled:
 				color: new Color(black).alpha(.15)
 				borderColor: new Color(black).alpha(.15)
@@ -304,6 +322,10 @@ exports.theme =
 				borderColor: beige60
 				backgroundColor: beige50
 				shadowColor: 'rgba(0,0,0,0)'
+				borderRadius: 4
+				borderWidth: 1
+				shadowY: 2
+				shadowBlur: 6
 			disabled:
 				color: new Color(black).alpha(.15)
 				borderColor: new Color(black).alpha(.15)
@@ -326,6 +348,10 @@ exports.theme =
 				backgroundColor: white
 				opacity: 1
 				shadowColor: 'rgba(0,0,0,.16)'
+				borderRadius: 4
+				borderWidth: 1
+				shadowY: 2
+				shadowBlur: 6
 			disabled:
 				color: grey40
 				borderColor: null
@@ -351,6 +377,10 @@ exports.theme =
 				backgroundColor: null
 				opacity: 1
 				shadowColor: 'rgba(0,0,0,0)'
+				borderRadius: 4
+				borderWidth: 1
+				shadowY: 2
+				shadowBlur: 6
 			disabled:
 				color: grey
 				borderColor: grey
