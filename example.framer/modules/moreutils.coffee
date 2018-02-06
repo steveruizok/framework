@@ -61,6 +61,50 @@ _.assign Utils,
 		for setPin in setPins
 			setPin.targetLayer.off(setPin.event, setPin.func)
 	
+	# Pin layer to another layer, based on the layer's origin
+	# @example    Utils.pinOrigin(layerA, layerB)
+	pinOrigin: (lA, lB, undo = false) ->
+		if undo
+			lB.off "change:size", lA.setPosition 
+			return
+
+		lA.setPosition = ->
+			lA.x = (lB.width - lA.width) * lA.originX
+			lA.y = (lB.height - lA.height) * lA.originY
+		
+		lA.setPosition()
+		
+		lB.on "change:size", lA.setPosition
+
+
+	# Pin layer to another layer, based on the layer's origin
+	# @example    Utils.pinOriginX(layerA, layerB)
+	pinOriginX: (lA, lB, undo = false) ->
+		if undo
+			lB.off "change:size", lA.setPosition 
+			return
+
+		lA.setPosition = ->
+			lA.x = (lB.width - lA.width) * lA.originX
+		
+		lA.setPosition()
+		
+		lB.on "change:size", lA.setPosition
+
+
+	# Pin layer to another layer, based on the layer's origin
+	# @example    Utils.pinOriginY(layerA, layerB)
+	pinOriginY: (lA, lB, undo = false) ->
+		if undo
+			lB.off "change:size", lA.setPosition 
+			return
+
+		lA.setPosition = ->
+			lA.y = (lB.height - lA.height) * lA.originY
+		
+		lA.setPosition()
+		
+		lB.on "change:size", lA.setPosition
 
 	# Set a layer's contraints to its parent
 	# @example    Utils.constrain(layer, {left: true, top: true, asepectRatio: true})
