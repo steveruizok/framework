@@ -446,17 +446,6 @@ exports.theme =
 				backgroundColor: null
 				opacity: 1
 				shadowColor: 'rgba(0,0,0,0)'
-	# --------------------------
-	# Sortable
-	sortable:
-		default:
-			scale: 1
-			shadowY: 0
-			shadowBlur: 0
-		dragging: 
-			scale: 1.07
-			shadowY: 2
-			shadowBlur: 16
 	
 	# --------------------------
 	# Icons

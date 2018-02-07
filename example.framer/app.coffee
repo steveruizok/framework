@@ -1065,45 +1065,209 @@ inputsView.onUnload ->
 # ----------------
 # Components
 
-# Sortables View
+# SortableComponent View
 
-sortablesView = new View
-	title: 'Sortables'
+sortableComponentView = new View
+	title: 'SortableComponent'
 
-sortablesView.onLoad ->
+sortableComponentView.onLoad ->
 	Utils.bind @content, ->
 		return if not SHOW_ALL
 		
-		positions = []
+		title = new H4
+			name: '.'
+			parent: @
+			y: (sortable?.maxY ? 0) + 32
+			text: 'Default SortableComponent'
+			
+		div = new Layer
+			name: '.'
+			parent: @
+			x: title.maxX + 16
+			y: title.y + 10
+			width: @width - (title.maxX + 16) - 16
+			backgroundColor: grey40
+			height: 1
 		
-		for i in _.range(7)
-			sortable = new Sortable
-				parent: @
-				name: 'Sortable'
-				positions: positions
-				x: Align.center()
-				y: 32
-				width: @width * .618
+		sortable = new SortableComponent
+			parent: @
+			x: Align.center()
+			y: title.maxY + 24	
+			width: @width * .618
+		
+		for i in _.range(3)
+			
+			last = new Layer
+				parent: sortable
+				x: 0
+				y: (last?.maxY ? -16) + 16
+				width: sortable.width
+				height: 48
+				
+		last = undefined
+		
+		# Sortable with handle
+		
+		title = new H4
+			name: '.'
+			parent: @
+			y: (sortable?.maxY ? 0) + 32
+			text: 'SortableComponent using Handles'
+			
+		div = new Layer
+			name: '.'
+			parent: @
+			x: title.maxX + 16
+			y: title.y + 10
+			width: @width - (title.maxX + 16) - 16
+			backgroundColor: grey40
+			height: 1
+		
+		sortable = new SortableComponent
+			parent: @
+			x: Align.center()
+			y: title.maxY + 24	
+			width: @width * .618
+			backgroundColor: null
+		
+		for i in _.range(4)
+			
+			last = new Layer
+				parent: sortable
+				y: (last?.maxY ? 1) - 1
+				width: sortable.width
+				height: 48
+				backgroundColor: grey30
+				borderColor: grey
+				borderWidth: 1
+				animationOptions:
+					time: .2
+					curve: 'linear'
+			
+			last.handle = new Layer
+				parent: last
+				x: Align.right()
+				height: last.height
+				width: 40
 				backgroundColor: null
 			
-			new Button
+			new Icon
+				parent: last.handle
+				x: Align.right(-8)
+				y: Align.center()
+				icon: 'drag'
+		
+		last = undefined
+		
+		# Sortable with dragging states
+		
+		title = new H4
+			name: '.'
+			parent: @
+			y: (sortable?.maxY ? 0) + 32
+			text: 'SortableComponent with Custom States'
+			
+		div = new Layer
+			name: '.'
+			parent: @
+			x: title.maxX + 16
+			y: title.y + 10
+			width: @width - (title.maxX + 16) - 16
+			backgroundColor: grey40
+			height: 1
+		
+		sortable = new SortableComponent
+			parent: @
+			x: Align.center()
+			y: title.maxY + 24	
+			width: @width * .618
+			backgroundColor: null
+			draggingState:
+				scale: 1.2
+				backgroundColor: blue30
+				opacity: .8
+			defaultState:
+				scale: 1
+				backgroundColor: green30
+				opacity: 1
+		
+		for i in _.range(4)
+			
+			last = new Layer
 				parent: sortable
+				y: (last?.maxY ? 1) - 1
 				width: sortable.width
-				color: black
-				backgroundColor: Color.mix(yellow, blue, i/7)
+				height: 48
+				backgroundColor: green30
+				borderColor: green
+				borderWidth: 1
+			
+		last = undefined
+		
+		
+		
+		# Sortable with other content
+		
+		title = new H4
+			name: '.'
+			parent: @
+			y: (sortable?.maxY ? 0) + 32
+			text: 'SortableComponent with Other Content'
+			
+		div = new Layer
+			name: '.'
+			parent: @
+			x: title.maxX + 16
+			y: title.y + 10
+			width: @width - (title.maxX + 16) - 16
+			backgroundColor: grey40
+			height: 1
+		
+		sortable = new SortableComponent
+			parent: @
+			x: Align.center()
+			y: title.maxY + 24	
+			width: @width * .618
+			backgroundColor: null
+		
+		for i in _.range(3)
+			
+			last = new Button
+				parent: sortable
+				y: (last?.maxY ? -16) + 16
+				width: sortable.width
 				text: 'Sortable ' + i
-				borderRadius: 4
-				
+		
+		last = undefined
+			
 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 	
-	addDocsLink(sortablesView, 'wiki/Sortable')
+	addDocsLink(sortableComponentView, 'wiki/SortableComponent')
 
-sortablesView.onUnload ->
+sortableComponentView.onUnload ->
 	for child in @content.children
 		child.destroy()
+		
 
 # CarouselComponent
 
+carouselComponentView = new View
+	title: 'Carousels'
+
+carouselComponentView.onLoad ->
+	Utils.bind @content, ->
+		return if not SHOW_ALL
+		
+		
+		
+				
+		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+	
+	addDocsLink(carouselComponentView, 'wiki/CarouselComponent')
+
+carouselComponentView.onUnload ->
+	for child in @content.children
+		child.destroy()
 
 # ----------------
 # Miscellaneous
@@ -1429,8 +1593,8 @@ Utils.bind homeView.content, ->
 		
 	new RowLink
 		parent: @
-		text: 'Sortable'
-		link: sortablesView
+		text: 'SortableComponent'
+		link: sortableComponentView
 		
 	new RowLink
 		parent: @
@@ -1461,3 +1625,5 @@ addDocsLink(homeView, '', 'github-circle')
 
 
 app.showNext homeView
+
+app.showNext sortableComponentView

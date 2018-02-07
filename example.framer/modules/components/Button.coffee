@@ -10,6 +10,7 @@ class exports.Button extends Layer
 		# Options
 		
 		_.defaults options,
+			x: 0
 			width: 0
 			height: 48
 			text: 'Get Started'
@@ -177,7 +178,6 @@ class exports.Button extends Layer
 		return customTheme
 
 	_setTheme: (value) =>
-		@animateStop()
 		props = @customTheme?[value] ? _.defaults(_.clone(@customOptions), theme[MODEL][@palette][value])
 		if @__instancing then @props = props else @animate props
 
@@ -228,7 +228,6 @@ class exports.Button extends Layer
 
 	_showTouching: (isTouching, silent = false, event) =>
 		return if @disabled
-		@animateStop()
 		
 		if isTouching
 			# show touching

@@ -5,7 +5,6 @@ require 'components/Theme'
 require 'components/Typography'
 
 { Button } = require 'components/Button'
-{ Carousel } = require 'components/Carousel'
 { Radiobox } = require 'components/Radiobox'
 { Checkbox } = require 'components/Checkbox'
 { Footer } = require 'components/Footer'
@@ -15,14 +14,15 @@ require 'components/Typography'
 { Tooltip } = require 'components/Tooltip'
 { Icon } = require 'components/Icon'
 { Link } = require 'components/Link'
-{ PageTransitionComponent } = require 'components/PageTransitionComponent'
 { Separator } = require 'components/Separator'
 { Select } = require 'components/Select'
 { Stepper } = require 'components/Stepper'
-{ Sortable } = require 'components/Sortable'
 { TextInput } = require 'components/TextInput'
-{ TransitionPage } = require 'components/PageTransitionComponent'
 { View } = require 'components/View'
+{ CarouselComponent } = require 'components/CarouselComponent'
+{ PageTransitionComponent } = require 'components/PageTransitionComponent'
+{ SortableComponent } = require 'components/SortableComponent'
+{ TransitionPage } = require 'components/PageTransitionComponent'
 
 
 class window.App extends FlowComponent
@@ -39,7 +39,6 @@ class window.App extends FlowComponent
 		# Add general components to window
 		for componentName in [
 			'Button', 
-			'Carousel', 
 			'Header', 
 			'Radiobox',
 			'Checkbox',
@@ -51,11 +50,12 @@ class window.App extends FlowComponent
 			'Segment',
 			'TextInput',
 			'Link', 
-			'PageTransitionComponent'
 			'Separator', 
-			'Sortable'
 			'TransitionPage', 
 			'View', 
+			'CarouselComponent', 
+			'SortableComponent'
+			'PageTransitionComponent'
 		]
 			c = eval(componentName)
 			do (componentName, c) =>
