@@ -48,8 +48,10 @@ class exports.Link extends TextLayer
 		# ---------------
 		# Events
 		
-		@onMouseOver => @hovered = true
-		@onMouseOut => @hovered = false
+		# Need a better solution here...
+		#
+		# @onMouseOver => @hovered = true
+		# @onMouseOut => @hovered = false
 
 		@onTouchStart (event) => @_showTouching(true, null, event)
 		@onTouchEnd (event) => @_showTouching(false, null, event)

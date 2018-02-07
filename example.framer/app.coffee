@@ -1625,5 +1625,3 @@ addDocsLink(homeView, '', 'github-circle')
 
 
 app.showNext homeView
-
-app.showNext sortableComponentView
