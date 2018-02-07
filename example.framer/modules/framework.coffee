@@ -4,6 +4,7 @@ require 'components/Colors'
 require 'components/Theme'
 require 'components/Typography'
 
+
 { Button } = require 'components/Button'
 { Radiobox } = require 'components/Radiobox'
 { Checkbox } = require 'components/Checkbox'
@@ -24,6 +25,8 @@ require 'components/Typography'
 { SortableComponent } = require 'components/SortableComponent'
 { TransitionPage } = require 'components/PageTransitionComponent'
 
+
+exports.app = undefined
 
 class window.App extends FlowComponent
 	constructor: (options = {}) ->
@@ -64,6 +67,8 @@ class window.App extends FlowComponent
 					return new c(options)
 
 		super options
+
+		exports.app = @
 
 		_.assign @,
 			chrome: options.chrome
