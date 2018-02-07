@@ -1598,7 +1598,7 @@ Utils.bind homeView.content, ->
 		
 	new RowLink
 		parent: @
-		text: 'Carousel'
+		text: 'CarouselComponent'
 	
 	# misc
 	new H3
