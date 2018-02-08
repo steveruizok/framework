@@ -11,7 +11,7 @@ Framer.Extras.Hints.disable()
 
 # dumb thing that blocks events in the upper left-hand corner
 dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
-dumbthing.style.width = "0px"
+dumbthing?.style.width = "0px"
 
 # Row Link
 
