@@ -106,6 +106,11 @@ class window.App extends FlowComponent
 		# header
 
 		if @chrome
+			# don't show safari bar when opening this project on mobile web
+			# ... but this might require a lot of app.header?.etc
+			if @chrome is 'safari' and Utils.isSafari()
+				@chrome = null
+
 			@header = new Header
 				app: @
 				safari: @chrome is 'safari'
