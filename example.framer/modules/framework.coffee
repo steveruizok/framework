@@ -25,6 +25,7 @@ require 'components/Typography'
 { SortableComponent } = require 'components/SortableComponent'
 { TransitionPage } = require 'components/PageTransitionComponent'
 
+exports.defaultTitle = defaultTitle = "www.framework.com"
 
 exports.app = undefined
 
@@ -33,11 +34,8 @@ class window.App extends FlowComponent
 
 		_.defaults options,
 			backgroundColor: white
-			title: 'www.framework.com'
+			title: defaultTitle
 			chrome: 'ios'
-
-		if not options.safari
-			options.title = ''
 
 		# Add general components to window
 		for componentName in [
@@ -72,6 +70,7 @@ class window.App extends FlowComponent
 
 		_.assign @,
 			chrome: options.chrome
+			_windowFrame: {}
 			views: []
 
 		# layers
@@ -115,10 +114,17 @@ class window.App extends FlowComponent
 				app: @
 				safari: @chrome is 'safari'
 				title: options.title
+
+			@header.on "change:height", => @_setWindowFrame
 		
-		if @chrome is 'safari'
-			@footer = new Footer 
-				app: @
+			if @chrome is 'safari'
+				@footer = new Footer 
+					app: @
+
+				@footer.on "change:height", => @_setWindowFrame
+
+
+		@_setWindowFrame()
 
 		# definitions
 		Utils.defineValid @, 'loading', false, _.isBoolean, "App.loading must be a boolean (true or false).", @_showLoading
@@ -172,6 +178,20 @@ class window.App extends FlowComponent
 				show: {options: options, x: 0, y: 0}
 				hide: {options: options, x: layerB.width, y: 0}
 
+	_setWindowFrame: =>
+		@_windowFrame = {
+			y: (@header?.maxY ? @y)
+			x: @x
+			height: @height - (@footer?.height ? 0) - (@header?.height - 0)
+			width: @width
+			size: {
+				height: @height - (@footer?.height ? 0) - (@header?.height - 0)
+				width: @width
+			}
+		}
+
+		@emit "change:windowFrame", @_windowFrame, @
+
 	_showLoading: (bool) =>
 		if bool
 			# show loading
@@ -204,3 +224,6 @@ class window.App extends FlowComponent
 			return
 
 		@transition(layer, @__show, options)
+
+	@define "windowFrame",
+		get: -> return @_windowFrame

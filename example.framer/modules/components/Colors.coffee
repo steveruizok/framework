@@ -24,7 +24,6 @@ mods =
 # add shades
 
 for color, value of colors
-	window[color] = value
 	for mod, func of mods
 		newColor = func(new Color(value))
 		colors[color + mod] = newColor
@@ -39,5 +38,5 @@ _.assign colors,
 # add values to window
 
 for color, value of colors
-	window[color] = value
-	
+	colors[color] = new Color(value)
+	window[color] = new Color(value)
