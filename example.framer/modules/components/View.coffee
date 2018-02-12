@@ -16,8 +16,9 @@ class exports.View extends ScrollComponent
 				
 			padding: {}
 			title: ''
-			load: -> null
-			unload: -> null
+			load: null
+			unload: null
+			update: null
 
 		_.assign options,
 			width: Screen.width
@@ -42,6 +43,8 @@ class exports.View extends ScrollComponent
 		Utils.defineValid @, 'title', options.title, _.isString, 'View.title must be a string.'
 		Utils.defineValid @, 'padding', options.padding, _.isObject, 'View.padding must be an object.'
 		Utils.defineValid @, 'load', options.load, _.isFunction, 'View.load must be a function.'
+		Utils.defineValid @, 'update', options.update, _.isFunction, 'View.update must be a function.'
+
 		
 		# unless padding is specifically null, set padding defaults
 		if @padding?
@@ -74,15 +77,29 @@ class exports.View extends ScrollComponent
 	# Private Functions			
 
 	_loadView: =>
+		return if not @load?
+
+		for child in @content.children
+			child.destroy()
+
 		@load()
+		@app.loading = false
 	
 	_unloadView: =>
+		return if not @unload?
 		@unload()
+
+	_updateView: =>
+		return if not @update?
+		@update()
 
 	# ---------------
 	# Public Functions
 
-	onLoad: (callback) -> 
+	onUpdate: (callback) -> 
+		@update = callback
+
+	onLoad: (callback) -> 	
 		@load = callback
 
 	onUnload: (callback) -> 

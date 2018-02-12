@@ -19,6 +19,7 @@ class exports.Segment extends Layer
 
 			options: ['Left', 'Center', 'Right']
 			icon: false
+			dark: false
 			active: 0
 
 		@customTheme = if options.backgroundColor and options.color then @_getCustomTheme(options.color, options.backgroundColor) else undefined
@@ -39,15 +40,19 @@ class exports.Segment extends Layer
 			options: options.options
 			buttons: []
 			icon: options.icon
+			backgroundColor: null
 
-		for option, i in @options
+		@buttons = @options.map (option, i) =>
 			button = new Button
 				name: '.'
 				parent: @
 				x: 0
 				y: 0
+				width: if options.width? then options.width / @options.length
 				color: options.color
 				backgroundColor: options.backgroundColor
+				dark: options.dark
+				secondary: options.secondary
 				text: if @icon then '' else option
 				icon: if @icon then option
 
@@ -58,13 +63,13 @@ class exports.Segment extends Layer
 			
 			button._element.childNodes[0].style['border-radius'] = radius
 
-			@buttons.push(button)
+			return button
 
 		# set positions
 
 		# maxW = _.maxBy(@children, 'width').width
 
-		for layer in @children
+		for layer in @buttons
 			# layer.width = maxW
 			layer.x = (last?.maxX ? 1) - 1
 			last = layer
@@ -77,7 +82,8 @@ class exports.Segment extends Layer
 
 					if @palette is 'active' and customTheme?
 						props = customTheme[value]
-					else props = theme[MODEL][@palette][value]
+					else 
+						props = theme[MODEL][@palette][value]
 
 					if @__instancing then @props = props else @animate props
 
@@ -87,6 +93,7 @@ class exports.Segment extends Layer
 			backgroundColor: null
 			height: _.maxBy(@children, 'maxY')?.maxY 
 			width: last.maxX
+
 
 		# ---------------
 		# Events
@@ -155,6 +162,9 @@ class exports.Segment extends Layer
 
 	# ---------------
 	# Special Definitions
+
+	@define "value",
+		get: -> return @options[@active]
 
 	@define "active",
 		get: -> return @_active

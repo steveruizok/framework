@@ -20,7 +20,7 @@ class exports.Select extends Layer
 				colorModel: 'husl'
 
 			options: ['Rafael', 'Michelangelo', 'Donatello', 'Leonardo']
-			selectedIndex: 0
+			selectedIndex: -1
 			disabled: false
 
 		@customTheme = undefined
@@ -55,6 +55,11 @@ class exports.Select extends Layer
 			width: Utils.px(@width)
 			height: Utils.px(@height)
 			'-webkit-appearance': 'none'
+			padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
+			backgroundColor: theme[MODEL].default.backgroundColor ? white
+			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			fontSize: Utils.px(theme[MODEL].default.fontSize) ? 13
+			textAlign: theme[MODEL].default.textAlign ? "left"
 
 		last = 0
 
@@ -161,9 +166,9 @@ class exports.Select extends Layer
 
 	_setSelected: (selectedIndex) =>
 		if -1 > selectedIndex > @optionLayers.length
-			throw 'Selected.selectedIndex must be more an -1 or less than its number of options.'
+			throw 'Selected.selectedIndex must be more than -1 or less than its number of options.'
 		
-		@_setValue(@optionLayers[selectedIndex].value)
+		@_setValue(@optionLayers[selectedIndex]?.value ? "")
 
 	_setValue: (value) =>
 		@textLayer.text = value

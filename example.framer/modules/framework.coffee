@@ -78,28 +78,28 @@ class window.App extends FlowComponent
 		@loadingLayer = new Layer 
 			name: '.'
 			size: 48
-			backgroundColor: grey
-			borderRadius: 16
+			backgroundColor: 'rgba(0,0,0,.64)'
+			borderRadius: 8
 			opacity: .8
 
 		Utils.bind @loadingLayer, ->
-			@iconLayer = new SVGLayer
+			@iconLayer = new Icon 
 				parent: @
-				size: 32
-				point: Align.center(-1)
-				svg: """<svg version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-					width="#{Utils.px(32)}" height="#{Utils.px(32)}" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
-						<path fill="#000" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
-							<animateTransform attributeType="xml"
-								attributeName="transform"
-								type="rotate"
-								from="0 25 25"
-								to="360 25 25"
-								dur="0.6s"
-								repeatCount="indefinite"/>
-						</path>
-					</svg>"""
-				fill: white
+				height: 32
+				width: 32
+				point: Align.center()
+				style:
+					lineHeight: 1
+				color: white
+				icon: "loading"
+
+			anim = new Animation @iconLayer,
+				rotation: 360
+				options:
+					curve: "linear"
+					looping: true
+
+			anim.start()
 
 
 		# header
@@ -159,14 +159,14 @@ class window.App extends FlowComponent
 	_updateNext: (prev, next) =>
 		return if not next
 
-		try next.load(@, next, prev)
+		next._loadView(@, next, prev)
 		
 	
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next) =>
 		return if not prev
 
-		try prev.unload(@, next, prev)
+		prev._unloadView(@, next, prev)
 
 	__show: (nav, layerA, layerB, overlay) ->
 		options = {curve: "spring(300, 35, 0)"}
@@ -209,13 +209,22 @@ class window.App extends FlowComponent
 		@ignoreEvents = false
 
 	# show next view
-	showNext: (layer, options={}) ->
+	showNext: (layer, loadingTime, options={}) ->
 		@_initial ?= layer
 
 		now = _.now()
 
 		@_updateNext(@current, layer)
 
+		# if loading time specified...
+		if loadingTime?
+			@loading = true
+			Utils.delay loadingTime, =>
+				@loading = false
+				@transition(layer, @__show, options)
+			return
+
+		# if loading is actually taking a minute...
 		if _.now() - now > 100
 			@loading = true
 			Utils.delay 1.15, => 
@@ -223,6 +232,7 @@ class window.App extends FlowComponent
 				@transition(layer, @__show, options)
 			return
 
+		# otherwise, show next
 		@transition(layer, @__show, options)
 
 	@define "windowFrame",

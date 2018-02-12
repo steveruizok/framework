@@ -10,6 +10,8 @@ class exports.Link extends TextLayer
 		# Options
 
 		_.defaults options,
+			x: 0
+			y: 0
 			padding: {top:12, bottom: 12}
 			disabled: false
 			icon: undefined
@@ -53,11 +55,16 @@ class exports.Link extends TextLayer
 		# @onMouseOver => @hovered = true
 		# @onMouseOut => @hovered = false
 
-		@onTouchStart (event) => @_showTouching(true, null, event)
-		@onTouchEnd (event) => @_showTouching(false, null, event)
+		if Utils.isMobile()
+			@onTap @_doSelect
 
-		@onTap @_showTapped
-		@onPan @_panOffTouch
+		else
+
+			@onTouchStart (event) => @_showTouching(true, null, event)
+			@onTouchEnd (event) => @_showTouching(false, null, event)
+
+			@onTap @_showTapped
+			@onPan @_panOffTouch
 
 		for child in @children
 			if !options.showNames

@@ -758,6 +758,13 @@ segmentsView.onLoad ->
 			name: 'Default Segment'
 			parent: @ 
 			
+		fw = new Segment 
+			name: 'Segment with Set Width'
+			parent: @ 
+			width: @width - 32
+			
+		fw.extra = "width: 343"
+		
 		new Segment 
 			name: 'Segment with Active'
 			parent: @ 
@@ -814,6 +821,7 @@ segmentsView.onLoad ->
 				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
 				"icon: #{layer.icon}"
 				"active: {active}"
+				layer.extra ? ""
 				].join('\n\t')
 				
 			label = new Code

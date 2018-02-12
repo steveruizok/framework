@@ -11,6 +11,7 @@ class exports.Button extends Layer
 		
 		_.defaults options,
 			x: 0
+			y: 0
 			width: 0
 			height: 48
 			text: 'Get Started'
@@ -136,11 +137,17 @@ class exports.Button extends Layer
 		@onMouseOver => @hovered = true
 		@onMouseOut => @hovered = false
 
-		@onTouchStart (event) => @_showTouching(true, null, event)
-		@onTouchEnd (event) => @_showTouching(false, null, event)
 
-		@onTap @_showTapped
-		@onPan @_panOffTouch
+		if Utils.isMobile()
+			@onTap @_doSelect
+
+		else
+
+			@onTouchStart (event) => @_showTouching(true, null, event)
+			@onTouchEnd (event) => @_showTouching(false, null, event)
+
+			@onTap @_showTapped
+			@onPan @_panOffTouch
 
 		for child in @children
 			if !options.showNames
