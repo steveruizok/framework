@@ -38,6 +38,22 @@ class exports.TextInput extends Layer
 
 		# ---------------
 		# Layers
+
+		@textLayer = new Body1
+			name: '.'
+			parent: @
+			color: @color
+			y: Align.center()
+			width: @width
+			padding: theme[MODEL].default.padding ? 12
+			backgroundColor: theme[MODEL].default.backgroundColor ? white
+			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
+			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
+			text: @placeholder
+
+		Utils.linkProperties @, @textLayer, "color"
 		
 		# Input
 		
@@ -45,8 +61,9 @@ class exports.TextInput extends Layer
 		@_element.appendChild @_input
 
 		_.assign @_input,
-			placeholder: options.placeholder
+			# placeholder: options.placeholder
 			value: options.value ? null
+			className: @name
 
 		for attr in ["autocorrect", "autocomplete", "autocapitalize", "spellcheck"]
 			@_input.setAttribute attr, "off"
@@ -54,14 +71,17 @@ class exports.TextInput extends Layer
 		_.assign @_input.style,
 			width: Utils.px(@width - 24)
 			height: Utils.px(@height)
-			backgroundColor: white
-			fontFamily: 'Helvetica'
-			fontSize: Utils.px(13)
-			padding: "0 #{Utils.px(12)}"
+			padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
+			backgroundColor: theme[MODEL].default.backgroundColor ? white
+			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			fontSize: options.fontSize ? Utils.px(theme[MODEL].default.fontSize) ? 13
+			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
 
 		# must be set before theme changes
 
 		Utils.linkProperties @, @_input.style, "color"
+		Utils.linkProperties @, @_input.style, "backgroundColor"
 
 		@_setTheme('default')
 
@@ -115,10 +135,12 @@ class exports.TextInput extends Layer
 		return if @disabled
 
 		if bool # focused is true
+			@textLayer.visible = false
 			@theme = "focused"
 			return
 
 		# focused is false
+		@textLayer.visible = @value is ""
 		@theme = "default"
 
 	_showDisabled: (bool) =>

@@ -32,6 +32,7 @@ class Footer extends Layer
 
 		icons = [back, forward, share, bookmark, tabs].map (icon) =>
 			new Layer
+				name: '.'
 				parent: @
 				size: 27
 				y: Align.center()

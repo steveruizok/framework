@@ -81,6 +81,10 @@ class window.App extends FlowComponent
 			backgroundColor: 'rgba(0,0,0,.64)'
 			borderRadius: 8
 			opacity: .8
+			backgroundBlur: 30
+			visible: false
+
+		@loadingLayer.sendToBack()
 
 		Utils.bind @loadingLayer, ->
 			@iconLayer = new Icon 
@@ -168,6 +172,16 @@ class window.App extends FlowComponent
 
 		prev._unloadView(@, next, prev)
 
+	_safariTransition: (nav, layerA, layerB, overlay) ->
+		options = {time: 0, delay: .15}
+		transition =
+			layerA:
+				show: {options: options, x: 0, y: 0}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: 0}
+			layerB:
+				show: {options: options, x: 0, y: 0}
+				hide: {options: options, x: layerB.width, y: 0}
+
 	__show: (nav, layerA, layerB, overlay) ->
 		options = {curve: "spring(300, 35, 0)"}
 		transition =
@@ -193,8 +207,14 @@ class window.App extends FlowComponent
 		@emit "change:windowFrame", @_windowFrame, @
 
 	_showLoading: (bool) =>
+
 		if bool
-			# show loading
+			# show safari loading
+			if @chrome is "safari"
+				@header._showLoading(true)
+				return
+
+			# show ios loading
 			_.assign @loadingLayer,
 				point: Align.center()
 				visible: true
@@ -203,16 +223,32 @@ class window.App extends FlowComponent
 			@ignoreEvents = true
 			return
 
-		# show not disabled
+		# show safari loading ended
+		if @chrome is "safari"
+			@header._showLoading(false)
+			return
+
+		# show ios loading
 		@loadingLayer.visible = false
 		@loadingLayer.sendToBack()
 		@ignoreEvents = false
+
+
 
 	# show next view
 	showNext: (layer, loadingTime, options={}) ->
 		@_initial ?= layer
 
 		now = _.now()
+
+		transition = switch @chrome
+			when "safari"
+				loadingTime ?= _.random(.5, .75)
+				@_safariTransition
+			else
+				@__show
+
+		# transition = @__show
 
 		@_updateNext(@current, layer)
 
@@ -221,19 +257,11 @@ class window.App extends FlowComponent
 			@loading = true
 			Utils.delay loadingTime, =>
 				@loading = false
-				@transition(layer, @__show, options)
-			return
-
-		# if loading is actually taking a minute...
-		if _.now() - now > 100
-			@loading = true
-			Utils.delay 1.15, => 
-				@loading = false
-				@transition(layer, @__show, options)
+				@transition(layer, transition, options)
 			return
 
 		# otherwise, show next
-		@transition(layer, @__show, options)
+		@transition(layer, transition, options)
 
 	@define "windowFrame",
 		get: -> return @_windowFrame

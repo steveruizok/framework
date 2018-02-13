@@ -42,10 +42,12 @@ class exports.Select extends Layer
 			name: '.'
 			parent: @
 			width: @width
-			x: 12
-			y: Align.center()
-			text: @options[options.selectedIndex]
-		
+			padding: theme[MODEL].default.padding ? 12
+			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
+			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
+			
 		# Input
 		
 		@_input = document.createElement 'select'
@@ -60,6 +62,7 @@ class exports.Select extends Layer
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
 			fontSize: Utils.px(theme[MODEL].default.fontSize) ? 13
 			textAlign: theme[MODEL].default.textAlign ? "left"
+			textTransform: theme[OPTION_MODEL].default.textTransform
 
 		last = 0
 
@@ -89,7 +92,7 @@ class exports.Select extends Layer
 				element: @optionElements[i]
 				index: i
 				value: option
-
+				
 			last += opLayer.height - 1
 
 			return opLayer
@@ -136,6 +139,10 @@ class exports.Select extends Layer
 		@_input.onblur = => @focused = false; @opened = false
 		@_input.onfocus = => @focused = true; @opened = true
 
+		@onPan (event) =>
+			if Math.abs(event.offset.y) > 4
+				@_input.blur()
+
 	# ---------------
 	# Private Methods
 
@@ -143,10 +150,12 @@ class exports.Select extends Layer
 		if bool
 			# opened is true
 			_.assign @optionContainer,
-				parent: null
+				parent: @app
 				y: @screenFrame.y + @height + 2
 				x: @screenFrame.x
 				visible: true
+
+			@optionContainer.placeBehind(@app.header)
 
 			@optionContainer.animate
 				height: @optionContainer.maxHeight
@@ -278,12 +287,17 @@ class Option extends Layer
 		# Layers
 
 		@textLayer = new Body2
-			x: 12
-			y: 8
+			x: 0
+			y: 0
 			text: @value
-
+			padding: theme[MODEL].default.padding ? 12
+			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
+			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
+			
 		_.assign @,
-			height: @textLayer.maxY + 8
+			height: @textLayer.maxY
 			width: @parent.width
 
 		@textLayer.parent = @
@@ -301,6 +315,7 @@ class Option extends Layer
 		@onMouseOut => @hovered = false
 		
 		@onTap (event) =>
+			event.stopPropagation()
 			return if Math.abs(event.offset.x > 12) or Math.abs(event.offset.y > 12)
 			@handler.selectedIndex = @index
 	

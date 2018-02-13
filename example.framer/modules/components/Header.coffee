@@ -11,7 +11,8 @@ class exports.Header extends Layer
 		
 		_.defaults options, 
 			name: 'Header'
-			backgroundColor: '#fff'
+			backgroundColor: "rgba(255, 255, 255, .8)"
+			backgroundBlur: 30
 			title: 'www.framework.com'
 			showLayers: true
 
@@ -74,6 +75,17 @@ class exports.Header extends Layer
 			borderRadius: 10
 			backgroundColor: '#e0e0e1'
 			visible: options.safari
+			clip: true
+
+		@loadingLayer = new Layer
+			name: '.'
+			parent: @addressContainer
+			x: 0
+			y: Align.bottom()
+			height: 2
+			width: 1
+			backgroundColor: "#007AFF"
+			visible: false
 		
 		@titleLayer = new Body1
 			name: unless options.showLayers then '.' else 'Title'
@@ -124,6 +136,27 @@ class exports.Header extends Layer
 		# definitions
 			
 		Utils.define @, 'title', options.title, @_setTitle
+
+	_showLoading: (bool, time) =>
+		if bool
+			# loading is true
+			_.assign @loadingLayer,
+				width: 1
+				visible: true
+
+			@loadingLayer.animate
+				width: @addressContainer.width
+				options:
+					time: time ? 2
+					curve: "linear"
+
+			return
+
+		# loading is false
+		_.assign @loadingLayer,
+			width: 1
+			visible: false
+
 
 	_showPrevious: =>
 		return if not @backIcon.visible
