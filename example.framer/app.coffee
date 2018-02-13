@@ -79,11 +79,12 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 # App
 
 app = new App
+	chrome: "safari"
 
 # Copy Input
 
 copyElement = document.createElement "textarea"
-app.header._element.appendChild(copyElement)
+app.header?._element.appendChild(copyElement)
 copyElement.style.opacity = 0
 
 copyTextLayerToClipboard = (layer) ->
@@ -1054,6 +1055,7 @@ inputsView.onLoad ->
 		
 		submit = new Button
 			parent: @
+			x: 16
 			y: checkbox.maxY + 32
 			text: 'Submit'
 			disabled: true
