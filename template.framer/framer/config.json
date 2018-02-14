@@ -1,0 +1,23 @@
+{
+  "orientation" : 0,
+  "updateDelay" : 0.29999999999999999,
+  "designModeSelected" : 0,
+  "cachedDeviceHeight" : 568,
+  "contentScale" : 1,
+  "cachedDeviceWidth" : 320,
+  "fullScreen" : false,
+  "deviceType" : "apple-iphone-se-space-gray",
+  "sharedPrototype" : true,
+  "propertyPanelToggleStates" : {
+
+  },
+  "projectId" : "D6CD7292-AE77-4B2E-930E-67DB85D02AF0",
+  "deviceOrientation" : 0,
+  "selectedHand" : "",
+  "showBezel" : false,
+  "foldedCodeRanges" : [
+    "{21, 218}",
+    "{297, 796}"
+  ],
+  "deviceScale" : "fit"
+}
