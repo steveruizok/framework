@@ -78,41 +78,37 @@ class exports.Button extends Layer
 			if options.width
 				@width = options.width
 				@iconLayer.x = (@width - contentWidth / 2)
-				@textLayer.x = @iconLayer.maxX + 8
+				@textLayer.x = @iconLayer.maxX
 			else
 				@iconLayer.x = 20
-				@textLayer.x = @iconLayer.maxX + 8
-				@width = contentWidth + 40
-
-			_.assign @textLayer,
-				parent: @
-				y: Align.center()
+				@textLayer.x = @iconLayer.maxX 
+				@width = contentWidth + 24
 
 		else
 
-			unless options.width
+			if options.width
+				@textLayer.width = options.width
+			else
 				@width = @textLayer.width + 40
-
-			_.assign @textLayer,
-				parent: @
-				x: Align.center()
-				y: Align.center()
 
 			@on "change:width", =>
 				_.assign @textLayer,
-					x: Align.center()
-					y: Align.center()
+					width: @width
+					point: Align.center()
 		
 		# Fix position
 
 		_.assign @,
-			x: options.x
-			y: options.y
+			x: options.x ? 0
+			y: options.y ? 0
 
 		_.assign @,
 			parent: parent
-			x: options.x
-			y: options.y
+
+		_.assign @textLayer,
+			parent: @
+			width: @width
+			point: Align.center()
 
 		@_setTheme('default')
 
