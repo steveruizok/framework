@@ -41,7 +41,7 @@ class exports.Toggle extends Layer
 			buttons: []
 			icon: options.icon
 
-		for option, i in @options[0..1]
+		@buttons = @options[0..1].map (option, i) =>
 			button = new Button
 				name: '.'
 				parent: @
@@ -59,7 +59,7 @@ class exports.Toggle extends Layer
 			
 			button._element.childNodes[0].style['border-radius'] = radius
 
-			@buttons.push(button)
+			return button
 
 		# set positions
 
@@ -104,7 +104,10 @@ class exports.Toggle extends Layer
 
 		delete @__instancing
 
-		Utils.defineValid @, 'toggled', options.toggled, _.isBoolean, 'Toggle.toggled must be a boolean (true or false).', @_setToggled
+		isOk = (value) ->
+			return _.isBoolean(value) or _.isUndefined(value)
+
+		Utils.defineValid @, 'toggled', options.toggled, isOk, 'Toggle.toggled must be a boolean (true or false) or undefined.', @_setToggled
 
 
 	# ---------------
@@ -135,10 +138,20 @@ class exports.Toggle extends Layer
 			}
 
 	_setToggled: (bool) =>
+		if bool is null
+			@active = -1
+			return
+
 		@active = if bool then 1 else 0
 
 	_showActive: (button) =>
-		return if not button
+		if not button
+			for button in @buttons
+				button.animateStop()
+				button.palette = "default"
+				button.theme = "default"
+				button.animate(theme[MODEL].default.default)
+			return
 
 		button.bringToFront()
 		button.animateStop()
@@ -160,6 +173,10 @@ class exports.Toggle extends Layer
 	# ---------------
 	# Special Definitions
 
+	@define "value", ->
+		get: -> return @toggled
+		set: (value) -> @toggled = value
+
 	@define "active",
 		get: -> return @_active
 		set: (num) ->
@@ -169,7 +186,7 @@ class exports.Toggle extends Layer
 			if not _.isNumber(num)
 				throw "Toggle.active must be a number (the index of the active layer)."
 
-			if not @children[num]
+			if num >= 0 and not @children[num]
 				throw "Index is out of range (no layer found at Toggle.children[#{num}])."
 
 			@_active = num
