@@ -11,7 +11,6 @@ class exports.View extends ScrollComponent
 		_.defaults options,
 			backgroundColor: '#FFF'
 			contentInset:
-				top: 16
 				bottom: 64
 				
 			padding: {}

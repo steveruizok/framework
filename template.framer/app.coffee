@@ -26,6 +26,22 @@ myView.onLoad (a, b, c) ->
 		width: @width - 64
 		y: layer.maxY + 40
 		select: -> app.showNext(secondView)
+		
+	new Button
+		showNames: true
+		parent: @content
+		icon: "crosshairs-gps"
+		text: "Search"
+		x: 32
+		y: 32
+		
+	new Button
+		showNames: true
+		parent: @content
+		icon: "crosshairs-gps"
+		text: "Search"
+		x: 32
+		y: 132
 
 # Second View
 
