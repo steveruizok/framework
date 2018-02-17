@@ -4,6 +4,13 @@ require 'components/Colors'
 require 'components/Theme'
 require 'components/Typography'
 
+# disable hints
+Framer.Extras.Hints.disable()
+
+# dumb thing that blocks events in the upper left-hand corner
+dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
+dumbthing?.style.width = "0px"
+
 
 { Button } = require 'components/Button'
 { Radiobox } = require 'components/Radiobox'
@@ -36,6 +43,7 @@ class window.App extends FlowComponent
 			backgroundColor: white
 			title: defaultTitle
 			chrome: 'ios'
+			contentWidth: Screen.width
 
 		# Add general components to window
 		for componentName in [
@@ -72,6 +80,17 @@ class window.App extends FlowComponent
 			chrome: options.chrome
 			_windowFrame: {}
 			views: []
+			contentWidth: Screen.width
+
+		# Transition
+		 
+		@_platformTransition = switch @chrome
+			when "safari"
+				@_safariTransition
+			when "ios"
+				@_iosTransition
+			else
+				@_defaultTransition
 
 		# layers
 
@@ -118,15 +137,21 @@ class window.App extends FlowComponent
 				app: @
 				safari: @chrome is 'safari'
 				title: options.title
-
-			@header.on "change:height", => @_setWindowFrame
 		
 			if @chrome is 'safari'
 				@footer = new Footer 
 					app: @
 
-				@footer.on "change:height", => @_setWindowFrame
+				@onSwipeUpEnd =>
+					@header._collapse()
+					@footer._collapse()
 
+				@onSwipeDownEnd =>
+					@header._expand()
+					@footer._expand()
+
+		@header?.on "change:height", @_setWindowFrame
+		@footer?.on "change:height", @_setWindowFrame
 
 		@_setWindowFrame()
 
@@ -140,6 +165,9 @@ class window.App extends FlowComponent
 		@onTransitionEnd @_updatePrevious
 
 		Screen.on Events.EdgeSwipeLeftEnd, @showPrevious
+
+	# ---------------
+	# Private Methods
 	
 	_updateHeader: (prev, next) =>
 		# header changes
@@ -169,33 +197,45 @@ class window.App extends FlowComponent
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next) =>
 		return if not prev
-
+		prev.sendToBack()
 		prev._unloadView(@, next, prev)
 
-	_safariTransition: (nav, layerA, layerB, overlay) ->
-		options = {time: 0, delay: .15}
+	_safariTransition: (nav, layerA, layerB, overlay) =>
+		options = {time: 0.01}
 		transition =
 			layerA:
-				show: {options: options, x: 0, y: 0}
-				hide: {options: options, x: 0 - layerA?.width / 2, y: 0}
+				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.y}
+				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.y}
 			layerB:
-				show: {options: options, x: 0, y: 0}
-				hide: {options: options, x: layerB.width, y: 0}
+				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.y}
+				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.y}
 
-	__show: (nav, layerA, layerB, overlay) ->
+	_iosTransition: (nav, layerA, layerB, overlay) =>
 		options = {curve: "spring(300, 35, 0)"}
 		transition =
 			layerA:
-				show: {options: options, x: 0, y: 0}
-				hide: {options: options, x: 0 - layerA?.width / 2, y: 0}
+				show: {options: options, x: Align.center(), y: @windowFrame.y}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.y}
 			layerB:
-				show: {options: options, x: 0, y: 0}
-				hide: {options: options, x: layerB.width, y: 0}
+				show: {options: options, x: Align.center(), y: @windowFrame.y}
+				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.y}
+
+	_defaultTransition: (nav, layerA, layerB, overlay) =>
+		options = {curve: "spring(300, 35, 0)"}
+		transition =
+			layerA:
+				show: {options: options, x: Align.center(), y: @windowFrame.y}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.y}
+			layerB:
+				show: {options: options, x: Align.center(), y: @windowFrame.y}
+				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.y}
 
 	_setWindowFrame: =>
 		@_windowFrame = {
-			y: (@header?.maxY ? @y)
+			y: (@header?.height ? 0)
 			x: @x
+			maxX: @maxX
+			maxY: @height - (@footer?.height ? 0)
 			height: @height - (@footer?.height ? 0) - (@header?.height - 0)
 			width: @width
 			size: {
@@ -207,6 +247,9 @@ class window.App extends FlowComponent
 		@emit "change:windowFrame", @_windowFrame, @
 
 	_showLoading: (bool) =>
+		if @chrome is 'safari'
+			@header._expand()
+			@footer._expand()
 
 		if bool
 			# show safari loading
@@ -233,22 +276,14 @@ class window.App extends FlowComponent
 		@loadingLayer.sendToBack()
 		@ignoreEvents = false
 
-
+	# ---------------
+	# Public Methods
 
 	# show next view
 	showNext: (layer, loadingTime, options={}) ->
 		@_initial ?= layer
 
-		now = _.now()
-
-		transition = switch @chrome
-			when "safari"
-				loadingTime ?= _.random(.5, .75)
-				@_safariTransition
-			else
-				@__show
-
-		# transition = @__show
+		if @chrome is "safari" then loadingTime ?= _.random(.5, .75)
 
 		@_updateNext(@current, layer)
 
@@ -257,11 +292,38 @@ class window.App extends FlowComponent
 			@loading = true
 			Utils.delay loadingTime, =>
 				@loading = false
-				@transition(layer, transition, options)
+				@transition(layer, @_platformTransition, options)
 			return
 
 		# otherwise, show next
-		@transition(layer, transition, options)
+		@transition(layer, @_platformTransition, options)
+
+	showPrevious: (options={}) =>
+		return unless @previous
+		return if @isTransitioning
+
+		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
+		options = {} if options instanceof(Framer._Layer)
+		options = _.defaults({}, options, {count: 1, animate: true})
+
+		if options.count > 1
+			count = options.count
+			@showPrevious(animate: false, count: 1) for n in [2..count]
+
+		previous = @_stack.pop()
+		current = @current
+		try current._loadView()
+		
+		if @chrome is "safari"
+			@loading = true
+			loadingTime = _.random(.3, .75)
+			Utils.delay loadingTime, =>
+				@loading = false
+				@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
+			return
+
+
+		@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
 
 	@define "windowFrame",
 		get: -> return @_windowFrame

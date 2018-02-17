@@ -42,7 +42,5 @@ secondView.onLoad ->
 		parent: @content
 		x: Align.center
 		y: 32
-		
-		
 
 app.showNext myView

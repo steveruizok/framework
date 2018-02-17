@@ -239,6 +239,7 @@ class exports.Button extends Layer
 			return
 		
 		# show not touching
+		return if not @_isTouching
 		@_isTouching = false
 		@theme = "default"
 

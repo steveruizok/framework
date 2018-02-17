@@ -270,7 +270,9 @@ linksView.onLoad ->
 			x: 16
 			color: red
 			select: => print "Clicked!"
-			
+		
+		last = undefined
+		
 		for layer, i in @children
 			continue if layer.constructor.name isnt 'Link'
 			
@@ -1491,146 +1493,146 @@ exampleView.onUnload ->
 homeView = new View
 	title: 'Framework'
 
-Utils.bind homeView.content, ->
+homeView.onLoad ->
+	Utils.bind @content, ->
 	
-	# foundations
-	new H3
-		parent: @
-		text: 'Foundations'
-		padding: {top: 24, bottom: 16}
+		# foundations
+		new H3
+			parent: @
+			text: 'Foundations'
+			padding: {top: 24, bottom: 16}
+		
+		new RowLink
+			parent: @
+			text: 'Theme'
+			
+		new RowLink
+			parent: @
+			text: 'Color'
+			link: colorsView
+			
+		new RowLink
+			parent: @
+			text: 'Typography'
+			link: typographyView
+		
+		new RowLink
+			parent: @
+			text: 'Icon'
+			link: iconsView
+		
+		
+		# structure
+		new H3
+			parent: @
+			text: 'Structure'
+			padding: {top: 16, bottom: 16}
+		
+		new RowLink
+			parent: @
+			text: 'App'
+			
+		new RowLink
+			parent: @
+			text: 'View'
+			
+		new RowLink
+			parent: @
+			text: 'Header'
+		
+		# buttons
+		new H3
+			parent: @
+			text: 'Buttons'
+			padding: {top: 16, bottom: 16}
+			
+		new RowLink
+			parent: @
+			text: 'Link'
+			link: linksView
+			
+		new RowLink
+			parent: @
+			text: 'Button'
+			link: buttonsView
+		
+		# inputs
+		new H3
+			parent: @
+			text: 'Inputs'
+			padding: {top: 16, bottom: 16}
+			
+		new RowLink
+			parent: @
+			text: 'TextInput'
+			link: textInputsView
+			
+		new RowLink
+			parent: @
+			text: 'Select'
+			link: selectsView
+			
+		new RowLink
+			parent: @
+			text: 'Checkbox'
+			link: inputsView
+			
+		new RowLink
+			parent: @
+			text: 'Radiobox'
+			link: inputsView
+			
+		new RowLink
+			parent: @
+			text: 'Stepper'
+			link: steppersView
+			
+		new RowLink
+			parent: @
+			text: 'Segment'
+			link: segmentsView
+			
+		new RowLink
+			parent: @
+			text: 'Toggle'
+			link: togglesView
+		
+		
+		# components
+		new H3
+			parent: @
+			text: 'Components'
+			padding: {top: 16, bottom: 16}
+			
+		new RowLink
+			parent: @
+			text: 'SortableComponent'
+			link: sortableComponentView
+			
+		new RowLink
+			parent: @
+			text: 'CarouselComponent'
+		
+		# misc
+		new H3
+			parent: @
+			text: 'Miscellaneous'
+			padding: {top: 16, bottom: 16}
+			
+		new RowLink
+			parent: @
+			text: 'Tooltip'
+			link: tooltipsView
+		
+		# set child positions
+		
+		for child, i in @children[1...]
+			child.y = @children[i]?.maxY
+		
+			if not SHOW_LAYER_TREE then child.name = '.'
+		
+	@updateContent()
 	
-	new RowLink
-		parent: @
-		text: 'Theme'
-		
-	new RowLink
-		parent: @
-		text: 'Color'
-		link: colorsView
-		
-	new RowLink
-		parent: @
-		text: 'Typography'
-		link: typographyView
-	
-	new RowLink
-		parent: @
-		text: 'Icon'
-		link: iconsView
-	
-	
-	# structure
-	new H3
-		parent: @
-		text: 'Structure'
-		padding: {top: 16, bottom: 16}
-	
-	new RowLink
-		parent: @
-		text: 'App'
-		
-	new RowLink
-		parent: @
-		text: 'View'
-		
-	new RowLink
-		parent: @
-		text: 'Header'
-	
-	# buttons
-	new H3
-		parent: @
-		text: 'Buttons'
-		padding: {top: 16, bottom: 16}
-		
-	new RowLink
-		parent: @
-		text: 'Link'
-		link: linksView
-		
-	new RowLink
-		parent: @
-		text: 'Button'
-		link: buttonsView
-	
-	# inputs
-	new H3
-		parent: @
-		text: 'Inputs'
-		padding: {top: 16, bottom: 16}
-		
-	new RowLink
-		parent: @
-		text: 'TextInput'
-		link: textInputsView
-		
-	new RowLink
-		parent: @
-		text: 'Select'
-		link: selectsView
-		
-	new RowLink
-		parent: @
-		text: 'Checkbox'
-		link: inputsView
-		
-	new RowLink
-		parent: @
-		text: 'Radiobox'
-		link: inputsView
-		
-	new RowLink
-		parent: @
-		text: 'Stepper'
-		link: steppersView
-		
-	new RowLink
-		parent: @
-		text: 'Segment'
-		link: segmentsView
-		
-	new RowLink
-		parent: @
-		text: 'Toggle'
-		link: togglesView
-	
-	
-	# components
-	new H3
-		parent: @
-		text: 'Components'
-		padding: {top: 16, bottom: 16}
-		
-	new RowLink
-		parent: @
-		text: 'SortableComponent'
-		link: sortableComponentView
-		
-	new RowLink
-		parent: @
-		text: 'CarouselComponent'
-	
-	# misc
-	new H3
-		parent: @
-		text: 'Miscellaneous'
-		padding: {top: 16, bottom: 16}
-		
-	new RowLink
-		parent: @
-		text: 'Tooltip'
-		link: tooltipsView
-	
-	# set child positions
-	
-	for child in @children
-		child.y = last ? 0
-		
-		last = child.maxY
-	
-		if not SHOW_LAYER_TREE then child.name = '.'
-	
-homeView.updateContent()
 addDocsLink(homeView, '', 'github-circle')
 
 

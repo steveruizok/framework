@@ -68,8 +68,8 @@ class exports.View extends ScrollComponent
 
 	_updateSize: (windowFrame) =>
 		# perhaps doing nothing is the best thing to do
+		@keyLayer?.y = 8 + (@app.windowFrame.y - @y)
 		return
-
 	# 	_.assign @,
 	# 		y: @app.windowFrame.y
 	# 		height: @app.windowFrame.height
@@ -96,7 +96,7 @@ class exports.View extends ScrollComponent
 		@app.loading = false
 
 		if @key
-			new TextLayer
+			@keyLayer = new TextLayer
 				name: "Key: #{@key}"
 				parent: @
 				fontSize: 12

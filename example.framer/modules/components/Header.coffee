@@ -11,8 +11,7 @@ class exports.Header extends Layer
 		
 		_.defaults options, 
 			name: 'Header'
-			backgroundColor: "rgba(255, 255, 255, .8)"
-			backgroundBlur: 30
+			backgroundColor: "rgba(255, 255, 255, 1)"
 			title: 'www.framework.com'
 			showLayers: true
 
@@ -21,6 +20,13 @@ class exports.Header extends Layer
 			safari: options.safari
 		
 		super options
+
+		if options.safari
+			_.assign @,
+				height: 64
+				backgroundColor: 'rgba(255,255,255,.65)'
+				backgroundBlur: 30
+				shadowBlur: 0
 		
 		@statusBar = new Layer
 			name: unless options.showLayers then '.' else 'Status Bar'
@@ -54,83 +60,130 @@ class exports.Header extends Layer
 				style:
 					lineHeight: '0px'
 				
-			@time = new TextLayer
+			@timeLayer = new TextLayer
 				name: unless options.showLayers then '.' else 'time'
 				parent: @
-				x: Align.center()
-				y: Align.center(3)
+				width: @width
+				y: Align.center(1)
 				fontSize: 12
 				fontWeight: 500
-				color: '#000'
+				fontFamily: "Helvetica Neue"
+				letterSpacing: 0.3
+				textAlign: "center"
 				text: new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})
+				color: '#000'
 
+		if @app.chrome is "safari"
 
-		@addressContainer = new Layer
-			name: unless options.showLayers then '.' else 'Address'
-			parent: @
-			width: @width - 20
-			height: 36
-			x: Align.center()
-			y: Align.center(10)
-			borderRadius: 10
-			backgroundColor: '#e0e0e1'
-			visible: options.safari
-			clip: true
+			@addressContainer = new Layer
+				name: unless options.showLayers then '.' else 'Address'
+				parent: @
+				width: @width - 20
+				height: 29
+				x: Align.center()
+				y: Align.center(10)
+				borderRadius: 8
+				backgroundColor: 'rgba(0,0,0,.09)'
+				clip: true
 
-		@loadingLayer = new Layer
-			name: '.'
-			parent: @addressContainer
-			x: 0
-			y: Align.bottom()
-			height: 2
-			width: 1
-			backgroundColor: "#007AFF"
-			visible: false
+			@refreshIcon = new Icon
+				name: unless options.showLayers then '.' else 'Menu Icon'
+				parent: @addressContainer
+				y: Align.center(1)
+				x: Align.right(-6)
+				icon: 'refresh'
+				rotation: -45
+				color: '#333'
+				height: 18
+				width: 18
+
+			@refreshIcon.onTap -> window.location.reload()
+
+			@loadingLayer = new Layer
+				name: '.'
+				parent: @addressContainer
+				x: 0
+				y: Align.bottom()
+				height: 2
+				width: 1
+				backgroundColor: "#007AFF"
+				visible: false
 		
-		@titleLayer = new Body1
-			name: unless options.showLayers then '.' else 'Title'
-			parent: @
-			y: Align.center(10)
-			width: Screen.width
-			textAlign: 'center'
-			text: 'test'
-		
-		@backIcon = new Icon
-			name: unless options.showLayers then '.' else 'Back Icon'
-			parent: @
-			y: Align.center(12)
-			x: 8
-			icon: 'ios-back'
-			visible: false
+			@urlLayer = new TextLayer
+				name: unless options.showLayers then '.' else 'Title'
+				parent: @addressContainer
+				y: Align.center()
+				width: @addressContainer.width
+				textAlign: 'center'
+				text: 'www.framework.com'
+				fontSize: 15
+				fontFamily: "Helvetica Neue"
+				fontWeight: 400
+				color: '#000'
 
-		@backText = new Body1
-			name: unless options.showLayers then '.' else 'Back Text'
-			parent: @
-			y: Align.center(10)
-			x: @backIcon.maxX
-			visible: false
-			text: 'Back'
+			# store props for expand
+
+			@_expandProps =
+				height: @height
+				addressContainer:
+					y: @addressContainer.y
+					backgroundColor: @addressContainer.backgroundColor
+
+		else
+		
+			@titleLayer = new Body1
+				name: unless options.showLayers then '.' else 'Title'
+				parent: @
+				y: Align.center(10)
+				width: Screen.width
+				textAlign: 'center'
+				text: 'test'
 			
-		@menuIcon = new Icon
-			name: unless options.showLayers then '.' else 'Menu Icon'
-			parent: @
-			y: Align.center(10)
-			x: Align.right(if options.safari then -16 else -8)
-			icon: if options.safari then 'close' else 'dots-vertical'
-			rotation: 90
+			@backIcon = new Icon
+				name: unless options.showLayers then '.' else 'Back Icon'
+				parent: @
+				y: Align.center(12)
+				x: 8
+				icon: 'ios-back'
+				visible: false
 
-		@hitArea = new Layer
-			name: unless options.showLayers then '.' else 'Hit Area'
-			parent: @
-			height: @height - 20
-			width: @width / 3
-			x: 0
-			y: 20
-			backgroundColor: null
+			@backText = new Body1
+				name: unless options.showLayers then '.' else 'Back Text'
+				parent: @
+				y: Align.center(10)
+				x: @backIcon.maxX
+				visible: false
+				text: 'Back'
+				
+			# @menuIcon = new Icon
+			# 	name: unless options.showLayers then '.' else 'Menu Icon'
+			# 	parent: @
+			# 	y: Align.center(10)
+			# 	x: Align.right(if options.safari then -16 else -8)
+			# 	icon: 'dots-vertical'
+			# 	rotation: 90
 
-		# events
+			@hitArea = new Layer
+				name: unless options.showLayers then '.' else 'Hit Area'
+				parent: @
+				height: @height - 20
+				width: @width / 3
+				x: 0
+				y: 20
+				backgroundColor: null
+
+			# events
+			
+			@hitArea.onTouchEnd @_showPrevious
+
+		# update time
+		@_setTime()
 		
-		@hitArea.onTouchEnd @_showPrevious
+		# ... and update time every sixty seconds
+		Utils.delay (60 - new Date().getSeconds()), =>
+			@_setTime()
+			Utils.interval 60, @_setTime
+
 		@on "change:color", => Utils.align @children, 'color', @color
 
 		# definitions
@@ -138,6 +191,7 @@ class exports.Header extends Layer
 		Utils.define @, 'title', options.title, @_setTitle
 
 	_showLoading: (bool, time) =>
+
 		if bool
 			# loading is true
 			_.assign @loadingLayer,
@@ -157,15 +211,71 @@ class exports.Header extends Layer
 			width: 1
 			visible: false
 
+	_setTime: =>
+		d = new Date()
+		@statusBar.timeLayer.text = d.toLocaleTimeString(['en-US'], {hour: 'numeric', minute: '2-digit'})
 
 	_showPrevious: =>
 		return if not @backIcon.visible
 		@app.showPrevious()
 
 	_setTitle: (value) =>
+		if @app.chrome is "safari"
+			@urlLayer.text = value
+			return
+
 		@titleLayer.text = value
 
+	_collapse: =>
+		if @app.chrome isnt "safari"
+			return
+
+		options = {time: .25}
+
+		@animate
+			height: 40
+			options: options
+
+		@addressContainer.animate
+			y: 15
+			backgroundColor: 'rgba(0,0,0,0)'
+			options: options
+
+		@refreshIcon.animate
+			opacity: 0
+			options: options
+
+		@urlLayer.animate
+			scale: .75
+			options: options
+
+	_expand: =>
+		if @app.chrome isnt "safari"
+			return
+
+		options = {time: .25}
+
+		@animate
+			height: @_expandProps.height
+			options: options
+
+		@addressContainer.animate
+			y: @_expandProps.addressContainer.y
+			backgroundColor: @_expandProps.addressContainer.backgroundColor
+			options: options
+
+		@refreshIcon.animate
+			opacity: 1
+			options: options
+
+		@urlLayer.animate
+			scale: 1
+			options: options
+
 	updateTitle: (title) =>
+		if @app.chrome is "safari"
+			return
+
 		@titleLayer.animateStop()
 		
 		do (title) =>
