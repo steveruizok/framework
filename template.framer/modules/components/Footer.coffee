@@ -8,7 +8,7 @@ class Footer extends Layer
 			clip: true
 			shadowY: -1
 			shadowColor: 'rgba(0,0,0,.16)'
-			backgroundColor: 'rgba(255,255,255,.65)'
+			backgroundColor: if Utils.isChrome() then '#FFF' else 'rgba(255,255,255,.65)'
 			backgroundBlur: 30
 
 		_.assign @,

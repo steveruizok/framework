@@ -4,7 +4,7 @@ app = new App
 	chrome: "safari"
 	title: 'framework.com'
 
- # Home View
+ # My View
 
 myView = new View
 	title: "Home"

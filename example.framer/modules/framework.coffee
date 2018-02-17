@@ -143,10 +143,14 @@ class window.App extends FlowComponent
 					app: @
 
 				@onSwipeUpEnd =>
+					return unless @current.isMoving 
+
 					@header._collapse()
 					@footer._collapse()
 
 				@onSwipeDownEnd =>
+					return unless @current.isMoving
+
 					@header._expand()
 					@footer._expand()
 

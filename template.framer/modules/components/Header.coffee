@@ -24,7 +24,7 @@ class exports.Header extends Layer
 		if options.safari
 			_.assign @,
 				height: 64
-				backgroundColor: 'rgba(255,255,255,.65)'
+				backgroundColor: if Utils.isChrome() then '#FFF' else 'rgba(255,255,255,.65)'
 				backgroundBlur: 30
 				shadowBlur: 0
 		
