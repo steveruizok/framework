@@ -1,51 +1,48 @@
 require 'framework'
 
-# Setup
-Framer.Extras.Hints.disable()
-
-# dumb thing that blocks events in the upper left-hand corner
-dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
-dumbthing?.style.width = "0px"
-
 app = new App
 	chrome: "safari"
 	title: 'framework.com'
 
-# Home View
+ # Home View
 
 myView = new View
 	title: "Home"
 	padding: null
+	key: "0.0.0"
 	
 Utils.bind myView, ->
-	# This callback will run immediately and only once.
-	# Use this to create the view's permanent properties, like functions.
+	null
 	
-	# fixed layers
-	
-	# fixed layer events
-	
-	# functions
-	
-myView.onLoad ->
-	# This callback will run when app navigates to this View.
-	# Before it runs, the View will destroy each of View.content's sublayers.
-	# Use View.onLoad to create the view's content.
-	
-	# content layers
-	
-	new Layer
+myView.onLoad (a, b, c) ->
+	layer = new Layer
 		parent: @content
+		x: Align.center
+		y: 32
+	
+	button = new Button
+		parent: @content
+		x: Align.center
+		width: @width - 64
+		y: layer.maxY + 40
+		select: -> app.showNext(secondView)
+
+# Second View
+
+secondView = new View
+	title: "Home"
+	padding: null
+	key: '1.0.0'
+	
+Utils.bind secondView, ->
+	null
 		
-	# content layer events
-	
-
-myView.onUpdate ->
-	# This callback will run when myView.update() is run manually.
-
-myView.onUnload ->
-	# This callback will run when app navigates away from this View.
-	# If performance is an issue, use it to destroy layers or stop processes.
-	
+secondView.onLoad ->
+	layer = new Layer
+		parent: @content
+		x: Align.center
+		y: 32
+		
+		
 
 app.showNext myView
