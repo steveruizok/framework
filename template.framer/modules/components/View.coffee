@@ -20,6 +20,7 @@ class exports.View extends ScrollComponent
 			key: null
 			clip: false
 			preserveContent: false
+			oneoff: false
 
 		_.assign options,
 			width: @app.contentWidth
@@ -44,6 +45,7 @@ class exports.View extends ScrollComponent
 		Utils.defineValid @, 'padding', options.padding, _.isObject, 'View.padding must be an object.'
 		Utils.defineValid @, 'load', options.load, _.isFunction, 'View.load must be a function.'
 		Utils.defineValid @, 'unload', options.unload, _.isFunction, 'View.unload must be a function.'
+		Utils.defineValid @, 'oneoff', options.oneoff, _.isBoolean, 'View.oneoff must be a boolean (true or false).'
 		Utils.defineValid @, 'preserveContent', options.preserveContent, _.isBoolean, 'View.preserveContent must be a boolean (true or false).'
 		
 		# unless padding is specifically null, set padding defaults
@@ -116,8 +118,14 @@ class exports.View extends ScrollComponent
 		
 		return if @preserveContent
 
+		if @oneoff
+			@destroy()
+			return
+
 		child.destroy() for child in _.without(@children, @content)
 		child.destroy() for child in @content.children
+
+
 
 
 	# ---------------

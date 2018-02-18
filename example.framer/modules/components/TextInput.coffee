@@ -154,7 +154,12 @@ class exports.TextInput extends Layer
 		@theme = "default"
 		@ignoreEvents = false
 		@_input.disabled = false
-
+	
+	# ---------------
+	# Public Functions
+	
+	forceBlur: => 
+		@_input?.blur()
 
 	# ---------------
 	# Special Definitions
