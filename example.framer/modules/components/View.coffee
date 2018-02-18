@@ -119,8 +119,17 @@ class exports.View extends ScrollComponent
 		child.destroy() for child in _.without(@children, @content)
 		child.destroy() for child in @content.children
 
+
 	# ---------------
 	# Public Methods
+	
+	refresh: (loadingTime) =>
+		loadingTime ?= _.random(.3, .5)
+
+		@app.loading = true
+		@_unloadView()
+		
+		Utils.delay loadingTime, => @app.showNext(@)
 
 	onLoad: (callback) -> 	
 		@load = callback
