@@ -173,6 +173,7 @@ class window.App extends FlowComponent
 		@_setWindowFrame()
 
 		# definitions
+		Utils.defineValid @, 'focused', null, _.isObject, "App.focused must be an html element.", @_showFocused
 		Utils.defineValid @, 'loading', false, _.isBoolean, "App.loading must be a boolean (true or false).", @_showLoading
 
 		# when transition starts, update the header
@@ -186,6 +187,37 @@ class window.App extends FlowComponent
 	# ---------------
 	# Private Methods
 	
+	_showFocused: (el) =>
+		return if not Utils.isMobile()
+		return if not @header
+
+		if el?
+			if Utils.isMobile()
+				@header.animate
+					y: 220
+					options:
+						curve: Spring(
+							tension: 295.87
+							friction: 31.42
+							velocity: 3.14
+							tolerance: 0.01
+						)
+			return
+
+		Utils.delay .05, =>
+			return if @focused?
+
+			@header.animate
+				y: 0
+				options:
+					curve: Spring(
+						tension: 295.87
+						friction: 31.42
+						velocity: 3.14
+						tolerance: 0.01
+					)
+
+
 	_updateHeader: (prev, next) =>
 		# header changes
 		return if not @header
@@ -265,6 +297,7 @@ class window.App extends FlowComponent
 
 	_showLoading: (bool) =>
 		if bool
+			@focused?.blur()
 			@loadingLayer.visible = true
 			@loadingLayer.bringToFront()
 
@@ -308,6 +341,7 @@ class window.App extends FlowComponent
 			return
 
 		# otherwise, show next
+		@focused?.blur()
 		@transition(layer, @_platformTransition, options)
 
 	showPrevious: (options={}) =>
@@ -334,7 +368,7 @@ class window.App extends FlowComponent
 				@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
 			return
 
-
+		@focused?.blur()
 		@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
 
 	@define "windowFrame",

@@ -16,8 +16,8 @@
   "selectedHand" : "",
   "showBezel" : false,
   "foldedCodeRanges" : [
-    "{82, 363}",
-    "{446, 209}"
+    "{82, 443}",
+    "{526, 209}"
   ],
   "deviceScale" : "fit"
 }
