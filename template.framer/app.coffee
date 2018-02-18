@@ -2,7 +2,7 @@ require 'framework'
 
 app = new App
 	chrome: "safari"
-	title: 'framework.com'
+	title: 'www.framework.com'
 
  # My View
 

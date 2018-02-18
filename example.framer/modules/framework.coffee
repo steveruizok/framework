@@ -11,7 +11,7 @@ Framer.Extras.Hints.disable()
 dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
 dumbthing?.style.width = "0px"
 
-
+# require in everything else
 { Button } = require 'components/Button'
 { Radiobox } = require 'components/Radiobox'
 { Checkbox } = require 'components/Checkbox'
@@ -32,8 +32,9 @@ dumbthing?.style.width = "0px"
 { SortableComponent } = require 'components/SortableComponent'
 { TransitionPage } = require 'components/PageTransitionComponent'
 
+# let other modules set default title before app is instanced 
 exports.defaultTitle = defaultTitle = "www.framework.com"
-
+# let other modules have access to app after app is instanced
 exports.app = undefined
 
 class window.App extends FlowComponent
@@ -45,7 +46,7 @@ class window.App extends FlowComponent
 			chrome: 'ios'
 			contentWidth: Screen.width
 
-		# Add general components to window
+		# Add components to window
 		for componentName in [
 			'Button', 
 			'Header', 
