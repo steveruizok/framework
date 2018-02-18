@@ -69,9 +69,13 @@ class window.App extends FlowComponent
 		]
 			c = eval(componentName)
 			do (componentName, c) =>
-				window[componentName] = (options = {}) =>
-					_.assign(options, {app: @})
-					return new c(options)
+				window[componentName] = class FrameworkComponent extends c 
+					constructor: (options = {}) ->
+						@constructorName = componentName
+
+						_.assign(options, {app: exports.app})
+
+						super options
 
 		super options
 
@@ -246,7 +250,8 @@ class window.App extends FlowComponent
 	
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next) =>
-		return if not prev
+		return unless prev?.constructor?.name is "View"
+
 		prev.sendToBack()
 		prev._unloadView(@, next, prev)
 

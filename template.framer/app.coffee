@@ -4,13 +4,15 @@ app = new App
 	chrome: "safari"
 	title: 'www.framework.com'
 
+
  # My View
 
 myView = new View
 	title: "Home"
 	padding: null
 	key: "0.0.0"
-# 	preserveContent: true
+	preserveContent: true
+
 	
 Utils.bind myView, ->
 	null
@@ -32,9 +34,6 @@ myView.onLoad (a, b, c) ->
 		parent: @content
 		y: button.maxY + 16
 		x: Align.center()
-
-		
-	
 
 # Second View
 
