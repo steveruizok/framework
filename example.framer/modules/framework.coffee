@@ -285,7 +285,6 @@ class window.App extends FlowComponent
 
 	# show next view
 	showNext: (layer, loadingTime, options={}) ->
-		return if @loading
 		@_initial ?= layer
 
 		if @chrome is "safari" then loadingTime ?= _.random(.5, .75)
@@ -305,7 +304,7 @@ class window.App extends FlowComponent
 
 	showPrevious: (options={}) =>
 		return unless @previous
-		return if @isTransitioning or @loading
+		return if @isTransitioning
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
