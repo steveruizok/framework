@@ -19,6 +19,7 @@ class exports.View extends ScrollComponent
 			unload: null
 			key: null
 			clip: false
+			preserveContent: false
 
 		_.assign options,
 			width: @app.contentWidth
@@ -43,6 +44,7 @@ class exports.View extends ScrollComponent
 		Utils.defineValid @, 'padding', options.padding, _.isObject, 'View.padding must be an object.'
 		Utils.defineValid @, 'load', options.load, _.isFunction, 'View.load must be a function.'
 		Utils.defineValid @, 'unload', options.unload, _.isFunction, 'View.unload must be a function.'
+		Utils.defineValid @, 'preserveContent', options.preserveContent, _.isBoolean, 'View.preserveContent must be a boolean (true or false).'
 		
 		# unless padding is specifically null, set padding defaults
 		if @padding?
@@ -89,9 +91,11 @@ class exports.View extends ScrollComponent
 
 	_loadView: (app, next, prev) =>
 		try 
+			return if @_initial and @preserveContent
 			@load(app, next, prev)
+			@_initial = true
 		catch
-			throw "View ('#{@title ? @name}') must have a `load` property, a function that creates the View's child layers."
+			throw "View ('#{@title ? @name}') must have a working `load` property (a callback). If it does have one, there's an error in it!"
 		@app.loading = false
 
 		if @key
@@ -109,6 +113,9 @@ class exports.View extends ScrollComponent
 	
 	_unloadView: (app, next, prev) =>
 		try @unload(app, next, prev)
+		
+		return if @preserveContent
+
 		child.destroy() for child in _.without(@children, @content)
 		child.destroy() for child in @content.children
 

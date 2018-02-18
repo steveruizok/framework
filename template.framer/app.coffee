@@ -10,6 +10,7 @@ myView = new View
 	title: "Home"
 	padding: null
 	key: "0.0.0"
+	preserveContent: true
 	
 Utils.bind myView, ->
 	null
@@ -25,7 +26,8 @@ myView.onLoad (a, b, c) ->
 		x: Align.center
 		width: @width - 64
 		y: layer.maxY + 40
-		select: -> app.showNext(secondView)
+		select: -> app.showNext(secondView, 1)
+
 		
 	
 

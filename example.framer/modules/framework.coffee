@@ -97,33 +97,45 @@ class window.App extends FlowComponent
 
 		@loadingLayer = new Layer 
 			name: '.'
-			size: 48
-			backgroundColor: 'rgba(0,0,0,.64)'
-			borderRadius: 8
-			opacity: .8
-			backgroundBlur: 30
+			size: Screen.size
+			backgroundColor: if @chrome is "safari" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
 			visible: false
 
+		@loadingLayer._element.style["pointer-events"] = "all"
 		@loadingLayer.sendToBack()
 
-		Utils.bind @loadingLayer, ->
-			@iconLayer = new Icon 
-				parent: @
-				height: 32
-				width: 32
-				point: Align.center()
-				style:
-					lineHeight: 1
-				color: white
-				icon: "loading"
+		# By this point, these should be different classes...
+		unless @chrome is "safari"
+			Utils.bind @loadingLayer, ->
+				
+				@loadingContainer = new Layer
+					name: '.'
+					parent: @
+					x: Align.center()
+					y: Align.center(-32)
+					size: 48
+					backgroundColor: 'rgba(0,0,0,.64)'
+					borderRadius: 8
+					opacity: .8
+					backgroundBlur: 30
 
-			anim = new Animation @iconLayer,
-				rotation: 360
-				options:
-					curve: "linear"
-					looping: true
+				@iconLayer = new Icon 
+					parent: @loadingContainer
+					height: 32
+					width: 32
+					point: Align.center()
+					style:
+						lineHeight: 1
+					color: white
+					icon: "loading"
 
-			anim.start()
+				anim = new Animation @iconLayer,
+					rotation: 360
+					options:
+						curve: "linear"
+						looping: true
+
+				anim.start()
 
 
 		# header
@@ -252,34 +264,29 @@ class window.App extends FlowComponent
 		@emit "change:windowFrame", @_windowFrame, @
 
 	_showLoading: (bool) =>
-		if @chrome is 'safari'
-			@header._expand()
-			@footer._expand()
-
 		if bool
+			@loadingLayer.visible = true
+			@loadingLayer.bringToFront()
+
 			# show safari loading
 			if @chrome is "safari"
+				@header._expand()
+				@footer._expand()
 				@header._showLoading(true)
 				return
 
 			# show ios loading
-			_.assign @loadingLayer,
-				point: Align.center()
-				visible: true
-
-			@loadingLayer.bringToFront()
-			@ignoreEvents = true
 			return
+
+		@loadingLayer.visible = false
+		@loadingLayer.sendToBack()
 
 		# show safari loading ended
 		if @chrome is "safari"
+			@header._expand()
+			@footer._expand()
 			@header._showLoading(false)
 			return
-
-		# show ios loading
-		@loadingLayer.visible = false
-		@loadingLayer.sendToBack()
-		@ignoreEvents = false
 
 	# ---------------
 	# Public Methods
