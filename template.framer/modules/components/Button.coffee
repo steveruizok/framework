@@ -12,7 +12,6 @@ class exports.Button extends Layer
 		_.defaults options,
 			x: 0
 			y: 0
-			width: 0
 			height: 48
 			text: 'Get Started'
 			animationOptions:
@@ -48,67 +47,72 @@ class exports.Button extends Layer
 
 		# ---------------
 		# Layers
+
+		@content = new Layer
+			name: "Content"
+			parent: @
+			width: 999
+			height: @height
+			backgroundColor: null
 			
 		@textLayer = new H5
-			name: '.'
+			name: 'TextLayer'
+			parent: @content
+			y: Align.center()
 			textAlign: 'center'
 			color: @palette.color
 			text: options.text ? ''
 
 		Utils.linkProperties @, @textLayer, "color"
 
-		# Show icon?
 
-		if options.icon?
+		if options.icon? # show our icon...
 			
 			@iconLayer = new Icon
-				parent: @
-				name: '.'
+				name: 'Icon'
+				parent: @content
+				y: Align.center()
 				width: 24
 				height: 24
-				y: Align.center()
 				color: @palette.color
 				icon: options.icon
 			
 			Utils.linkProperties @, @iconLayer, "color"
+			
+			if @textLayer.text.length > 0
+				_.assign @textLayer,
+					x: @iconLayer.maxX + 8
+					padding: {right: 4}
 
-			contentWidth = @iconLayer.width
-			if options.text?.length > 0 then contentWidth += 8 + @textLayer.width
-
-			if options.width
-				@width = options.width
-				@iconLayer.x = (@width - contentWidth / 2)
-				@textLayer.x = @iconLayer.maxX
-			else
-				@iconLayer.x = 20
-				@textLayer.x = @iconLayer.maxX 
-				@width = contentWidth + 24
-
-		else
+			@content.width = _.maxBy(@content.children, 'maxX').maxX
 
 			if options.width
-				@textLayer.width = options.width
+				@content.x = Align.center()
 			else
-				@width = @textLayer.width + 40
+				@content.x = 20
+				@width = @content.width + 40
+
+		else # if there's no icon...
+
+			if options.width
+				@content.width = @width
+				@textLayer.point = Align.center()
+			else
+				@content.width = @textLayer.width
+				@content.x = 22
+				@width = @content.width + 44
 
 			@on "change:width", =>
-				_.assign @textLayer,
-					width: @width
-					point: Align.center()
-		
-		# Fix position
+				@content.width = @width
+				@textLayer.point = Align.center()
 
-		_.assign @,
+
+		# Fix position, now that we have our size
+
+		@props =
+			parent: parent
 			x: options.x ? 0
 			y: options.y ? 0
-
-		_.assign @,
-			parent: parent
-
-		_.assign @textLayer,
-			parent: @
-			width: @width
-			point: Align.center()
 
 		@_setTheme('default')
 

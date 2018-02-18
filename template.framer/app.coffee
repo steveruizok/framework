@@ -26,6 +26,8 @@ myView.onLoad (a, b, c) ->
 		width: @width - 64
 		y: layer.maxY + 40
 		select: -> app.showNext(secondView)
+		
+	
 
 # Second View
 
