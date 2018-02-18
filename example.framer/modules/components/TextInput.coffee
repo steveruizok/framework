@@ -74,7 +74,7 @@ class exports.TextInput extends Layer
 			padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
 			backgroundColor: theme[MODEL].default.backgroundColor ? white
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
-			fontSize: options.fontSize ? Utils.px(theme[MODEL].default.fontSize) ? 13
+			fontSize: Utils.px(options.fontSize ? theme[MODEL].default.fontSize ? 13)
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
 			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
 
@@ -165,4 +165,5 @@ class exports.TextInput extends Layer
 			return if @__constructor
 			
 			@_input.value = value
+			@textLayer.visible = @value is ""
 			@emit "change:value", value, @

@@ -296,7 +296,7 @@ class exports.Header extends Layer
 
 leftContent = """<svg width="57px" height="11px" viewBox="0 0 57 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-6.000000, -5.000000)">
-		<gtransform="translate(6.000000, 3.000000)">
+		<g transform="translate(6.000000, 3.000000)">
 			<text font-family="Arial" font-size="12" font-weight="normal" fill="#030303">
 				<tspan x="20" y="11.5">FW</tspan>
 			</text>
