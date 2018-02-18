@@ -188,34 +188,35 @@ class window.App extends FlowComponent
 	# Private Methods
 	
 	_showFocused: (el) =>
-		return if not Utils.isMobile()
-		return if not @header
+		return
+		# return if not Utils.isMobile()
+		# return if not @header
 
-		if el?
-			if Utils.isMobile()
-				@header.animate
-					y: 220
-					options:
-						curve: Spring(
-							tension: 295.87
-							friction: 31.42
-							velocity: 3.14
-							tolerance: 0.01
-						)
-			return
+		# if el?
+		# 	if Utils.isMobile()
+		# 		@header.animate
+		# 			y: 220
+		# 			options:
+		# 				curve: Spring(
+		# 					tension: 295.87
+		# 					friction: 31.42
+		# 					velocity: 3.14
+		# 					tolerance: 0.01
+		# 				)
+		# 	return
 
-		Utils.delay .05, =>
-			return if @focused?
+		# Utils.delay .05, =>
+		# 	return if @focused?
 
-			@header.animate
-				y: 0
-				options:
-					curve: Spring(
-						tension: 295.87
-						friction: 31.42
-						velocity: 3.14
-						tolerance: 0.01
-					)
+		# 	@header.animate
+		# 		y: 0
+		# 		options:
+		# 			curve: Spring(
+		# 				tension: 295.87
+		# 				friction: 31.42
+		# 				velocity: 3.14
+		# 				tolerance: 0.01
+		# 			)
 
 
 	_updateHeader: (prev, next) =>
