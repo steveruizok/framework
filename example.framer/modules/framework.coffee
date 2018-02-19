@@ -250,7 +250,7 @@ class window.App extends FlowComponent
 	
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next) =>
-		return unless prev?.constructor?.name is "View"
+		return unless prev? and prev instanceof View
 
 		prev.sendToBack()
 		prev._unloadView(@, next, prev)

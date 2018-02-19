@@ -117,7 +117,7 @@ class exports.View extends ScrollComponent
 		try @unload(app, next, prev)
 		
 		return if @preserveContent
-
+		
 		if @oneoff
 			@destroy()
 			return
