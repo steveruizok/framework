@@ -113,18 +113,17 @@ class exports.View extends ScrollComponent
 				text: @key
 
 	
-	_unloadView: (app, next, prev) =>
-		try @unload(app, next, prev)
+	_unloadView: (app, next, prev, direction) =>
+		try @unload(app, next, prev, direction)
 		
 		return if @preserveContent
-		
-		if @oneoff
-			@destroy()
-			return
 
 		child.destroy() for child in _.without(@children, @content)
 		child.destroy() for child in @content.children
 
+		if @oneoff and direction is 'back'
+			@destroy()
+			return
 
 
 

@@ -5,6 +5,9 @@ MODEL = 'textInput'
 class exports.TextInput extends Layer
 	constructor: (options = {}) ->
 
+		# TODO
+		# * Scroll to Input when on a mobile device (with screen keyboard)
+
 		# ---------------
 		# Options
 
