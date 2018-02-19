@@ -116,7 +116,7 @@ class window.App extends FlowComponent
 					name: '.'
 					parent: @
 					x: Align.center()
-					y: Align.center(-32)
+					y: Align.center()
 					size: 48
 					backgroundColor: 'rgba(0,0,0,.64)'
 					borderRadius: 8
@@ -190,40 +190,12 @@ class window.App extends FlowComponent
 
 	# ---------------
 	# Private Methods
-	
+
 	_showFocused: (el) =>
+		# possibly... an app state dealing with an on-screen keyboard
 		return
-		# return if not Utils.isMobile()
-		# return if not @header
 
-		# if el?
-		# 	if Utils.isMobile()
-		# 		@header.animate
-		# 			y: 220
-		# 			options:
-		# 				curve: Spring(
-		# 					tension: 295.87
-		# 					friction: 31.42
-		# 					velocity: 3.14
-		# 					tolerance: 0.01
-		# 				)
-		# 	return
-
-		# Utils.delay .05, =>
-		# 	return if @focused?
-
-		# 	@header.animate
-		# 		y: 0
-		# 		options:
-		# 			curve: Spring(
-		# 				tension: 295.87
-		# 				friction: 31.42
-		# 				velocity: 3.14
-		# 				tolerance: 0.01
-		# 			)
-
-
-	_updateHeader: (prev, next) =>
+	_updateHeader: (prev, next, direction) =>
 		# header changes
 		return if not @header
 
@@ -249,11 +221,11 @@ class window.App extends FlowComponent
 		
 	
 	# Reset the previous View after transitioning
-	_updatePrevious: (prev, next) =>
+	_updatePrevious: (prev, next, direction) =>
 		return unless prev? and prev instanceof View
 
 		prev.sendToBack()
-		prev._unloadView(@, next, prev)
+		prev._unloadView(@, next, prev, direction)
 
 	_safariTransition: (nav, layerA, layerB, overlay) =>
 		options = {time: 0.01}
@@ -329,7 +301,7 @@ class window.App extends FlowComponent
 
 	# ---------------
 	# Public Methods
-
+	
 	# show next view
 	showNext: (layer, loadingTime, options={}) ->
 		@_initial ?= layer
@@ -349,6 +321,7 @@ class window.App extends FlowComponent
 		# otherwise, show next
 		@focused?.blur()
 		@transition(layer, @_platformTransition, options)
+
 
 	showPrevious: (options={}) =>
 		return unless @previous
@@ -376,6 +349,7 @@ class window.App extends FlowComponent
 
 		@focused?.blur()
 		@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
+
 
 	@define "windowFrame",
 		get: -> return @_windowFrame
