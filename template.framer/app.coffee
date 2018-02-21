@@ -1,9 +1,8 @@
 require 'framework'
 
 app = new App
-	chrome: "safari"
+# 	chrome: "safari"
 	title: 'www.framework.com'
-
 
  # My View
 
@@ -16,7 +15,7 @@ myView = new View
 myView.onLoad (a, b, c) ->
 	layer = new Layer
 		parent: @content
-		x: Align.center
+		x: 32
 		y: 32
 	
 	button = new Button
@@ -25,6 +24,27 @@ myView.onLoad (a, b, c) ->
 		width: @width - 64
 		y: layer.maxY + 40
 		select: -> app.showNext(secondView, 1)
+		
+	l = new Layer
+		parent: @content
+		size: 100
+		
+	Utils.pin l, layer, 'right', 'bottom'
+	
+	anim1 = new Animation layer,
+		x: 100
+		width: 100
+		y: 100
+		height: 100
+	
+	anim2 = new Animation layer,
+		x: 32
+		width: 200
+		y: 32
+		height: 200
+		
+	Utils.chainAnimations anim1, anim2
+	
 
 # Second View
 
