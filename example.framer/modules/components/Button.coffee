@@ -91,11 +91,17 @@ class exports.Button extends Layer
 			else
 				@content.x = 20
 				@width = @content.width + 40
+			
+			@on "change:width", =>
+				@content.x = Align.center()
+
+			
 
 		else # if there's no icon...
 
 			if options.width
 				@content.width = @width
+				@content.x = 0
 				@textLayer.point = Align.center()
 			else
 				@content.width = @textLayer.width
@@ -103,6 +109,7 @@ class exports.Button extends Layer
 				@width = @content.width + 44
 
 			@on "change:width", =>
+				@content.x = 0
 				@content.width = @width
 				@textLayer.point = Align.center()
 
