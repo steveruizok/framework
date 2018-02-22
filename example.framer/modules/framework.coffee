@@ -47,7 +47,7 @@ class window.App extends FlowComponent
 			contentWidth: Screen.width
 
 		# Add components to window
-		for componentName in [
+		[
 			'Button', 
 			'Header', 
 			'Radiobox',
@@ -66,16 +66,16 @@ class window.App extends FlowComponent
 			'CarouselComponent', 
 			'SortableComponent'
 			'PageTransitionComponent'
-		]
+		].forEach (componentName) =>
+
 			c = eval(componentName)
-			do (componentName, c) =>
-				window[componentName] = class FrameworkComponent extends c 
-					constructor: (options = {}) ->
-						@constructorName = componentName
+			window[componentName] = class FrameworkComponent extends c 
+				constructor: (options = {}) ->
+					@constructorName = componentName
 
-						_.assign(options, {app: exports.app})
+					_.assign(options, {app: exports.app})
 
-						super options
+					super options
 
 		super options
 

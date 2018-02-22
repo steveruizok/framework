@@ -1,7 +1,5 @@
 require 'framework'
 
-SHOW_ALL = true
-SHOW_LAYER_TREE = false
 
 # Setup
 { theme } = require 'components/Theme' # not usually needed
@@ -44,7 +42,6 @@ class RowLink extends Layer
 			
 			@linkLayer.onSelect (event) =>
 				app.showNext(@link)
-		
 
 # Add Docs Link
 
@@ -73,26 +70,14 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 			color: white
 		
 		do (url) ->
-			docsLinkCircle.onTap -> window.open("https://github.com/steveruizok/framework/#{url}")
+			docsLinkCircle.onTap -> window.open("https://github.com/ProjectRogueOne/framework/#{url}")
+
 
 # ----------------
 # App
 
 app = new App
-	chrome: "safari"
-
-# Copy Input
-
-copyElement = document.createElement "textarea"
-app.header?._element.appendChild(copyElement)
-copyElement.style.opacity = 0
-
-copyTextLayerToClipboard = (layer) ->
-	copyElement.value = layer.text
-	copyElement.select()
-	document.execCommand('copy')
-	copyElement.blur()
-	
+# 	chrome: "safari"
 
 
 # ----------------
@@ -107,7 +92,6 @@ colorsView = new View
 	
 colorsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		{ colors } = require 'components/Colors'
 		
@@ -136,11 +120,7 @@ colorsView.onLoad ->
 			
 			i++
 
-addDocsLink(colorsView, 'wiki/Colors')
-
-colorsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Colors')
 
 # Typography View
 
@@ -149,7 +129,6 @@ typographyView = new View
 
 typographyView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		i = 0
 		for k, v of theme.typography
@@ -170,13 +149,7 @@ typographyView.onLoad ->
 					
 				last = label.maxY + 32
 	
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-
-addDocsLink(typographyView, 'wiki/Typography')
-
-typographyView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Typography')
 
 # Icons View
 
@@ -185,7 +158,6 @@ iconsView = new View
 
 iconsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		i = 0
 		for ic in _.entries(theme.icons)[0..50]
@@ -215,11 +187,8 @@ iconsView.onLoad ->
 			text: "For full list, see\nhttp://www.materialdesignicons.com"
 			color: black
 	
-addDocsLink(iconsView, 'wiki/Icon')
+	addDocsLink(@, 'wiki/Icon')
 
-iconsView.onUnload ->
-	for child in @content.children
-		child.destroy()
 
 # ----------------
 # Structure
@@ -229,6 +198,7 @@ iconsView.onUnload ->
 # View
 
 # Header
+
 
 # ----------------
 # Buttons
@@ -240,7 +210,6 @@ linksView = new View
 	
 linksView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		new H2Link
 			parent: @
@@ -274,7 +243,7 @@ linksView.onLoad ->
 		last = undefined
 		
 		for layer, i in @children
-			continue if layer.constructor.name isnt 'Link'
+			continue if not layer instanceof Link
 			
 			title = new H4
 				name: '.'
@@ -356,13 +325,9 @@ linksView.onLoad ->
 				
 				last = label
 	
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		
 	
-addDocsLink(linksView, 'wiki/Link')
-
-linksView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Link')
 
 # Buttons View
 
@@ -371,7 +336,6 @@ buttonsView = new View
 	
 buttonsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		buttons = _.map _.range(24), (i) =>
 			button = new Button
@@ -435,13 +399,9 @@ buttonsView.onLoad ->
 		dark2.sendToBack()
 		dark3.sendToBack()
 	
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 		
-addDocsLink(buttonsView, 'wiki/Button')
-
-buttonsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+		
+	addDocsLink(@, 'wiki/Button')
 
 
 # ----------------
@@ -454,7 +414,6 @@ textInputsView = new View
 
 textInputsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		new TextInput
 			name: 'Default TextInput'
@@ -477,7 +436,7 @@ textInputsView.onLoad ->
 			disabled: true
 	
 		for layer in @children
-			continue if layer.constructor.name isnt 'TextInput'
+			continue if not layer instanceof TextInput
 			
 			title = new H4
 				name: '.'
@@ -520,7 +479,7 @@ textInputsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					copyTextLayerToClipboard(label)
+					Utils.copyTextToClipboard(label)
 				
 				layer.on "change:value", (value) -> 
 					label.template =
@@ -531,13 +490,7 @@ textInputsView.onLoad ->
 			
 			last = label
 		
-# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-
-addDocsLink(textInputsView, 'wiki/TextInput')
-
-textInputsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/TextInput')
 
 # Selects View
 
@@ -546,7 +499,6 @@ selectsView = new View
 
 selectsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		new Select
 			name: 'Default Select'
@@ -568,7 +520,7 @@ selectsView.onLoad ->
 			disabled: true
 	
 		for layer in @children
-			continue if layer.constructor.name isnt 'Select'
+			continue if not layer instanceof Select
 			
 			title = new H4
 				name: '.'
@@ -612,7 +564,7 @@ selectsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					copyTextLayerToClipboard(label)
+					Utils.copyTextToClipboard(label)
 					
 				layer.on "change:disabled", (bool) -> 
 					label.template =
@@ -630,13 +582,7 @@ selectsView.onLoad ->
 			
 			last = label
 		
-# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-
-addDocsLink(selectsView, 'wiki/Select')
-
-selectsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Select')
 
 # Checkbox
 
@@ -649,7 +595,6 @@ steppersView = new View
 
 steppersView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 	
 		stepper = new Stepper
 			name: 'Default Stepper'
@@ -681,7 +626,7 @@ steppersView.onLoad ->
 		# set positions and create code labels
 		
 		for layer in @children
-			continue if layer.constructor.name isnt 'Stepper'
+			continue if not layer instanceof Stepper
 			
 			title = new H4
 				name: '.'
@@ -728,21 +673,15 @@ steppersView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					copyTextLayerToClipboard(label)
+					Utils.copyTextToClipboard(label)
 					
 				layer.on "change:value", =>
 					label.template = layer.value
 			
 			last = label
 		
-		if not SHOW_LAYER_TREE
-			child.name = '.' for child in @children
 		
-addDocsLink(steppersView, 'wiki/Stepper')
-
-steppersView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Stepper')
 
 # Segments View
 
@@ -753,7 +692,6 @@ segmentsView = new View
 
 segmentsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 	
 		# Segments
 			
@@ -800,7 +738,7 @@ segmentsView.onLoad ->
 		# set positions and create code labels
 		
 		for layer in @children
-			continue if layer.constructor.name isnt 'Segment'
+			continue if not layer instanceof Segment
 			
 			title = new H4
 				name: '.'
@@ -846,20 +784,16 @@ segmentsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					copyTextLayerToClipboard(label)
+					Utils.copyTextToClipboard(label)
 					
 				layer.on "change:active", =>
 					label.template = layer.active
 			
 			last = label
 	
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		
 
-addDocsLink(segmentsView, 'wiki/Segment')
-
-segmentsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(segmentsView, 'wiki/Segment')
 
 # Toggles View
 
@@ -870,7 +804,6 @@ togglesView = new View
 
 togglesView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 	
 		# toggles
 		
@@ -910,7 +843,7 @@ togglesView.onLoad ->
 		# set positions and create code labels
 		
 		for layer in @children
-			continue if layer.constructor.name isnt 'Toggle'
+			continue if not layer instanceof Toggle
 			
 			title = new H4
 				name: '.'
@@ -955,7 +888,7 @@ togglesView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					copyTextLayerToClipboard(label)
+					Utils.copyTextToClipboard(label)
 					
 				layer.on "change:active", =>
 					label.template = layer.toggled
@@ -963,13 +896,9 @@ togglesView.onLoad ->
 			last = label
 	
 		
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
+		
 	
-addDocsLink(togglesView, 'wiki/Toggle')
-
-togglesView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Toggle')
 
 # Inputs View
 
@@ -978,7 +907,6 @@ inputsView = new View
 
 inputsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		# text input
 		
@@ -1065,13 +993,8 @@ inputsView.onLoad ->
 		checkSubmit = ->
 			submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
 	
-# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 
-addDocsLink(inputsView, 'wiki/Inputs')
-
-inputsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Inputs')
 
 
 # ----------------
@@ -1084,7 +1007,6 @@ sortableComponentView = new View
 
 sortableComponentView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		title = new H4
 			name: '.'
@@ -1252,14 +1174,9 @@ sortableComponentView.onLoad ->
 		
 		last = undefined
 			
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-	
-	addDocsLink(sortableComponentView, 'wiki/SortableComponent')
-
-sortableComponentView.onUnload ->
-	for child in @content.children
-		child.destroy()
 		
+	
+	addDocsLink(@, 'wiki/SortableComponent')
 
 # CarouselComponent
 
@@ -1268,18 +1185,10 @@ carouselComponentView = new View
 
 carouselComponentView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
-		
-		
-				
-		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
 	
 	addDocsLink(carouselComponentView, 'wiki/CarouselComponent')
 
-carouselComponentView.onUnload ->
-	for child in @content.children
-		child.destroy()
 
 # ----------------
 # Miscellaneous
@@ -1291,7 +1200,6 @@ tooltipsView = new View
 
 tooltipsView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		new Tooltip
 			name: 'Default Tooltip'
@@ -1327,7 +1235,7 @@ tooltipsView.onLoad ->
 			direction: 'left'
 	
 		for layer in @children
-			continue if layer.constructor.name isnt 'Tooltip'
+			continue if not layer instanceof Tooltip
 			
 			title = new H4
 				name: '.'
@@ -1369,18 +1277,12 @@ tooltipsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					copyTextLayerToClipboard(label)
+					Utils.copyTextToClipboard(label)
 					
 			
 			last = label
 		
-# 		if not SHOW_LAYER_TREE then child.name = '.' for child in @children
-
-addDocsLink(tooltipsView, 'wiki/Tooltip')
-
-tooltipsView.onUnload ->
-	for child in @content.children
-		child.destroy()
+	addDocsLink(@, 'wiki/Tooltip')
 
 # Example View
 
@@ -1389,7 +1291,6 @@ exampleView = new View
 
 exampleView.onLoad ->
 	Utils.bind @content, ->
-		return if not SHOW_ALL
 		
 		@header = new H2
 			name: 'Header H2'
@@ -1484,9 +1385,8 @@ exampleView.onLoad ->
 			delay: 1
 			time: .7
 
-exampleView.onUnload ->
-	for child in @content.children
-		child.destroy()
+
+# ----------------
 
 # Home View
 
@@ -1495,11 +1395,11 @@ homeView = new View
 
 homeView.onLoad ->
 	Utils.bind @content, ->
-	
 		# foundations
 		new H3
 			parent: @
 			text: 'Foundations'
+			y: 32
 			padding: {top: 24, bottom: 16}
 		
 		new RowLink
@@ -1611,8 +1511,8 @@ homeView.onLoad ->
 			
 		new RowLink
 			parent: @
-			text: 'CarouselComponent'
-		
+			text: 'Carousel'
+			
 		# misc
 		new H3
 			parent: @
@@ -1626,14 +1526,11 @@ homeView.onLoad ->
 		
 		# set child positions
 		
-		for child, i in @children[1...]
-			child.y = @children[i]?.maxY
-		
-			if not SHOW_LAYER_TREE then child.name = '.'
-		
+		Utils.offsetY(@children, 0)
+	
 	@updateContent()
 	
-addDocsLink(homeView, '', 'github-circle')
+	addDocsLink(@, '', 'github-circle')
 
 
 app.showNext homeView
