@@ -121,12 +121,12 @@ class exports.Select extends Layer
 
 		@__instancing = true
 
-		Utils.defineValid @, 'opened', false, _.isBoolean, "Select.opened must be a boolean (true or false).", @_setOpened
-		Utils.defineValid @, 'theme', 'default', _.isString, 'Select.theme must be a string.', @_setTheme
-		Utils.defineValid @, 'hovered', false, _.isBoolean, 'Select.hovered must be a boolean.', @_showHovered
-		Utils.defineValid @, 'focused', false, _.isBoolean, 'Select.focused must be a boolean.',  @_showFocused
-		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, 'Select.disabled must be a boolean.',  @_showDisabled
-		Utils.defineValid @, 'selectedIndex', options.selectedIndex, _.isNumber, "Select.selectedIndex must be a number.", @_setSelected
+		Utils.define @, 'opened', false, @_setOpened, _.isBoolean, "Select.opened must be a boolean (true or false)."
+		Utils.define @, 'theme', 'default', @_setTheme, _.isString, 'Select.theme must be a string.'
+		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, 'Select.hovered must be a boolean.'
+		Utils.define @, 'focused', false, @_showFocused, _.isBoolean, 'Select.focused must be a boolean.'
+		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, 'Select.disabled must be a boolean.'
+		Utils.define @, 'selectedIndex', options.selectedIndex, @_setSelected, _.isNumber, "Select.selectedIndex must be a number."
 
 		delete @__instancing
 
@@ -305,8 +305,8 @@ class Option extends Layer
 		# ---------------
 		# Definitions
 		
-		Utils.defineValid @, 'theme', 'default', _.isString, 'Select.theme must be a string.', @_setTheme
-		Utils.defineValid @, 'hovered', false, _.isBoolean, 'Select.hovered must be a boolean.', @_showHovered
+		Utils.define @, 'theme', 'default', @_setTheme, _.isString, 'Select.theme must be a string.'
+		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, 'Select.hovered must be a boolean.'
 		
 		# ---------------
 		# Events

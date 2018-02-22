@@ -177,8 +177,8 @@ class window.App extends FlowComponent
 		@_setWindowFrame()
 
 		# definitions
-		Utils.defineValid @, 'focused', null, _.isObject, "App.focused must be an html element.", @_showFocused
-		Utils.defineValid @, 'loading', false, _.isBoolean, "App.loading must be a boolean (true or false).", @_showLoading
+		Utils.define @, 'focused', null, @_showFocused, _.isObject, "App.focused must be an html element."
+		Utils.define @, 'loading', false, @_showLoading, _.isBoolean, "App.loading must be a boolean (true or false)."
 
 		# when transition starts, update the header
 		@onTransitionStart @_updateHeader

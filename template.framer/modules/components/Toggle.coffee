@@ -104,10 +104,8 @@ class exports.Toggle extends Layer
 
 		delete @__instancing
 
-		isOk = (value) ->
-			return _.isBoolean(value) or _.isUndefined(value)
-
-		Utils.defineValid @, 'toggled', options.toggled, isOk, 'Toggle.toggled must be a boolean (true or false) or undefined.', @_setToggled
+		isOk = (value) -> _.isBoolean(value) or _.isUndefined(value)
+		Utils.define @, 'toggled', options.toggled, @_setToggled, isOk, 'Toggle.toggled must be a boolean (true or false) or undefined.'
 
 
 	# ---------------

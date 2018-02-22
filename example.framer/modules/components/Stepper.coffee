@@ -123,7 +123,7 @@ class exports.Stepper extends Layer
 		# ---------------
 		# Definitions
 
-		Utils.defineValid @, 'value', options.value, _.isNumber, 'Stepper.value must be a number.', @_setValue
+		Utils.define @, 'value', options.value, @_setValue, _.isNumber, 'Stepper.value must be a number.'
 
 
 	# ---------------

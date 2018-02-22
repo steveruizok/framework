@@ -41,12 +41,12 @@ class exports.View extends ScrollComponent
 		# ---------------
 		# Definitions
 		
-		Utils.defineValid @, 'title', options.title, _.isString, 'View.title must be a string.'
-		Utils.defineValid @, 'padding', options.padding, _.isObject, 'View.padding must be an object.'
-		Utils.defineValid @, 'load', options.load, _.isFunction, 'View.load must be a function.'
-		Utils.defineValid @, 'unload', options.unload, _.isFunction, 'View.unload must be a function.'
-		Utils.defineValid @, 'oneoff', options.oneoff, _.isBoolean, 'View.oneoff must be a boolean (true or false).'
-		Utils.defineValid @, 'preserveContent', options.preserveContent, _.isBoolean, 'View.preserveContent must be a boolean (true or false).'
+		Utils.define @, 'title', options.title, undefined, _.isString, 'View.title must be a string.'
+		Utils.define @, 'padding', options.padding, undefined, _.isObject, 'View.padding must be an object.'
+		Utils.define @, 'load', options.load, undefined, _.isFunction, 'View.load must be a function.'
+		Utils.define @, 'unload', options.unload, undefined, _.isFunction, 'View.unload must be a function.'
+		Utils.define @, 'oneoff', options.oneoff, undefined, _.isBoolean, 'View.oneoff must be a boolean (true or false).'
+		Utils.define @, 'preserveContent', options.preserveContent, undefined, _.isBoolean, 'View.preserveContent must be a boolean (true or false).'
 		
 		# unless padding is specifically null, set padding defaults
 		if @padding?

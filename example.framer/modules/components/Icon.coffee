@@ -33,7 +33,7 @@ class exports.Icon extends Layer
 		# ---------------
 		# Definitions
 		
-		Utils.defineValid @, "icon", options.icon, _.isString, 'Icon.icon must be a string.', @_refresh
+		Utils.define @, "icon", options.icon, @_refresh, _.isString, 'Icon.icon must be a string.'
 
 
 		# ---------------

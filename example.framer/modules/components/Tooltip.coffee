@@ -60,9 +60,8 @@ class exports.Tooltip extends Layer
 		# Definitions
 	
 		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.defineValid @, 'direction', options.direction, _.isString, "Tooltip.direction must be a string.", @_showDirection
+		Utils.define @, 'direction', options.direction, @_showDirection, _.isString, "Tooltip.direction must be a string."
 		
-
 
 	# ---------------
 	# Private Methods

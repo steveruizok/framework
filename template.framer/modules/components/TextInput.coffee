@@ -93,10 +93,10 @@ class exports.TextInput extends Layer
 		
 		@__instancing = true
 
-		Utils.defineValid @, 'theme', 'default', _.isString, 'TextInput.theme must be a string.', @_setTheme
-		Utils.defineValid @, 'hovered', false, _.isBoolean, 'TextInput.hovered must be a boolean.', @_showHovered
-		Utils.defineValid @, 'focused', false, _.isBoolean, 'TextInput.focused must be a boolean.',  @_showFocused
-		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, 'TextInput.disabled must be a boolean.',  @_showDisabled
+		Utils.define @, 'theme', 'default', @_setTheme, _.isString, 'TextInput.theme must be a string.'
+		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, 'TextInput.hovered must be a boolean.'
+		Utils.define @, 'focused', false, @_showFocused, _.isBoolean, 'TextInput.focused must be a boolean.'
+		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, 'TextInput.disabled must be a boolean.'
 		
 		delete @__constructor
 		delete @__instancing

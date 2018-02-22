@@ -39,10 +39,10 @@ class exports.Link extends TextLayer
 
 		@__instancing = true
 
-		Utils.defineValid @, 'theme', 'default', _.isString, "Link.theme must be a string.", (value) => @_setTheme(value)
-		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Link.disabled must be a boolean (true or false).", @_showDisabled
-		Utils.defineValid @, 'hovered', false, _.isBoolean, "Link.hovered must be a boolean (true or false).", @_showHovered
-		Utils.defineValid @, 'select', options.select, _.isFunction, "Link.select must be a function."
+		Utils.define @, 'theme', 'default', @_setTheme, _.isString, "Link.theme must be a string."
+		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Link.disabled must be a boolean (true or false)."
+		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, "Link.hovered must be a boolean (true or false)."
+		Utils.define @, 'select', options.select, undefined, _.isFunction, "Link.select must be a function."
 
 		delete @__instancing
 

@@ -34,7 +34,7 @@ class exports.NewComponent extends Layer
 		# ---------------
 		# Definitions
 		
-		Utils.defineValid @, 'selected', options.selected, _.isBoolean, @showSelected
+		Utils.define @, 'selected', options.selected, @showSelected, _.isBoolean, 'Selected must be a boolean (true or false).'
 		Utils.define @, 'theme', 'default', @_setTheme
 
 

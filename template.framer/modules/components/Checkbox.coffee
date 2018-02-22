@@ -56,10 +56,10 @@ class exports.Checkbox extends Layer
 		# Definitions
 		
 		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.defineValid @, 'checked', options.checked, _.isBoolean, 'Checkbox.checked must be a boolean (true or false)', @_showChecked
-		Utils.defineValid @, 'hovered', false, _.isBoolean, "Checkbox.hovered must be a boolean (true or false).", @_showHovered
-		Utils.defineValid @, 'error', options.disabled, _.isBoolean, "Checkbox.error must be a boolean (true or false).", @_showError
-		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Checkbox.disabled must be a boolean (true or false).", @_showDisabled
+		Utils.define @, 'checked', options.checked, @_showChecked, _.isBoolean, 'Checkbox.checked must be a boolean (true or false)'
+		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, "Checkbox.hovered must be a boolean (true or false)."
+		Utils.define @, 'error', options.disabled, @_showError, _.isBoolean, "Checkbox.error must be a boolean (true or false)."
+		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Checkbox.disabled must be a boolean (true or false)."
 		
 
 

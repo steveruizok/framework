@@ -184,7 +184,9 @@ class exports.Header extends Layer
 			@_setTime()
 			Utils.interval 60, @_setTime
 
-		@on "change:color", => Utils.align @children, 'color', @color
+		@on "change:color", => 
+			Utils.align @children,
+				color: @color
 
 		# definitions
 			

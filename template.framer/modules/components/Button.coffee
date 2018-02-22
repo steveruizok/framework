@@ -128,12 +128,12 @@ class exports.Button extends Layer
 
 		@__instancing = true
 
-		Utils.defineValid @, 'theme', 'default', _.isString, "Button.theme must be a string.", (value) => @_setTheme(value)
-		Utils.defineValid @, 'dark', options.dark, _.isBoolean, "Button.dark must be a boolean (true or false).", 
-		Utils.defineValid @, 'secondary', options.secondary, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
-		Utils.defineValid @, 'disabled', options.disabled, _.isBoolean, "Button.disabled must be a boolean (true or false).", @_showDisabled
-		Utils.defineValid @, 'hovered', false, _.isBoolean, "Button.hovered must be a boolean (true or false).", @_showHovered
-		Utils.defineValid @, 'select', options.select, _.isFunction, "Button.select must be a function."
+		Utils.define @, 'theme', 'default', @_setTheme, _.isString, "Button.theme must be a string."
+		Utils.define @, 'dark', options.dark, undefined, _.isBoolean, "Button.dark must be a boolean (true or false).", 
+		Utils.define @, 'secondary', options.secondary, undefined, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
+		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Button.disabled must be a boolean (true or false)."
+		Utils.define @, 'hovered', false, @_showHovered, undefined, _.isBoolean, "Button.hovered must be a boolean (true or false)."
+		Utils.define @, 'select', options.select, undefined, _.isFunction, "Button.select must be a function."
 
 		delete @__instancing
 
