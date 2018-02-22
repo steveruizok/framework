@@ -1,4 +1,4 @@
-require 'framework'
+require 'myTheme'
 
 app = new App
 # 	chrome: "safari"

@@ -31,51 +31,54 @@ dumbthing?.style.width = "0px"
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
 { SortableComponent } = require 'components/SortableComponent'
 { TransitionPage } = require 'components/PageTransitionComponent'
+{ theme } = require 'components/Theme'
 
 # let other modules set default title before app is instanced 
-exports.defaultTitle = defaultTitle = "www.framework.com"
-# let other modules have access to app after app is instanced
-exports.app = undefined
+_.assign exports,
+	defaultTitle: "www.framework.com"
+	app: undefined
+	components: [
+		'Button', 
+		'Header', 
+		'Radiobox',
+		'Checkbox',
+		'Toggle',
+		'Tooltip',
+		'Select',
+		'Icon', 
+		'Stepper', 
+		'Segment',
+		'TextInput',
+		'Link', 
+		'Separator', 
+		'TransitionPage', 
+		'View', 
+		'CarouselComponent', 
+		'SortableComponent'
+		'PageTransitionComponent'
+		]
+	theme: theme
 
 class window.App extends FlowComponent
 	constructor: (options = {}) ->
 
 		_.defaults options,
 			backgroundColor: white
-			title: defaultTitle
+			title: exports.defaultTitle
 			chrome: 'ios'
 			contentWidth: Screen.width
 
 		# Add components to window
-		for componentName in [
-			'Button', 
-			'Header', 
-			'Radiobox',
-			'Checkbox',
-			'Toggle',
-			'Tooltip',
-			'Select',
-			'Icon', 
-			'Stepper', 
-			'Segment',
-			'TextInput',
-			'Link', 
-			'Separator', 
-			'TransitionPage', 
-			'View', 
-			'CarouselComponent', 
-			'SortableComponent'
-			'PageTransitionComponent'
-		]
+		exports.components.forEach (componentName) =>
+
 			c = eval(componentName)
-			do (componentName, c) =>
-				window[componentName] = class FrameworkComponent extends c 
-					constructor: (options = {}) ->
-						@constructorName = componentName
+			window[componentName] = class FrameworkComponent extends c 
+				constructor: (options = {}) ->
+					@constructorName = componentName
 
-						_.assign(options, {app: exports.app})
+					_.assign(options, {app: exports.app})
 
-						super options
+					super options
 
 		super options
 
