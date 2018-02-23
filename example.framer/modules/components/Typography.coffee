@@ -17,7 +17,6 @@ updateTypography = ->
 					_.defaults options, theme.typography[className]
 					_.defaults options, theme.typography[style.style]
 
-					delete options.style
 
 					super options
 
@@ -30,7 +29,6 @@ updateTypography = ->
 					_.defaults options, theme.typography[className]
 					_.defaults options, theme.typography[style.style]
 
-					delete options.style
 
 					super options
 

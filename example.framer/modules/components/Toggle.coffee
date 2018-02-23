@@ -45,12 +45,8 @@ class exports.Toggle extends Layer
 			button = new Button
 				name: '.'
 				parent: @
-				x: 0
-				y: 0
-				color: options.color
 				text: if @icon then '' else option
 				icon: if @icon then option
-				backgroundColor: options.backgroundColor
 
 			radius = switch i
 				when 0 then "#{Utils.px(button.borderRadius)} 0px 0px #{Utils.px(button.borderRadius)}"
@@ -63,26 +59,18 @@ class exports.Toggle extends Layer
 
 		# set positions
 
-		maxW = _.maxBy(@children, 'width').width
+		maxW = _.maxBy(@buttons, 'width').width
 
-		for layer in @children
-			layer.width = maxW
-			layer.x = (last?.maxX ? 1) - 1
-			last = layer
+		for button in @buttons
+			button.width = maxW
+			button.x = (last?.maxX ? 1) - 1
+			last = button
 
-			customTheme = @customTheme
+			button.customTheme = @customTheme
+			button.model = MODEL
 
-			do (layer) =>
-				layer._setTheme = (value) ->
-					@animateStop()
-
-					if @palette is 'active' and customTheme?
-						props = customTheme[value]
-					else props = theme[MODEL][@palette][value]
-
-					if @__instancing then @props = props else @animate props
-
-				layer.onSelect => @toggled = _.indexOf(@children, layer) is 1
+			do (button) =>
+				button.onSelect => @toggled = _.indexOf(@children, button) is 1
 
 		_.assign @,
 			backgroundColor: null
@@ -112,28 +100,51 @@ class exports.Toggle extends Layer
 	# Private Methods
 
 	_getCustomTheme: (color, backgroundColor) ->
-		return {
+		customTheme =
+			active:
+				default:
+					color: color
+					borderColor: new Color(backgroundColor).darken(10)
+					backgroundColor: backgroundColor
+					shadowColor: 'rgba(0,0,0,0)'
+				disabled:
+					color: new Color(color).alpha(.15)
+					borderColor: new Color(color).alpha(.15)
+					backgroundColor: new Color(backgroundColor).alpha(0)
+					shadowColor: 'rgba(0,0,0,0)'
+				touched:
+					color: color
+					borderColor: new Color(backgroundColor).darken(20)
+					backgroundColor: new Color(backgroundColor).darken(20)
+					shadowColor: 'rgba(0,0,0,0)'
+				hovered:
+					color: color
+					borderColor: new Color(backgroundColor).darken(20)
+					backgroundColor: new Color(backgroundColor).darken(10)
+					shadowColor: 'rgba(0,0,0,0)'
 			default:
-				color: color
-				borderColor: new Color(backgroundColor).darken(10)
-				backgroundColor: backgroundColor
-				shadowColor: 'rgba(0,0,0,0)'
-			disabled:
-				color: new Color(color).alpha(.15)
-				borderColor: new Color(color).alpha(.15)
-				backgroundColor: new Color(backgroundColor).alpha(0)
-				shadowColor: 'rgba(0,0,0,0)'
-			touched:
-				color: color
-				borderColor: new Color(backgroundColor).darken(20)
-				backgroundColor: new Color(backgroundColor).darken(20)
-				shadowColor: 'rgba(0,0,0,0)'
-			hovered:
-				color: color
-				borderColor: new Color(backgroundColor).darken(20)
-				backgroundColor: new Color(backgroundColor).darken(10)
-				shadowColor: 'rgba(0,0,0,0)'
-			}
+				default:
+					color: black
+					borderColor: white.darken(10)
+					backgroundColor: white
+					shadowColor: 'rgba(0,0,0,0)'
+				disabled:
+					color: new Color(black).lighten(20)
+					borderColor: grey40
+					backgroundColor: grey30
+					shadowColor: 'rgba(0,0,0,0)'
+				touched:
+					color: black
+					borderColor: grey40
+					backgroundColor: white
+					shadowColor: 'rgba(0,0,0,0)'
+				hovered:
+					color: black
+					borderColor: grey40
+					backgroundColor: grey30
+					shadowColor: 'rgba(0,0,0,0)'
+
+		return customTheme
 
 	_setToggled: (bool) =>
 		if bool is null
@@ -146,22 +157,24 @@ class exports.Toggle extends Layer
 		if not button
 			for button in @buttons
 				button.animateStop()
-				button.palette = "default"
+				button.customTheme = @customTheme?.default
 				button.theme = "default"
-				button.animate(theme[MODEL].default.default)
+				button.animate( @customTheme?.default.default ? theme[MODEL].default.default)
 			return
 
 		button.bringToFront()
 		button.animateStop()
 		button.palette = "active"
+		button.customTheme = @customTheme?.active
 		button.theme = "default"
-		button.animate @customTheme?.default ? theme[MODEL].active.default
+		button.animate( @customTheme?.active.default ? theme[MODEL].active.default)
 
 		for sib in button.siblings
 			sib.animateStop()
 			sib.palette = "default"
+			sib.customTheme = @customTheme?.default
 			sib.theme = "default"
-			sib.animate(theme[MODEL].default.default)
+			sib.animate( @customTheme?.default.default ? theme[MODEL].default.default)
 
 
 	# ---------------

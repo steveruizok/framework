@@ -479,7 +479,7 @@ textInputsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label)
+					Utils.copyTextToClipboard(label.text)
 				
 				layer.on "change:value", (value) -> 
 					label.template =
@@ -564,7 +564,7 @@ selectsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label)
+					Utils.copyTextToClipboard(label.text)
 					
 				layer.on "change:disabled", (bool) -> 
 					label.template =
@@ -673,7 +673,7 @@ steppersView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label)
+					Utils.copyTextToClipboard(label.text)
 					
 				layer.on "change:value", =>
 					label.template = layer.value
@@ -784,14 +784,13 @@ segmentsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label)
+					Utils.copyTextToClipboard(label.text)
 					
 				layer.on "change:active", =>
 					label.template = layer.active
 			
 			last = label
-	
-		
+
 
 	addDocsLink(segmentsView, 'wiki/Segment')
 
@@ -846,13 +845,13 @@ togglesView.onLoad ->
 			continue if not layer instanceof Toggle
 			
 			title = new H4
-				name: '.'
+				name: 'Title'
 				parent: @
 				y: (last?.maxY ? 0) + 32
 				text: layer.name
 				
 			div = new Layer
-				name: '.'
+				name: 'Code'
 				parent: @
 				x: title.maxX + 16
 				y: title.y + 10
@@ -863,14 +862,14 @@ togglesView.onLoad ->
 			layer.y = title.maxY + 24
 		
 			string = [
-				"new Topggle",
+				"new Toggle",
 				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
 				"icon: #{layer.icon}"
 				"toggled: {toggled}"
 				].join('\n\t')
 							
 			label = new Code
-				name: '.'
+				name: 'Label'
 				parent: @
 				x: layer.x
 				y: layer.maxY + 24
@@ -885,10 +884,12 @@ togglesView.onLoad ->
 				icon: 'content-copy'
 				color: grey
 				
+			copyIcon.onTap -> print 'hello'
+				
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label)
+					Utils.copyTextToClipboard(label.text)
 					
 				layer.on "change:active", =>
 					label.template = layer.toggled
@@ -1277,7 +1278,7 @@ tooltipsView.onLoad ->
 			do (layer, label, copyIcon) ->
 				
 				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label)
+					Utils.copyTextToClipboard(label.text)
 					
 			
 			last = label
@@ -1532,5 +1533,5 @@ homeView.onLoad ->
 	
 	addDocsLink(@, '', 'github-circle')
 
-
 app.showNext homeView
+

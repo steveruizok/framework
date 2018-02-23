@@ -34,6 +34,7 @@ class exports.Button extends Layer
 			disabled: false
 			icon: undefined
 			select: => null
+			model: MODEL
 
 		@customTheme = if options.backgroundColor? and options.color? then @_getCustomTheme(options.color, options.backgroundColor) else undefined
 		
@@ -46,10 +47,13 @@ class exports.Button extends Layer
 
 		super options
 
+		_.assign @,
+			model: options.model
+
 		# ---------------
 		# Layers
 
-		palette = theme[MODEL][@palette]['default']
+		palette = theme[@model][@palette]['default']
 
 		@content = new Layer
 			name: "Content"
@@ -132,7 +136,7 @@ class exports.Button extends Layer
 
 		@__instancing = true
 
-		Utils.define @, 'theme', 'default', @_setTheme, _.isString, "Button.theme must be a string."
+		Utils.define @, 'theme', "default", @_setTheme, _.isString, "Button.theme must be a string."
 		Utils.define @, 'dark', options.dark, undefined, _.isBoolean, "Button.dark must be a boolean (true or false).", 
 		Utils.define @, 'secondary', options.secondary, undefined, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
 		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Button.disabled must be a boolean (true or false)."
@@ -197,7 +201,7 @@ class exports.Button extends Layer
 
 	_setTheme: (value) =>
 		@animateStop()
-		props = @customTheme?[value] ? _.defaults(_.clone(@customOptions), theme[MODEL][@palette][value])
+		props = @customTheme?[value] ? _.defaults(_.clone(@customOptions), theme[@model][@palette][value])
 		if @__instancing then @props = props else @animate props
 
 	_showHovered: (bool) =>

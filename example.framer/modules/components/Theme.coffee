@@ -20,6 +20,8 @@ updateTheme = (values = {}) ->
 			Mono:
 				color: black40
 				fontFamily: 'Menlo'
+				style: 
+					tabSize: 2
 			H1:
 				name: 'H1'
 				style: 'Sans'
@@ -265,7 +267,6 @@ updateTheme = (values = {}) ->
 					borderColor: yellow60
 					backgroundColor: yellow50
 					shadowColor: 'rgba(0,0,0,0)'
-					borderRadius: 4
 					borderWidth: 1
 					shadowY: 2
 					shadowBlur: 6
@@ -290,7 +291,6 @@ updateTheme = (values = {}) ->
 					borderColor: grey40
 					backgroundColor: white
 					shadowColor: 'rgba(0,0,0,0)'
-					borderRadius: 4
 					borderWidth: 1
 					shadowY: 2
 					shadowBlur: 6
@@ -427,6 +427,10 @@ updateTheme = (values = {}) ->
 	Utils.insertCSS("""
 		*:focus { outline: 0; }
 		textarea { resize: none; }
+
+		pre {
+			tab-size: 10px;
+		}
 
 	 	input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
 	 	  -webkit-text-fill-color: #{combinedTheme.textInput.default.color};

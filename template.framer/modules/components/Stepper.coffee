@@ -56,7 +56,7 @@ class exports.Stepper extends Layer
 			width: @width
 			text: options.value
 
-		for option, i in @options[0..1]
+		@buttons = @options[0..1].map (option, i) =>
 			button = new Button
 				name: '.'
 				parent: @
@@ -68,17 +68,9 @@ class exports.Stepper extends Layer
 				backgroundColor: options.backgroundColor
 
 			customTheme = @customTheme
+			
 			button.palette = 'active'
-
-			button._setTheme = (value) ->
-				@animateStop()
-
-				if customTheme?
-					props = customTheme[value]
-				else props = theme[MODEL][@palette][value]
-
-				if @__instancing then @props = props else @animate props
-
+			button.model = 'segment'
 
 			radius = switch i
 				when 0 then "#{Utils.px(button.borderRadius)} 0px 0px #{Utils.px(button.borderRadius)}"
@@ -87,7 +79,7 @@ class exports.Stepper extends Layer
 			
 			button._element.childNodes[0].style['border-radius'] = radius
 
-			@buttons.push(button)
+			return button
 
 
 		# set positions
@@ -123,7 +115,7 @@ class exports.Stepper extends Layer
 		# ---------------
 		# Definitions
 
-		Utils.define @, 'value', options.value, @_setValue, _.isNumber, 'Stepper.value must be a number.'
+		Utils.define @, 'value', options.value, @_showValue, _.isNumber, 'Stepper.value must be a number.'
 
 
 	# ---------------

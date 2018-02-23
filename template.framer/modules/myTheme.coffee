@@ -32,6 +32,7 @@ componentNames = [
 Utils.insertCSS("""
  	@font-face {
 		font-family: 'MuktaMahee';
+		font-weight: 200;
 		src: url('modules/myTheme-components/fonts/MuktaMahee-Regular.ttf'); 
 	}
 """)
@@ -89,7 +90,7 @@ themeStyles =
 		Serif:
 			fontFamily: 'Times New Roman'
 		Sans:
-			fontFamily: 'MuktaMahee'
+			fontFamily: 'Mukta Mahee'
 
 
 
