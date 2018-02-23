@@ -1,5 +1,9 @@
+Theme = require "components/Theme"
+theme = undefined
+
 class exports.SortableComponent extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
 		
 		_.defaults options,
 			name: 'Sortable Component'

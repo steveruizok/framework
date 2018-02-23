@@ -1,10 +1,11 @@
-{ theme } = require "components/Theme"
+Theme = require "components/Theme"
+theme = undefined
 MODEL = 'button'
+
 
 class exports.Button extends Layer
 	constructor: (options = {}) ->
-
-		@app = options.app
+		theme = Theme.theme
 
 		# ---------------
 		# Options
@@ -48,6 +49,8 @@ class exports.Button extends Layer
 		# ---------------
 		# Layers
 
+		palette = theme[MODEL][@palette]['default']
+
 		@content = new Layer
 			name: "Content"
 			parent: @
@@ -60,7 +63,7 @@ class exports.Button extends Layer
 			parent: @content
 			y: Align.center()
 			textAlign: 'center'
-			color: @palette.color
+			color: palette.color
 			text: options.text ? ''
 
 		Utils.linkProperties @, @textLayer, "color"
@@ -74,7 +77,7 @@ class exports.Button extends Layer
 				y: Align.center()
 				width: 24
 				height: 24
-				color: @palette.color
+				color: palette.color
 				icon: options.icon
 			
 			Utils.linkProperties @, @iconLayer, "color"

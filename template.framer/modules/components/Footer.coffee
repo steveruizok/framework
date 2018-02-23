@@ -1,5 +1,9 @@
+Theme = require "components/Theme"
+theme = undefined
+
 class Footer extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
 
 		_.defaults options,
 			name: 'Footer'
@@ -12,9 +16,9 @@ class Footer extends Layer
 			backgroundBlur: 30
 
 		_.assign @,
-			app: options.app
 			tint: '#007AFF'
 			offTint: '#C3C3C1'
+			app: options.app
 
 		super options
 

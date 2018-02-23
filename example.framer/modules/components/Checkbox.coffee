@@ -1,12 +1,12 @@
-{ theme } = require 'components/Theme'
+Theme = require "components/Theme"
+theme = undefined
 
 class exports.Checkbox extends Layer
 	constructor: (options = {}) ->
 
+		theme = Theme.theme
+		
 		# ---------------
-		# Options
-
-		@app = options.app
 
 		_.defaults options,
 			name: 'Checkbox'

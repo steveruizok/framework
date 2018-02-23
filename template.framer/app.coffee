@@ -1,4 +1,4 @@
-require 'myTheme'
+require 'framework'
 
 app = new App
 # 	chrome: "safari"
@@ -25,6 +25,7 @@ myView.onLoad (a, b, c) ->
 		y: layer.maxY + 40
 		select: -> app.showNext(secondView, 1)
 
+
 # Second View
 
 secondView = new View
@@ -46,6 +47,8 @@ secondView.onLoad ->
 		width: @width * .82
 		text: Utils.randomText(48, true)
 
-
-
 app.showNext myView
+
+# new Layer
+# 	backgroundColor: '#252729'
+

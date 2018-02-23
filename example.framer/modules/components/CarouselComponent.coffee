@@ -1,7 +1,12 @@
+Theme = require "components/Theme"
+theme = undefined
+
 # Carousel
 
 class exports.CarouselComponent extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
+		
 		@__constructor = true
 
 		_.assign @,

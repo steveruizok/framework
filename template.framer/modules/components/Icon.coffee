@@ -1,7 +1,10 @@
-{ theme } = require 'components/Theme'
+Theme = require "components/Theme"
+theme = undefined
 
 class exports.Icon extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
+
 		@__constructor = true
 
 		# ---------------

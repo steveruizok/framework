@@ -1,15 +1,16 @@
-# Page Transition Component
+Theme = require "components/Theme"
+theme = undefined
+
 
 class PageTransitionComponent extends PageComponent
 	constructor: (options = {}) ->
+		theme = Theme.theme
 		
 		_.defaults options,
 			direction: 'bottom'
 			originY: 0
 		
 		super options
-
-		@app = options.app
 
 		
 		# -----------------
@@ -225,8 +226,6 @@ class TransitionPage extends Layer
 			grid: false
 		
 		super options
-
-		@app = options.app
 
 		@transitionStates = {}
 		

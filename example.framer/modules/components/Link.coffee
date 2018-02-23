@@ -1,10 +1,11 @@
-{ theme } = require "components/Theme"
+Theme = require "components/Theme"
+theme = undefined
+
 MODEL = 'link'
 
 class exports.Link extends TextLayer
 	constructor: (options = {}) ->
-
-		@app = options.app
+		theme = Theme.theme
 
 		# ---------------
 		# Options

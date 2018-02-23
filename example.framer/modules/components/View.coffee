@@ -1,9 +1,9 @@
-# View
+Theme = require "components/Theme"
+theme = undefined
 
 class exports.View extends ScrollComponent
 	constructor: (options = {}) ->
-		
-		@app = options.app
+		theme = Theme.theme
 
 		# ---------------
 		# Options

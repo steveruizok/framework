@@ -1,17 +1,17 @@
-{ theme } = require 'components/Theme'
+Theme = require "components/Theme"
+theme = undefined
 
 MODEL = 'textInput'
 
 class exports.TextInput extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
 
 		# TODO
 		# * Scroll to Input when on a mobile device (with screen keyboard)
 
 		# ---------------
 		# Options
-
-		@app = options.app
 
 		_.defaults options,
 			name: 'TextInput'

@@ -1,14 +1,14 @@
-{ theme } = require 'components/Theme'
+Theme = require "components/Theme"
+theme = undefined
 
 MODEL = "component"
 
 class exports.NewComponent extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
 
 		# ---------------
 		# Options
-		
-		@app = options.app
 
 		_.defaults options,
 			name: 'New Component'

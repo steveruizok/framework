@@ -1,8 +1,9 @@
-# Separator
+Theme = require "components/Theme"
+theme = undefined
 
 class exports.Separator extends Layer
 	constructor: (options = {}) ->
-		@app = options.app
+		theme = Theme.theme
 		
 		_.defaults options,
 			name: 'Separator'

@@ -1,7 +1,10 @@
-# Header
+Theme = require "components/Theme"
+theme = undefined
 
 class exports.Header extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
+		
 		_.assign options,
 			width: Screen.width
 			height: 72
@@ -16,8 +19,8 @@ class exports.Header extends Layer
 			showLayers: true
 
 		_.assign @,
-			app: options.app,
 			safari: options.safari
+			app: options.app
 		
 		super options
 

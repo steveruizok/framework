@@ -1,15 +1,15 @@
-{ theme } = require 'components/Theme'
+Theme = require "components/Theme"
+theme = undefined
 
 MODEL = "select"
 OPTION_MODEL = "option"
 
 class exports.Select extends Layer
 	constructor: (options = {}) ->
+		theme = Theme.theme
 
 		# ---------------
 		# Options
-		
-		@app = options.app
 
 		_.defaults options,
 			name: 'Select'
