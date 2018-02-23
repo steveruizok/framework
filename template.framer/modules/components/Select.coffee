@@ -13,7 +13,7 @@ class exports.Select extends Layer
 
 		_.defaults options,
 			name: 'Select'
-			height: 48
+			height: theme[MODEL]['default'].height ? 48
 			clip: false
 			animationOptions:
 				time: .2
@@ -38,11 +38,13 @@ class exports.Select extends Layer
 
 		# SelectedContent
 
-		@textLayer = new Body2
+		@textLayer = new Body1
 			name: '.'
 			parent: @
 			width: @width
-			padding: theme[MODEL].default.padding ? 12
+			x: theme[MODEL].default.padding ? 12
+			y: Align.center()
+			backgroundColor: theme[MODEL].default.backgroundColor ? white
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
 			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
@@ -57,12 +59,6 @@ class exports.Select extends Layer
 			width: Utils.px(@width)
 			height: Utils.px(@height)
 			'-webkit-appearance': 'none'
-			padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
-			backgroundColor: theme[MODEL].default.backgroundColor ? white
-			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
-			fontSize: Utils.px(theme[MODEL].default.fontSize) ? 13
-			textAlign: theme[MODEL].default.textAlign ? "left"
-			textTransform: theme[OPTION_MODEL].default.textTransform
 
 		last = 0
 
@@ -107,7 +103,7 @@ class exports.Select extends Layer
 			parent: @
 			x: Align.right(-8)
 			y: Align.center
-			icon: 'menu-down'
+			icon: theme[MODEL].default.icon ? 'menu-down'
 
 		# must be set before theme changes
 
@@ -286,7 +282,7 @@ class Option extends Layer
 		# ---------------
 		# Layers
 
-		@textLayer = new Body2
+		@textLayer = new Body1
 			x: 0
 			y: 0
 			text: @value

@@ -7,13 +7,23 @@ class exports.Button extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
 
+		# light primary
+		if !options.dark and !options.secondary
+			@palette = 'light_primary'
+		else if !options.dark and options.secondary
+			@palette = 'light_secondary'
+		else if options.dark and !options.secondary
+			@palette = 'dark_primary'
+		else if options.dark and options.secondary
+			@palette = 'dark_secondary'
+
 		# ---------------
 		# Options
 		
 		_.defaults options,
 			x: 0
 			y: 0
-			height: 48
+			height: theme[MODEL][@palette]['default'].height ? 48
 			text: 'Get Started'
 			animationOptions:
 				time: .2
@@ -24,16 +34,6 @@ class exports.Button extends Layer
 			disabled: false
 			icon: undefined
 			select: => null
-
-		# light primary
-		if !options.dark and !options.secondary
-			@palette = 'light_primary'
-		else if !options.dark and options.secondary
-			@palette = 'light_secondary'
-		else if options.dark and !options.secondary
-			@palette = 'dark_primary'
-		else if options.dark and options.secondary
-			@palette = 'dark_secondary'
 
 		@customTheme = if options.backgroundColor? and options.color? then @_getCustomTheme(options.color, options.backgroundColor) else undefined
 		
@@ -58,11 +58,12 @@ class exports.Button extends Layer
 			height: @height
 			backgroundColor: null
 			
-		@textLayer = new H5
+		@textLayer = new Body1
 			name: 'TextLayer'
 			parent: @content
-			y: Align.center()
+			y: Align.center(2)
 			textAlign: 'center'
+			fontWeight: palette.fontWeight
 			color: palette.color
 			text: options.text ? ''
 
@@ -105,7 +106,7 @@ class exports.Button extends Layer
 			if options.width
 				@content.width = @width
 				@content.x = 0
-				@textLayer.point = Align.center()
+				@textLayer.x = Align.center()
 			else
 				@content.width = @textLayer.width
 				@content.x = 22
@@ -114,7 +115,7 @@ class exports.Button extends Layer
 			@on "change:width", =>
 				@content.x = 0
 				@content.width = @width
-				@textLayer.point = Align.center()
+				@textLayer.x = Align.center()
 
 
 		# Fix position, now that we have our size
@@ -195,6 +196,7 @@ class exports.Button extends Layer
 		return customTheme
 
 	_setTheme: (value) =>
+		@animateStop()
 		props = @customTheme?[value] ? _.defaults(_.clone(@customOptions), theme[MODEL][@palette][value])
 		if @__instancing then @props = props else @animate props
 

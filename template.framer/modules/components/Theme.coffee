@@ -3,15 +3,6 @@
 # --------------------------
 # Input Styling
 
-Utils.insertCSS("""
-	*:focus { outline: 0; }
-	textarea { resize: none; }
-
- 	input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
- 	  -webkit-text-fill-color: rgba(0,0,0,.5);
- 	}
-""")
-
 updateTheme = (values = {}) ->
 	theme =
 		# --------------------------
@@ -429,8 +420,23 @@ updateTheme = (values = {}) ->
 					backgroundColor: null
 					opacity: 1
 					shadowColor: 'rgba(0,0,0,0)'
+
+
+	combinedTheme = _.merge(theme, values)
+
+	Utils.insertCSS("""
+		*:focus { outline: 0; }
+		textarea { resize: none; }
+
+	 	input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+	 	  -webkit-text-fill-color: #{combinedTheme.textInput.default.color};
+	 	  font-family: #{combinedTheme.typography.Sans.fontFamily};
+	 	  font-size: #{Utils.px(combinedTheme.typography.Body1.fontSize)};
+	 	  font-weight: #{combinedTheme.typography.Body1.fontWeight};
+	 	}
+	""")
 		
-	exports.theme = _.merge(theme, values)
+	exports.theme = combinedTheme
 
 
 # --------------------------

@@ -18,6 +18,7 @@ class exports.TextInput extends Layer
 			width: 260
 			placeholder: "Placeholder"
 			disabled: false
+			clip: true
 			value: ''
 			animationOptions:
 				time: .15
@@ -26,7 +27,7 @@ class exports.TextInput extends Layer
 		delete options.label
 
 		_.assign options,
-			height: 48
+			height: theme[MODEL].default.height ? 48
 
 		@customOptions =
 			color: options.color
@@ -76,11 +77,12 @@ class exports.TextInput extends Layer
 			height: Utils.px(@height)
 			padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
 			backgroundColor: theme[MODEL].default.backgroundColor ? white
-			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
-			fontSize: Utils.px(options.fontSize ? theme[MODEL].default.fontSize ? 13)
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
 			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
-
+			fontFamily: options.fontFamily ? theme.typography.Body1.fontFamily ? "Helvetica"
+			fontSize: Utils.px(options.fontSize ? theme.typography.Body1.fontSize ? 13)
+			fontWeight: options.fontWeight ? theme[MODEL].default.fontWeight ? theme.typography.Body1.fontWeight ? 500
+			
 		# must be set before theme changes
 
 		Utils.linkProperties @, @_input.style, "color"

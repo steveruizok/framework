@@ -10,10 +10,13 @@ defaultColors =
 	blue: '#5399c3'
 	green: '#599FA0'
 
-updateColors = (colors) ->
 
-	colors = _.merge(_.clone(defaultColors), colors)
-	exports.colors = colors
+updateColors = (newColors = {}, soloColors = {}) ->
+
+	for k, v of soloColors
+		window[k] = new Color(v)
+
+	colors = _.merge(_.clone(defaultColors), newColors)
 
 	# Set up shades
 
@@ -45,6 +48,9 @@ updateColors = (colors) ->
 	for color, value of colors
 		colors[color] = new Color(value)
 		window[color] = new Color(value)
+
+	exports.colors = _.merge(colors, soloColors)
+
 
 exports.colors = undefined
 exports.updateColors = updateColors

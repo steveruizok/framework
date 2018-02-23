@@ -18,14 +18,23 @@ theme = framework.theme.theme
 # and place the component's name (as a string) into
 # the componentNames array.
 
-{ Donut } = require 'cs-components/Donut'
-{ Card } = require 'cs-components/Card'
-# { Example } = require 'cs-components/Example'
+{ Circle } = require 'myTheme-components/Circle'
+# { Square } = require 'myTheme-components/Square'
 
 componentNames = [
-	'Donut'
-	'Card'
+	'Circle'
+#	'Square'
 	]
+
+# -----------------
+# Fonts
+
+Utils.insertCSS("""
+ 	@font-face {
+		font-family: 'MuktaMahee';
+		src: url('modules/myTheme-components/fonts/MuktaMahee-Regular.ttf'); 
+	}
+""")
 
 
 # -----------------
@@ -40,7 +49,7 @@ componentNames = [
 # You can change the value of the default colors (commented out
 # in the list below), but you can't remove them.
 
-themeColors = {
+shadeColors =
 	# black: '#252729'
 	# grey: '#c1c1c2'
 	# yellow: '#ffd16d'
@@ -49,40 +58,20 @@ themeColors = {
 	# beige: '#eae5e0'
 	# blue: '#5399c3'
 	# green: '#599FA0'
-}
+
+# You can also add colors without giving them the full shade treatment.
+# These colors will still be available as global variables in your project,
+# but they won't have shade50, shade40, etc.
+
+soloColors =
+	orange: "#dcaa74"
+	green: "#dcaa74"
+	blue: "#547190"
 
 
-# -----------------
-# Fonts
-
-# You can add custom your custom fonts here. You'll also have to
-# sure to change the typography styles to use them (see below).
-
- Utils.insertCSS("""
- 	@font-face {
-		font-family: 'Aktiv Grotesk';
-		font-weight: 200;
-		src: url('modules/cs-components/fonts/AktivGrotesk_W_Hair.woff'); 
-	}
-
-	@font-face {
-		font-family: 'Aktiv Grotesk';
-		font-weight: 300;
-		src: url('modules/cs-components/fonts/AktivGrotesk_W_Lt.woff'); 
-	}
-
-	@font-face {
-		font-family: 'Aktiv Grotesk';
-		font-weight: 400;
-		src: url('modules/cs-components/fonts/AktivGrotesk_W_Rg.woff'); 
-	}
-
-	@font-face {
-		font-family: 'Aktiv Grotesk';
-		font-weight: 500;
-		src: url('modules/cs-components/fonts/AktivGrotesk_W_Md.woff'); 
-	}
-	""")
+# don't change this line -----------------------------
+framework.colors.updateColors(shadeColors, soloColors)
+# ----------------------------------------------------
 
 
 # -----------------
@@ -92,33 +81,31 @@ themeColors = {
 # Check components/Theme for the defaults - but don't 
 # change those defaults!
 
-theme.typography.Serif =
-	fontFamily: 'Aktiv Grotesk'
-
-theme.typography.Sans =
-	fontFamily: 'Aktiv Grotesk'
-
-
-
-
-
-
-
+themeStyles = 
+	# ----------
+	# Typography
+	#
+	typography: 
+		Serif:
+			fontFamily: 'Times New Roman'
+		Sans:
+			fontFamily: 'MuktaMahee'
 
 
 
 # -----------------
-# Blood-slick machinery
+# Blood-Slick machinery
 #
 # Here's where your components get processed.
 # Don't change this part!
 
-_.assign framework.colors.colors, themeColors
-framework.theme.updateTheme()
+framework.theme.updateTheme(themeStyles)
 framework.typography.updateTypography()
+
 
 componentNames.forEach (componentName) =>
 	window[componentName] = class FrameworkComponent extends eval(componentName)
 		constructor: (options = {}) ->
 			@app = framework.app
 			super options
+
