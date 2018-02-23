@@ -3,6 +3,8 @@ theme = require 'components/Theme'
 colors = require 'components/Colors'
 typography = require 'components/Typography'
 
+colors.updateColors()
+
 # disable hints
 Framer.Extras.Hints.disable()
 

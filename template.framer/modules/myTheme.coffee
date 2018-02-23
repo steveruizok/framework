@@ -18,13 +18,13 @@ theme = framework.theme.theme
 # and place the component's name (as a string) into
 # the componentNames array.
 
-
-{ Circle } = require 'myTheme-components/Circle'
-# { Square } = require 'myTheme-components/Square'
+{ Donut } = require 'cs-components/Donut'
+{ Card } = require 'cs-components/Card'
+# { Example } = require 'cs-components/Example'
 
 componentNames = [
-	'Circle'
-#	'Square'
+	'Donut'
+	'Card'
 	]
 
 
@@ -40,9 +40,7 @@ componentNames = [
 # You can change the value of the default colors (commented out
 # in the list below), but you can't remove them.
 
-themeColors =
-	primary: '#0085dd'
-	secondary: '#23c962'
+themeColors = {
 	# black: '#252729'
 	# grey: '#c1c1c2'
 	# yellow: '#ffd16d'
@@ -51,8 +49,40 @@ themeColors =
 	# beige: '#eae5e0'
 	# blue: '#5399c3'
 	# green: '#599FA0'
+}
 
 
+# -----------------
+# Fonts
+
+# You can add custom your custom fonts here. You'll also have to
+# sure to change the typography styles to use them (see below).
+
+ Utils.insertCSS("""
+ 	@font-face {
+		font-family: 'Aktiv Grotesk';
+		font-weight: 200;
+		src: url('modules/cs-components/fonts/AktivGrotesk_W_Hair.woff'); 
+	}
+
+	@font-face {
+		font-family: 'Aktiv Grotesk';
+		font-weight: 300;
+		src: url('modules/cs-components/fonts/AktivGrotesk_W_Lt.woff'); 
+	}
+
+	@font-face {
+		font-family: 'Aktiv Grotesk';
+		font-weight: 400;
+		src: url('modules/cs-components/fonts/AktivGrotesk_W_Rg.woff'); 
+	}
+
+	@font-face {
+		font-family: 'Aktiv Grotesk';
+		font-weight: 500;
+		src: url('modules/cs-components/fonts/AktivGrotesk_W_Md.woff'); 
+	}
+	""")
 
 
 # -----------------
@@ -63,10 +93,10 @@ themeColors =
 # change those defaults!
 
 theme.typography.Serif =
-	fontFamily: 'Times New Roman'
+	fontFamily: 'Aktiv Grotesk'
 
 theme.typography.Sans =
-	fontFamily: 'Avenir'
+	fontFamily: 'Aktiv Grotesk'
 
 
 

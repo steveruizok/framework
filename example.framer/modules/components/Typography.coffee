@@ -10,24 +10,28 @@ updateTypography = ->
 
 			window[className] = class FrameworkComponent extends TextLayer 
 				constructor: (options = {}) ->
-					theme = Theme.theme
 					@app = framework.app
-					_.defaults options, style
-			
-					for key, value of theme.typography[style.style]
-						options[key] = value
+
+					theme = Theme.theme 
+
+					_.defaults options, theme.typography[className]
+					_.defaults options, theme.typography[style.style]
+
+					delete options.style
 
 					super options
 
 			window[className + 'Link'] = class FrameworkComponent extends Link 
 				constructor: (options = {}) ->
-					theme = Theme.theme
 					@app = framework.app
-					_.defaults options, style
 
-					for key, value of theme.typography[style.style]
-						options[key] = value
-			
+					theme = Theme.theme 
+
+					_.defaults options, theme.typography[className]
+					_.defaults options, theme.typography[style.style]
+
+					delete options.style
+
 					super options
 
 exports.updateTypography = updateTypography

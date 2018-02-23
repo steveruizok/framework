@@ -1,6 +1,6 @@
 # set up colors
 
-colors =
+defaultColors =
 	black: '#252729'
 	grey: '#c1c1c2'
 	yellow: '#ffd16d'
@@ -10,7 +10,10 @@ colors =
 	blue: '#5399c3'
 	green: '#599FA0'
 
-updateColors = ->
+updateColors = (colors) ->
+
+	colors = _.merge(_.clone(defaultColors), colors)
+	exports.colors = colors
 
 	# Set up shades
 
@@ -43,7 +46,6 @@ updateColors = ->
 		colors[color] = new Color(value)
 		window[color] = new Color(value)
 
-updateColors()
-
-exports.colors = colors
+exports.colors = undefined
 exports.updateColors = updateColors
+updateColors()

@@ -10,19 +10,10 @@ Utils.insertCSS("""
  	input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
  	  -webkit-text-fill-color: rgba(0,0,0,.5);
  	}
- 	
- 	*/
- 	@font-face {
- 		font-family: 'Aktiv Grotesk';
- 		font-weight: 200;
- 		src: url('modules/cs-components/fonts/AktivGrotesk_W_Hair.woff'); 
- 	/*
- 	}
 """)
 
-updateTheme = ->
-	updateColors()
-	exports.theme =
+updateTheme = (values = {}) ->
+	theme =
 		# --------------------------
 		# Icons
 		icons: icons
@@ -30,13 +21,13 @@ updateTheme = ->
 		# Typography
 		typography:
 			Serif:
-				color: '#000'
+				color: black
 				fontFamily: 'Georgia'
 			Sans:
-				color: '#000'
+				color: black
 				fontFamily: 'Helvetica'
 			Mono:
-				color: '#333'
+				color: black40
 				fontFamily: 'Menlo'
 			H1:
 				name: 'H1'
@@ -56,7 +47,7 @@ updateTheme = ->
 				color: black
 			H3:
 				name: 'H3'
-				style: 'sans'
+				style: 'Sans'
 				fontSize: 30
 				letterSpacing: -0.01
 				lineHeight: 1
@@ -439,6 +430,9 @@ updateTheme = ->
 					opacity: 1
 					shadowColor: 'rgba(0,0,0,0)'
 		
+	exports.theme = _.merge(theme, values)
+
+
 # --------------------------
 # Icons
 icons =
