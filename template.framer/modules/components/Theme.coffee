@@ -82,6 +82,7 @@ updateTheme = (values = {}) ->
 				name: 'Body1'
 				style: 'Sans'
 				fontSize:  16
+				lineHeight: 1.25
 				fontWeight: 500
 				letterSpacing: 0
 				color: black
@@ -420,7 +421,6 @@ updateTheme = (values = {}) ->
 					backgroundColor: null
 					opacity: 1
 					shadowColor: 'rgba(0,0,0,0)'
-
 
 	combinedTheme = _.merge(theme, values)
 

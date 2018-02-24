@@ -6,6 +6,8 @@ MODEL = "tooltip"
 class exports.Tooltip extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -17,7 +19,7 @@ class exports.Tooltip extends Layer
 				colorModel: 'husl'
 
 			text: 'Tooltip'
-			direction: 'below'
+			position: 'below'
 
 		@customTheme = undefined
 		@customOptions = {}
@@ -26,12 +28,13 @@ class exports.Tooltip extends Layer
 
 		_.assign @,
 			text: options.text 
-			direction: options.direction
+			position: options.position
 
 		# ---------------
 		# Layers
 		
 		@diamond = new Layer
+			name: 'Diamond'
 			parent: @
 			size: 12
 			rotation: 45
@@ -39,6 +42,7 @@ class exports.Tooltip extends Layer
 		Utils.linkProperties @, @diamond, 'backgroundColor'
 
 		@textLayer = new Body2
+			name: 'Text'
 			color: white
 			padding: {top: 15, bottom: 15, left: 15, right: 15}
 			text: @text
@@ -54,14 +58,20 @@ class exports.Tooltip extends Layer
 		# ---------------
 		# Events
 
-
-
 		# ---------------
 		# Definitions
 	
-		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.define @, 'direction', options.direction, @_showDirection, _.isString, "Tooltip.direction must be a string."
+		delete @__constructor
 		
+		#				Property	Initial value 		Callback 		Validation	Error
+		Utils.define @, 'theme', 	'default', 			@_setTheme
+		Utils.define @, 'position',	options.position, 	@_showPosition,	_.isString,	"Tooltip.position must be a string."
+		
+		delete @__instancing
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Methods
@@ -93,6 +103,7 @@ class exports.Tooltip extends Layer
 				shadowColor: 'rgba(0,0,0,.16)'
 			}
 
+
 	_setTheme: (value) =>
 		@animateStop()
 		props = @customTheme?[value] ? _.defaults(
@@ -102,7 +113,8 @@ class exports.Tooltip extends Layer
 
 		if @__instancing then @props = props else @animate props
 
-	_showDirection: (string) ->
+
+	_showPosition: (string) ->
 		switch string
 			when "above"
 				@diamond.props =
@@ -129,7 +141,7 @@ class exports.Tooltip extends Layer
 					rotationY: 0
 					rotationX: 40
 			else
-				throw 'Tooltip.direction must be either "above", "right", "below", or "left".'
+				throw 'Tooltip.position must be either "above", "right", "below", or "left".'
 
 
 	# ---------------

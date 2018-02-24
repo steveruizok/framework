@@ -1,10 +1,13 @@
 Theme = require "components/Theme"
 theme = undefined
 
+MODEL = 'checkbox'
 
 class exports.Radiobox extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -39,7 +42,6 @@ class exports.Radiobox extends Layer
 			x: @x - 4
 			y: @y - 4
 
-
 		# ---------------
 		# Layers
 		
@@ -62,16 +64,26 @@ class exports.Radiobox extends Layer
 
 		# ---------------
 		# Definitions
+		
+		delete @__constructor
 
 		isLayer = (value) -> return value.on?
 		
 		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.define @, 'checked', options.checked, @_showChecked, _.isBoolean, 'Checkbox.checked must be a boolean (true or false)'
-		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, "Checkbox.hovered must be a boolean (true or false)."
-		Utils.define @, 'error', options.disabled, @_showError, _.isBoolean, "Checkbox.error must be a boolean (true or false)."
-		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Checkbox.disabled must be a boolean (true or false)."
-		Utils.define @, 'labelLayer', options.labelLayer, @_setLabelLayer, isLayer, "Checkbox.labelLayer must be a Layer type."
+		Utils.define @, 'checked', options.checked, @_showChecked, _.isBoolean, 'Radiobox.checked must be a boolean (true or false)'
+		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, "Radiobox.hovered must be a boolean (true or false)."
+		Utils.define @, 'error', options.disabled, @_showError, _.isBoolean, "Radiobox.error must be a boolean (true or false)."
+		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Radiobox.disabled must be a boolean (true or false)."
+		Utils.define @, 'labelLayer', options.labelLayer, @_setLabelLayer, isLayer, "Radiobox.labelLayer must be a Layer type."
 	
+		delete @__instancing
+		
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
+
+
 	# ---------------
 	# Private Methods
 
@@ -79,10 +91,11 @@ class exports.Radiobox extends Layer
 		@animateStop()
 		props = @customTheme?[value] ? _.defaults(
 			_.clone(@customOptions), 
-			theme.radiobox[value]
+			theme[MODEL][value]
 			)
 
-		if @__instancing then @props = props else @animate props
+		if @__instancing then @props = props 
+		else @animate props
 
 	_showChecked: (bool) =>
 		if not bool

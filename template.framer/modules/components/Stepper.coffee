@@ -6,6 +6,8 @@ MODEL = 'segment'
 class exports.Stepper extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -56,9 +58,11 @@ class exports.Stepper extends Layer
 			width: @width
 			text: options.value
 
+		# Buttons
+
 		@buttons = @options[0..1].map (option, i) =>
 			button = new Button
-				name: '.'
+				name: 'Button ' + i
 				parent: @
 				x: 0
 				y: 0
@@ -80,7 +84,6 @@ class exports.Stepper extends Layer
 			button._element.childNodes[0].style['border-radius'] = radius
 
 			return button
-
 
 		# set positions
 
@@ -104,7 +107,6 @@ class exports.Stepper extends Layer
 			backgroundColor: white
 			height: _.maxBy(@children, 'maxY')?.maxY
 
-
 		delete @__constructor
 
 		# ---------------
@@ -115,8 +117,19 @@ class exports.Stepper extends Layer
 		# ---------------
 		# Definitions
 
-		Utils.define @, 'value', options.value, @_showValue, _.isNumber, 'Stepper.value must be a number.'
+		delete @__constructor
+		button.__instancing = true for button in @buttons
+		
+		#				Property	Initial value 	Callback 		Validation	Error
+		Utils.define @, 'value',	options.value,	@_showValue,	_.isNumber,	'Stepper.value must be a number.'
 
+		delete button.__instancing for button in @buttons
+		delete @__instancing
+
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Methods

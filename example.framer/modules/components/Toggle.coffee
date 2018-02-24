@@ -6,6 +6,8 @@ MODEL = 'segment'
 class exports.Toggle extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -28,9 +30,6 @@ class exports.Toggle extends Layer
 		@options = options.options
 		@icon = options.icon
 
-		@__instancing = true
-		@__constructor = true
-
 		super options
 
 		# ---------------
@@ -43,7 +42,7 @@ class exports.Toggle extends Layer
 
 		@buttons = @options[0..1].map (option, i) =>
 			button = new Button
-				name: '.'
+				name: 'Button ' + i
 				parent: @
 				text: if @icon then '' else option
 				icon: if @icon then option
@@ -80,21 +79,25 @@ class exports.Toggle extends Layer
 		# ---------------
 		# Events
 
-
-
 		# ---------------
 		# Definitions
-
+		# 
+		isOk = (value) -> _.isBoolean(value) or _.isUndefined(value)
 
 		delete @__constructor
+		button.__instancing = true for button in @buttons
 
-		Utils.define @, 'activeLayer', null, @_showActive
+		#				Property		Initial value 		Callback 		Validation	Error
+		Utils.define @, 'activeLayer', 	null, 				@_showActive
+		Utils.define @, 'toggled', 		options.toggled, 	@_setToggled, 	isOk, 		'Toggle.toggled must be a boolean (true or false) or undefined.'
 
+		delete button.__instancing for button in @buttons
 		delete @__instancing
 
-		isOk = (value) -> _.isBoolean(value) or _.isUndefined(value)
-		Utils.define @, 'toggled', options.toggled, @_setToggled, isOk, 'Toggle.toggled must be a boolean (true or false) or undefined.'
-
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Methods
@@ -146,12 +149,14 @@ class exports.Toggle extends Layer
 
 		return customTheme
 
+
 	_setToggled: (bool) =>
 		if bool is null
 			@active = -1
 			return
 
 		@active = if bool then 1 else 0
+
 
 	_showActive: (button) =>
 		if not button
@@ -176,10 +181,8 @@ class exports.Toggle extends Layer
 			sib.theme = "default"
 			sib.animate( @customTheme?.default.default ? theme[MODEL].default.default)
 
-
 	# ---------------
 	# Public Methods
-
 
 	# ---------------
 	# Special Definitions

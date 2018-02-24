@@ -4,6 +4,11 @@ theme = undefined
 class exports.SortableComponent extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
+
+		# ---------------
+		# Options
 		
 		_.defaults options,
 			name: 'Sortable Component'
@@ -27,14 +32,30 @@ class exports.SortableComponent extends Layer
 			closeGaps: options.closeGaps
 			defaultState: options.defaultState
 			draggingState: options.draggingState
+
+		# ---------------
+		# Layers
+
+		# ---------------
+		# Events
 			
 		@on "change:children", @_updateChildren
 		@_context.on "layer:destroy", @_checkForLostChildren
+
+		# ---------------
+		# Definitions
+
+		delete @__constructor
+		delete @__instancing
+
+	# ---------------
+	# Private Methods
 		
 	_checkForLostChildren: (layer) =>
 		if layer.parent is @
 			@emit "change:children", {added: [], removed: [layer]}
-		
+	
+
 	_updateChildren: (layers) =>
 		# scrub up layers that were removed as children
 		@_removeEvents(layer) for layer in layers.removed
@@ -64,6 +85,7 @@ class exports.SortableComponent extends Layer
 				
 			return position
 	
+
 	_setEvents: (layer) =>
 		# skip if this layer already has suffered the treatment
 		return if layer._hasSortableEvents
@@ -102,6 +124,7 @@ class exports.SortableComponent extends Layer
 		# make a note that this layer has already been treated
 		layer._hasSortableEvents = true
 
+
 	# clear events when a layer is lost as a child
 	_removeEvents: (layer) ->
 		delete layer._takePosition
@@ -120,6 +143,7 @@ class exports.SortableComponent extends Layer
 		@bringToFront()
 		@animate "dragging"
 	
+
 	# while the user is dragging...
 	_duringSearch: ->
 		if not @_sortableStarted
@@ -139,6 +163,7 @@ class exports.SortableComponent extends Layer
 		else if @midY < below?.midY
 			below.layer._takePosition( @position, true )
 			@_takePosition( below, false )
+	
 	
 	# ... and when the user ends the drag
 	_endSearch: ->

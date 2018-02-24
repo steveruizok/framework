@@ -4,8 +4,8 @@ theme = undefined
 class exports.Icon extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
-
 		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -34,12 +34,6 @@ class exports.Icon extends Layer
 		@_element.appendChild(@ctx)
 
 		# ---------------
-		# Definitions
-		
-		Utils.define @, "icon", options.icon, @_refresh, _.isString, 'Icon.icon must be a string.'
-
-
-		# ---------------
 		# Events
 
 		@on "change:color", @_refresh
@@ -47,11 +41,24 @@ class exports.Icon extends Layer
 
 		@color = options.color
 
+		# ---------------
+		# Definitions
+		
+		delete @__constructor
+		
+		Utils.define @, "icon", options.icon, @_refresh, _.isString, 'Icon.icon must be a string.'
+
+		delete @__instancing
+		
+		# ---------------
+		# Cleanup
+
 		@_setSize()
+
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Methods
-
 
 	_setSize: =>
 		Utils.setAttributes @ctx,
@@ -81,3 +88,6 @@ class exports.Icon extends Layer
 		iconObj[name] = svg
 		theme.icons = _.merge(theme.icons, iconObj)
 		@icon = name
+
+	# ---------------
+	# Special Definitions

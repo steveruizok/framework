@@ -6,6 +6,8 @@ MODEL = 'segment'
 class exports.Segment extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -86,17 +88,23 @@ class exports.Segment extends Layer
 		# Events
 
 
-
 		# ---------------
 		# Definitions
-
+		
 		delete @__constructor
+		button.__instancing = true for button in @buttons
 
 		Utils.define @, 'activeLayer', undefined, @_showActive
 
+		delete button.__instancing for button in @buttons
 		delete @__instancing
 
 		@active = options.active
+
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 
 	# ---------------

@@ -4,6 +4,8 @@ theme = undefined
 class exports.View extends ScrollComponent
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -41,13 +43,18 @@ class exports.View extends ScrollComponent
 		# ---------------
 		# Definitions
 		
-		Utils.define @, 'title', options.title, undefined, _.isString, 'View.title must be a string.'
-		Utils.define @, 'padding', options.padding, undefined, _.isObject, 'View.padding must be an object.'
-		Utils.define @, 'load', options.load, undefined, _.isFunction, 'View.load must be a function.'
-		Utils.define @, 'unload', options.unload, undefined, _.isFunction, 'View.unload must be a function.'
-		Utils.define @, 'oneoff', options.oneoff, undefined, _.isBoolean, 'View.oneoff must be a boolean (true or false).'
-		Utils.define @, 'preserveContent', options.preserveContent, undefined, _.isBoolean, 'View.preserveContent must be a boolean (true or false).'
+		delete @__constructor
 		
+		# 				Property			Initial value 			Callback 	Validation		Error
+		Utils.define @, 'title', 			options.title, 			undefined, 	_.isString, 	'View.title must be a string.'
+		Utils.define @, 'padding',			options.padding, 		undefined, 	_.isObject, 	'View.padding must be an object.'
+		Utils.define @, 'load', 			options.load, 			undefined, 	_.isFunction, 	'View.load must be a function.'
+		Utils.define @, 'unload', 			options.unload, 		undefined, 	_.isFunction, 	'View.unload must be a function.'
+		Utils.define @, 'oneoff', 			options.oneoff, 		undefined, 	_.isBoolean, 	'View.oneoff must be a boolean (true or false).'
+		Utils.define @, 'preserveContent',	options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
+		
+		delete @__instancing
+
 		# unless padding is specifically null, set padding defaults
 		if @padding?
 			_.defaults @padding,
@@ -61,21 +68,18 @@ class exports.View extends ScrollComponent
 		@content.on "change:children", @_fitChildrenToPadding
 		@app.on "change:windowFrame", @_updateSize
 
-
-		@delayedUpdate = Utils.throttle 1, @_delayUpdateSize
 	# ---------------
 	# Private Functions
 	
 	_delayUpdateSize: =>
 		Utils.delay 1, @_updateSize
 
+
 	_updateSize: (windowFrame) =>
 		# perhaps doing nothing is the best thing to do
 		@keyLayer?.y = 8 + (@app.windowFrame.y - @y)
 		return
-	# 	_.assign @,
-	# 		y: @app.windowFrame.y
-	# 		height: @app.windowFrame.height
+
 			
 	_fitChildrenToPadding: (children) =>
 		return if not @padding
@@ -125,11 +129,10 @@ class exports.View extends ScrollComponent
 			@destroy()
 			return
 
-
-
 	# ---------------
 	# Public Methods
 	
+
 	refresh: (loadingTime) =>
 		loadingTime ?= _.random(.3, .5)
 
@@ -138,8 +141,13 @@ class exports.View extends ScrollComponent
 		
 		Utils.delay loadingTime, => @app.showNext(@)
 
+
 	onLoad: (callback) -> 	
 		@load = callback
 
+
 	onUnload: (callback) -> 
 		@unload = callback
+
+	# ---------------
+	# Special Definitions

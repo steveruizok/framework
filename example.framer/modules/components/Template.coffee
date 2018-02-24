@@ -6,6 +6,8 @@ MODEL = "component"
 class exports.NewComponent extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -23,20 +25,26 @@ class exports.NewComponent extends Layer
 
 		# ---------------
 		# Layers
-		
-
 
 		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
+		
+		# ---------------
 		# Events
-
-
 
 		# ---------------
 		# Definitions
 		
-		Utils.define @, 'selected', options.selected, @showSelected, _.isBoolean, 'Selected must be a boolean (true or false).'
-		Utils.define @, 'theme', 'default', @_setTheme
-
+		delete @__constructor
+		
+		#				Property	Initial value 		Callback 		Validation		Error
+		Utils.define @, 'theme', 	'default', 			@_setTheme
+		Utils.define @, 'selected',	options.selected,	@showSelected,	_.isBoolean,	'Selected must be a boolean (true or false).'
+		
+		
+		delete @__instancing
 
 
 	# ---------------
@@ -69,6 +77,7 @@ class exports.NewComponent extends Layer
 				shadowColor: 'rgba(0,0,0,.16)'
 			}
 
+
 	_setTheme: (value) =>
 		@animateStop()
 		props = @customTheme?[value] ? _.defaults(
@@ -76,9 +85,8 @@ class exports.NewComponent extends Layer
 			theme[MODEL][value]
 			)
 
-		if @__instancing then @props = props else @animate props
-
-
+		if @__instancing then @props = props 
+		else @animate props
 
 	# ---------------
 	# Public Methods

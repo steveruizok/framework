@@ -6,6 +6,8 @@ MODEL = 'link'
 class exports.Link extends TextLayer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -37,8 +39,8 @@ class exports.Link extends TextLayer
 
 		# ---------------
 		# Definitions
-
-		@__instancing = true
+		
+		delete @__constructor
 
 		Utils.define @, 'theme', 'default', @_setTheme, _.isString, "Link.theme must be a string."
 		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Link.disabled must be a boolean (true or false)."

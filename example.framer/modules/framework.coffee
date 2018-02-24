@@ -16,6 +16,7 @@ dumbthing?.style.width = "0px"
 { Button } = require 'components/Button'
 { Radiobox } = require 'components/Radiobox'
 { Checkbox } = require 'components/Checkbox'
+{ DocComponent } = require 'components/DocComponent'
 { Footer } = require 'components/Footer'
 { Header } = require 'components/Header'
 { Segment } = require 'components/Segment'
@@ -42,6 +43,7 @@ _.assign exports,
 		'Header', 
 		'Radiobox',
 		'Checkbox',
+		'DocComponent',
 		'Toggle',
 		'Tooltip',
 		'Select',

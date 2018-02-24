@@ -7,6 +7,8 @@ OPTION_MODEL = "option"
 class exports.Select extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# ---------------
 		# Options
@@ -114,8 +116,8 @@ class exports.Select extends Layer
 
 		# ---------------
 		# Definitions
-
-		@__instancing = true
+		
+		delete @__constructor
 
 		Utils.define @, 'opened', false, @_setOpened, _.isBoolean, "Select.opened must be a boolean (true or false)."
 		Utils.define @, 'theme', 'default', @_setTheme, _.isString, 'Select.theme must be a string.'
@@ -138,6 +140,11 @@ class exports.Select extends Layer
 		@onPan (event) =>
 			if Math.abs(event.offset.y) > 4
 				@_input.blur()
+		
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Methods

@@ -2,10 +2,11 @@ Theme = require "components/Theme"
 theme = undefined
 MODEL = 'button'
 
-
 class exports.Button extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# light primary
 		if !options.dark and !options.secondary
@@ -35,6 +36,7 @@ class exports.Button extends Layer
 			icon: undefined
 			select: => null
 			model: MODEL
+			loadTime: 0
 
 		@customTheme = if options.backgroundColor? and options.color? then @_getCustomTheme(options.color, options.backgroundColor) else undefined
 		
@@ -55,6 +57,8 @@ class exports.Button extends Layer
 
 		palette = theme[@model][@palette]['default']
 
+		# content container
+
 		@content = new Layer
 			name: "Content"
 			parent: @
@@ -62,10 +66,12 @@ class exports.Button extends Layer
 			height: @height
 			backgroundColor: null
 			
-		@textLayer = new Body1
+		# text layer
+		
+		@textLayer = new Label
 			name: 'TextLayer'
 			parent: @content
-			y: Align.center(2)
+			y: Align.center()
 			textAlign: 'center'
 			fontWeight: palette.fontWeight
 			color: palette.color
@@ -73,6 +79,17 @@ class exports.Button extends Layer
 
 		Utils.linkProperties @, @textLayer, "color"
 
+		# loading icon
+		
+		@loadingIcon = new Icon
+			name: 'Loading Icon'
+			parent: @content
+			icon: "loading"
+			color: palette.color
+			y: Align.center()
+			visible: false
+
+		Utils.linkProperties @, @loadingIcon, "color"
 
 		if options.icon? # show our icon...
 			
@@ -93,6 +110,7 @@ class exports.Button extends Layer
 					padding: {right: 4}
 
 			@content.width = _.maxBy(@content.children, 'maxX').maxX
+			@loadingIcon.x = Align.center()
 
 			if options.width
 				@content.x = Align.center()
@@ -103,24 +121,25 @@ class exports.Button extends Layer
 			@on "change:width", =>
 				@content.x = Align.center()
 
-			
-
 		else # if there's no icon...
 
 			if options.width
-				@content.width = @width
 				@content.x = 0
+				@content.width = @width
 				@textLayer.x = Align.center()
+				@loadingIcon.x = Align.center()
+
 			else
-				@content.width = @textLayer.width
 				@content.x = 22
+				@content.width = @textLayer.width
 				@width = @content.width + 44
+				@loadingIcon.x = Align.center()
 
 			@on "change:width", =>
 				@content.x = 0
 				@content.width = @width
 				@textLayer.x = Align.center()
-
+				@loadingIcon.x = Align.center()
 
 		# Fix position, now that we have our size
 
@@ -133,18 +152,20 @@ class exports.Button extends Layer
 
 		# ---------------
 		# Definitions
+		
+		delete @__constructor
 
-		@__instancing = true
-
-		Utils.define @, 'theme', "default", @_setTheme, _.isString, "Button.theme must be a string."
-		Utils.define @, 'dark', options.dark, undefined, _.isBoolean, "Button.dark must be a boolean (true or false).", 
-		Utils.define @, 'secondary', options.secondary, undefined, _.isBoolean, "Button.secondary must be a boolean (true or false).", 
-		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Button.disabled must be a boolean (true or false)."
-		Utils.define @, 'hovered', false, @_showHovered, undefined, _.isBoolean, "Button.hovered must be a boolean (true or false)."
-		Utils.define @, 'select', options.select, undefined, _.isFunction, "Button.select must be a function."
-
+		# Definitions:	Property		Initial value 		Callback 		Validation		Error
+		Utils.define @, 'theme', 		"default", 			@_setTheme, 	_.isString, 	"Button.theme must be a string."
+		Utils.define @, 'dark', 		options.dark, 		undefined, 		_.isBoolean, 	"Button.dark must be a boolean (true or false).", 
+		Utils.define @, 'secondary', 	options.secondary, 	undefined, 		_.isBoolean, 	"Button.secondary must be a boolean (true or false).", 
+		Utils.define @, 'select', 		options.select, 	undefined, 		_.isFunction, 	"Button.select must be a function."
+		Utils.define @, 'disabled', 	options.disabled, 	@_showDisabled, _.isBoolean, 	"Button.disabled must be a boolean (true or false)."
+		Utils.define @, 'hovered', 		false, 				@_showHovered, 	_.isBoolean, 	"Button.hovered must be a boolean (true or false)."
+		Utils.define @, 'loadTime', 	options.loadTime, 	undefined, 		_.isNumber,		"Button.loadTime must be a number."
+		Utils.define @, 'loading', 		options.loading,	@_showLoading, 	_.isBoolean,	"Button.loading must be a boolean (true or false)."
+		
 		delete @__instancing
-
 
 		# ---------------
 		# Events
@@ -157,16 +178,16 @@ class exports.Button extends Layer
 			@onTap @_doSelect
 
 		else
-
 			@onTouchStart (event) => @_showTouching(true, null, event)
 			@onTouchEnd (event) => @_showTouching(false, null, event)
 
 			@onTap @_showTapped
 			@onPan @_panOffTouch
 
-		for child in @children
-			if !options.showNames
-				child.name = '.'
+		# ---------------
+		# Cleanup
+
+		if not options.showSublayers then child.name = '.' for child in @children
 
 	# ---------------
 	# Private Methods
@@ -199,10 +220,59 @@ class exports.Button extends Layer
 		
 		return customTheme
 
+
 	_setTheme: (value) =>
 		@animateStop()
-		props = @customTheme?[value] ? _.defaults(_.clone(@customOptions), theme[@model][@palette][value])
-		if @__instancing then @props = props else @animate props
+		props = @customTheme?[value] ? _.defaults(
+			_.clone(@customOptions), 
+			theme[@model][@palette][value]
+			)
+
+		if @__instancing then @props = props 
+		else @animate props
+
+
+	_showLoading: (bool) =>
+		if bool is true
+			# show loading
+			for layer in [@iconLayer, @textLayer]
+				layer?.animate
+					opacity: 0
+					options: {time: .15}
+
+			_.assign @loadingIcon, 
+				visible: true
+				opacity: 0
+
+			@loadingIcon.animate
+				opacity: 1
+				options: {time: .15, delay: .15}
+
+			@loadingIcon.animate
+				rotation: 360
+				options:
+					curve: "linear"
+					time: 1
+					looping: true
+			return
+
+		# show not loading
+		@loadingIcon.once Events.AnimationEnd,
+			_.assign @loadingIcon, 
+				visible: false
+				opacity: 0
+				rotation: 0
+
+			@loadingIcon.animateStop()
+
+		@loadingIcon.animate
+			opacity: 0
+			options: {time: .15}
+
+		for layer in [@iconLayer, @textLayer]
+			layer?.animate
+				opacity: 1
+				options: {time: .15, delay: .15}
 
 	_showHovered: (bool) =>
 		return if @disabled
@@ -215,6 +285,7 @@ class exports.Button extends Layer
 		# show not hovered
 		@theme = 'default'
 
+
 	_showDisabled: (bool) =>
 		if bool
 			# show disabled
@@ -226,20 +297,6 @@ class exports.Button extends Layer
 		@theme = 'default'
 		@ignoreEvents = false
 
-	_doSelect: (event) =>
-		return if @disabled
-
-		try @select(event, @)
-		@emit "select", @
-
-	_panOffTouch: (event) => 
-		return if @_isTouching is false
-		return if @disabled
-		return if @theme is "default"
-
-		if Math.abs(event.offset.x) > @width/2 or
-		Math.abs(event.offset.y) > @height/2
-			@theme = "default"
 
 	_showTapped: =>
 		return if @disabled
@@ -264,6 +321,31 @@ class exports.Button extends Layer
 		@theme = "default"
 
 		unless silent then @_doSelect(event)
+
+
+	_doSelect: (event) =>
+		return if @disabled
+
+		if @loadTime > 0
+			@loading = true
+			Utils.delay @loadTime, => 
+				@select(event, @)
+				@emit "select", @
+				@loading = false
+			return
+
+		try @select(event, @)
+		@emit "select", @	
+
+
+	_panOffTouch: (event) => 
+		return if @_isTouching is false
+		return if @disabled
+		return if @theme is "default"
+
+		if Math.abs(event.offset.x) > @width/2 or
+		Math.abs(event.offset.y) > @height/2
+			@theme = "default"
 
 	# ---------------
 	# Public Methods

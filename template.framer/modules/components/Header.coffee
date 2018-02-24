@@ -4,6 +4,11 @@ theme = undefined
 class exports.Header extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
+
+		# ---------------
+		# Options
 		
 		_.assign options,
 			width: Screen.width
@@ -23,6 +28,9 @@ class exports.Header extends Layer
 			app: options.app
 		
 		super options
+
+		# ---------------
+		# Layers
 
 		if options.safari
 			_.assign @,
@@ -187,16 +195,31 @@ class exports.Header extends Layer
 			@_setTime()
 			Utils.interval 60, @_setTime
 
+		# ---------------
+		# Definitions
+		
+		delete @__constructor
+			
+		Utils.define @, 'title', options.title, @_setTitle
+
+		delete @__instancing
+		
+		# ---------------
+		# Events
+
 		@on "change:color", => 
 			Utils.align @children,
 				color: @color
 
-		# definitions
-			
-		Utils.define @, 'title', options.title, @_setTitle
+		# ---------------
+		# Cleanup
+
+		if not options.showSublayers then child.name = '.' for child in @children
+
+	# ---------------
+	# Private Methods
 
 	_showLoading: (bool, time) =>
-
 		if bool
 			# loading is true
 			_.assign @loadingLayer,
@@ -208,7 +231,6 @@ class exports.Header extends Layer
 				options:
 					time: time ? 2
 					curve: "linear"
-
 			return
 
 		# loading is false
@@ -216,13 +238,16 @@ class exports.Header extends Layer
 			width: 1
 			visible: false
 
+
 	_setTime: =>
 		d = new Date()
 		@statusBar.timeLayer.text = d.toLocaleTimeString(['en-US'], {hour: 'numeric', minute: '2-digit'})
 
+
 	_showPrevious: =>
 		return if not @backIcon.visible
 		@app.showPrevious()
+
 
 	_setTitle: (value) =>
 
@@ -233,6 +258,7 @@ class exports.Header extends Layer
 
 		value = _.truncate(value, {length: 22})
 		@titleLayer.text = value
+
 
 	_collapse: =>
 		if @app.chrome isnt "safari"
@@ -257,6 +283,7 @@ class exports.Header extends Layer
 			scale: .75
 			options: options
 
+
 	_expand: =>
 		if @app.chrome isnt "safari"
 			return
@@ -280,6 +307,10 @@ class exports.Header extends Layer
 			scale: 1
 			options: options
 
+	# ---------------
+	# Public Methods
+
+
 	updateTitle: (title) =>
 		if @app.chrome is "safari"
 			return
@@ -300,6 +331,9 @@ class exports.Header extends Layer
 			opacity: 0
 			options:
 				time: .2
+
+	# ---------------
+	# Special Definitions
 
 
 leftContent = """<svg width="57px" height="11px" viewBox="0 0 57 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

@@ -11,7 +11,7 @@ myView = new View
 	padding: null
 	key: "0.0.0"
 
-myView.onLoad (a, b, c) ->
+myView.onLoad ->
 	layer = new Layer
 		parent: @content
 		x: Align.center()
@@ -21,10 +21,10 @@ myView.onLoad (a, b, c) ->
 	button = new Button
 		parent: @content
 		x: Align.center
-		width: @width - 64
 		y: layer.maxY + 40
+		width: @width - 64
 		select: -> app.showNext(secondView, 1)
-
+	
 
 # Second View
 
@@ -48,7 +48,3 @@ secondView.onLoad ->
 		text: Utils.randomText(48, true)
 
 app.showNext myView
-
-# new Layer
-# 	backgroundColor: '#252729'
-

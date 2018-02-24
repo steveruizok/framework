@@ -6,6 +6,8 @@ MODEL = 'textInput'
 class exports.TextInput extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
+		@__constructor = true
+		@__instancing = true
 
 		# TODO
 		# * Scroll to Input when on a mobile device (with screen keyboard)
@@ -32,8 +34,6 @@ class exports.TextInput extends Layer
 		@customOptions =
 			color: options.color
 			backgroundColor: options.backgroundColor
-		
-		@__constructor = true
 
 		super options
 
@@ -43,7 +43,7 @@ class exports.TextInput extends Layer
 		# ---------------
 		# Layers
 
-		@textLayer = new Body1
+		@textLayer = new Body2
 			name: '.'
 			parent: @
 			color: @color
@@ -79,9 +79,9 @@ class exports.TextInput extends Layer
 			backgroundColor: theme[MODEL].default.backgroundColor ? white
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
 			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
-			fontFamily: options.fontFamily ? theme.typography.Body1.fontFamily ? "Helvetica"
-			fontSize: Utils.px(options.fontSize ? theme.typography.Body1.fontSize ? 13)
-			fontWeight: options.fontWeight ? theme[MODEL].default.fontWeight ? theme.typography.Body1.fontWeight ? 500
+			fontFamily: options.fontFamily ? theme.typography.Body2.fontFamily ? "Helvetica"
+			fontSize: Utils.px(options.fontSize ? theme.typography.Body2.fontSize ? 13)
+			fontWeight: options.fontWeight ? theme[MODEL].default.fontWeight ? theme.typography.Body2.fontWeight ? 500
 			
 		# must be set before theme changes
 
@@ -92,15 +92,15 @@ class exports.TextInput extends Layer
 
 		# ---------------
 		# Definitions
-		
-		@__instancing = true
 
-		Utils.define @, 'theme', 'default', @_setTheme, _.isString, 'TextInput.theme must be a string.'
-		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, 'TextInput.hovered must be a boolean.'
-		Utils.define @, 'focused', false, @_showFocused, _.isBoolean, 'TextInput.focused must be a boolean.'
-		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, 'TextInput.disabled must be a boolean.'
-		
 		delete @__constructor
+
+		#				Property	Initial value 		Callback 		Validation	Error
+		Utils.define @, 'theme', 	'default', 			@_setTheme, 	_.isString, 'TextInput.theme must be a string.'
+		Utils.define @, 'hovered', 	false, 				@_showHovered, 	_.isBoolean, 'TextInput.hovered must be a boolean.'
+		Utils.define @, 'focused', 	false,				@_showFocused, 	_.isBoolean, 'TextInput.focused must be a boolean.'
+		Utils.define @, 'disabled',	options.disabled,	@_showDisabled,	_.isBoolean, 'TextInput.disabled must be a boolean.'
+		
 		delete @__instancing
 
 		# ---------------
@@ -117,6 +117,11 @@ class exports.TextInput extends Layer
 			@focused = true
 
 		@value = options.value
+
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Functions

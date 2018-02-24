@@ -1,12 +1,16 @@
 Theme = require "components/Theme"
 theme = undefined
 
+MODEL = 'checkbox'
+
 class exports.Checkbox extends Layer
 	constructor: (options = {}) ->
-
 		theme = Theme.theme
-		
+		@__constructor = true
+		@__instancing = true
+
 		# ---------------
+		# Options
 
 		_.defaults options,
 			name: 'Checkbox'
@@ -36,13 +40,13 @@ class exports.Checkbox extends Layer
 		# Layers
 		
 		@iconLayer = new Icon
+			name: "Icon"
 			parent: @
 			point: Align.center
 			icon: 'checkbox-blank-outline'
 			color: options.color
 
 		Utils.linkProperties @, @iconLayer, "color"
-
 
 		# ---------------
 		# Events
@@ -51,9 +55,10 @@ class exports.Checkbox extends Layer
 		@onMouseOver => @hovered = true
 		@onMouseOut => @hovered = false
 
-
 		# ---------------
 		# Definitions
+		
+		delete @__constructor
 		
 		Utils.define @, 'theme', 'default', @_setTheme
 		Utils.define @, 'checked', options.checked, @_showChecked, _.isBoolean, 'Checkbox.checked must be a boolean (true or false)'
@@ -61,8 +66,12 @@ class exports.Checkbox extends Layer
 		Utils.define @, 'error', options.disabled, @_showError, _.isBoolean, "Checkbox.error must be a boolean (true or false)."
 		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Checkbox.disabled must be a boolean (true or false)."
 		
+		delete @__instancing
 
-
+		# ---------------
+		# Cleanup
+		
+		child.name = '.' for child in @children unless options.showSublayers
 
 	# ---------------
 	# Private Methods
@@ -90,10 +99,11 @@ class exports.Checkbox extends Layer
 		@animateStop()
 		props = @customTheme?[value] ? _.defaults(
 			_.clone(@customOptions), 
-			theme.checkbox[value]
+			theme[MODEL][value]
 			)
 
-		if @__instancing then @props = props else @animate props
+		if @__instancing then @props = props 
+		else @animate props
 
 	_showChecked: (bool) =>
 		if not bool
