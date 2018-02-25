@@ -32,6 +32,7 @@ dumbthing?.style.width = "0px"
 { CarouselComponent } = require 'components/CarouselComponent'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
 { SortableComponent } = require 'components/SortableComponent'
+{ TabComponent } = require 'components/TabComponent'
 { TransitionPage } = require 'components/PageTransitionComponent'
 
 # Exports for theme support 
@@ -58,6 +59,7 @@ _.assign exports,
 		'CarouselComponent', 
 		'SortableComponent'
 		'PageTransitionComponent'
+		'TabComponent'
 		]
 	theme: theme
 	typography: typography

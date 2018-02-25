@@ -6,10 +6,10 @@ class exports.DocComponent extends Layer
 		
 		_.defaults options,
 			name: "Documentation"
-			backgroundColor: null
-			color: black
-			x: 16
-			width: Screen.width - 32
+			width: Screen.width
+			color: white
+			backgroundColor: black
+			tabbed: true
 			text: [
 				"new Component"
 				"status: {status}"
@@ -26,9 +26,9 @@ class exports.DocComponent extends Layer
 		@codeBlock = new Code
 			name: 'Label'
 			parent: @
-			x: 0
-			y: 0
-			text: options.text.join('\n\t')
+			x: 12
+			y: 16
+			text: options.text.join(if options.tabbed then '\n\t' else '\n')
 			color: @color
 		
 		Utils.toMarkdown(@codeBlock)
@@ -48,7 +48,7 @@ class exports.DocComponent extends Layer
 			
 			layer.onChange property, (value) =>
 				@codeBlock.template = {"#{key}": value}
-				@height = _.maxBy(@children, 'maxY')?.maxY
+				@height = _.maxBy(@children, 'maxY')?.maxY + 16
 			
 		@codeBlock.templateFormatter = formatter
 		@codeBlock.template = template
@@ -56,8 +56,7 @@ class exports.DocComponent extends Layer
 		@copyIcon = new Icon
 			name: 'Copy Icon'
 			parent: @
-			y: 0
-			x: Align.right(-8)
+			y: 16
 			icon: 'content-copy'
 			color: grey
 			
@@ -65,7 +64,7 @@ class exports.DocComponent extends Layer
 			name: 'Copy Label'
 			parent: @
 			y: @copyIcon.maxY
-			x: Align.right()
+			x: Align.right(-8)
 			text: 'COPY'
 			color: grey
 			
@@ -87,11 +86,11 @@ class exports.DocComponent extends Layer
 			
 			@codeBlock.animate
 				color: blue
-				options: { time: .1 }
+				options: { time: .07 }
 					
 			Utils.delay .1, =>
 				@codeBlock.animate
 					color: @color
 					options: { time: .5 }
 					
-		@height = _.maxBy(@children, 'maxY')?.maxY
+		@height = _.maxBy(@children, 'maxY')?.maxY + 16

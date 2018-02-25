@@ -1188,6 +1188,149 @@ carouselComponentView.onLoad ->
 	
 	addDocsLink(carouselComponentView, 'wiki/CarouselComponent')
 
+# TabComponent View
+
+tabComponentView = new View
+	title: 'TabComponent'
+	padding: null
+
+tabComponentView.onLoad ->
+# 	@content.backgroundColor = grey30
+	Utils.bind @content, ->
+		
+		title = new H4
+			name: 'Title'
+			x: 16
+			y: 32
+			parent: @
+			fontWeight: 400
+			width: @width - 32
+			text: "**Tab Component**"
+		
+		Utils.toMarkdown(title)
+		
+		body = new Body2
+			parent: @
+			x: 16
+			width: @width - 32
+			text: "A TabComponent manages several layers, called `tabs`. The `active` or `current` tab is placed in front of the other tabs. The user can select a new `active` tab by tapping on the tab's button."
+		
+		Utils.toMarkdown(body)
+		
+		s = new Separator
+			parent: @
+			x: 0
+			width: 100
+		s.width = @width
+		
+		# examples
+		
+		# 1
+	
+		t1 = new TabComponent
+			parent: @
+			width: @width
+			
+		new DocComponent
+			parent: @
+			tabbed: false
+			text: [
+				"new TabComponent"
+				"\ttabs: ['Tab 1', 'Tab 2']"
+				"\tactive: {active}"
+				""
+				"print t1.current"
+				""
+				"# » {current}"
+			]
+			template:
+				active: [t1, 'active']
+				current: [t1, 'current', (v) -> 
+					"<Layer id:#{v.id} name:#{v.name} (0, 0)>"
+					]
+		
+		# 2
+		
+		t2 = new TabComponent
+			parent: @
+			width: @width
+			active: 1
+			
+		new DocComponent
+			parent: @
+			tabbed: false
+			text: [
+				"t2 = new TabComponent"
+				"\ttabs: ['Tab 1', 'Tab 2']"
+				"\tactive: {active}"
+				""
+				"print t2.current"
+				""
+				"# » {current}"
+			]
+			template:
+				active: [t2, 'active']
+				current: [t2, 'current', (v) -> 
+					"<Layer id:#{v.id} name:#{v.name} (0, 0)>"
+					]
+		
+		# 3
+			
+		t3 = new TabComponent
+			parent: @
+			width: @width
+			tabs: ["Fruit", "Veggies", "Liquor"]
+			height: 220
+			showSublayers: true
+			
+		new DocComponent
+			parent: @
+			tabbed: false
+			text: [
+				"t3 = new TabComponent"
+				"\ttabs: ['Fruit', 'Vegetables', 'Liquor']"
+				"\tactive: {active}"
+				""
+				"print t3.current"
+				""
+				"# » {current}"
+			]
+			template:
+				active: [t3, 'active']
+				current: [t3, 'current', (v) -> 
+					"<Layer id:#{v.id} name:#{v.name} (0, 0)>"
+					]
+		
+		Utils.bind t3.tabs[0], ->
+			new Body2
+				parent: @
+				x: 16
+				y: 16
+				width: @width - 32
+				text: "In botany, a fruit is the seed-bearing structure in flowering plants (also known as angiosperms) formed from the ovary after flowering. In common language usage, 'fruit' normally means the fleshy seed-associated structures of a plant that are sweet or sour, and edible in the raw state, such as apples."
+		
+		Utils.bind t3.tabs[1], ->
+			new Body2
+				parent: @
+				x: 16
+				y: 16
+				width: @width - 32
+				text: "In everyday usage, vegetables are certain parts of plants that are consumed by humans as food as part of a savory meal. Modern-day culinary usage of the term vegetable can be largely defined through culinary and cultural tradition."
+		
+		Utils.bind t3.tabs[2], ->
+			new Body2
+				parent: @
+				x: 16
+				y: 16
+				width: @width - 32
+				text: "A distilled beverage, spirit, liquor, hard liquor or hard alcohol is an alcoholic beverage produced by distillation of grains, fruit, or vegetables that have already gone through alcoholic fermentation. As distilled beverages contain significantly more alcohol, they are considered 'harder'."
+		
+		
+		Utils.offsetY @children, 32
+		
+	@updateContent()	
+	
+	addDocsLink(tabComponentView, 'wiki/TabComponent')
 
 # ----------------
 # Miscellaneous
@@ -2408,12 +2551,21 @@ homeView.onLoad ->
 			
 		new RowLink
 			parent: @
+			text: 'TabComponent'
+			link: tabComponentView
+			
+		new RowLink
+			parent: @
 			text: 'SortableComponent'
 			link: sortableComponentView
 			
 		new RowLink
 			parent: @
-			text: 'Carousel'
+			text: 'DocComponent'
+			
+		new RowLink
+			parent: @
+			text: 'CarouselComponent'
 			
 		# misc
 		new H3

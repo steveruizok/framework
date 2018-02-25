@@ -260,6 +260,53 @@ updateTheme = (values = {}) ->
 				color: red
 				opacity: 1
 		# --------------------------
+		# Tab
+		tab:			
+			active:
+				default:
+					color: black
+					borderColor: grey40
+					backgroundColor: white
+					borderWidth: 1
+					borderRadius: 4
+					shadowColor: 'rgba(0,0,0,0)'
+					shadowY: 0
+					shadowBlur: 0
+				disabled:
+					color: black
+					borderColor: grey40
+					backgroundColor: white
+				touched:
+					color: black
+					borderColor: grey40
+					backgroundColor: white
+				hovered:
+					color: black
+					borderColor: grey40
+					backgroundColor: white
+			default:
+				default:
+					color: black30
+					borderColor: grey40
+					backgroundColor: yellow30.lighten(7)
+					borderWidth: 1
+					borderRadius: 4
+					shadowColor: 'rgba(0,0,0,0)'
+					shadowY: 0
+					shadowBlur: 0
+				disabled:
+					color: black30
+					borderColor: grey40
+					backgroundColor: yellow30.lighten(7)
+				touched:
+					color: black
+					borderColor: grey40
+					backgroundColor: yellow30.lighten(7)
+				hovered:
+					color: black
+					borderColor: grey40
+					backgroundColor: yellow30.lighten(4)
+		# --------------------------
 		# Segment
 		segment:
 			active:
