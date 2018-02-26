@@ -47,23 +47,4 @@ secondView.onLoad ->
 		width: @width * .82
 		text: Utils.randomText(48, true)
 
-# app.showNext myView
-
-t = new TabComponent
-	showSublayers: true
-	point: Align.center()
-# 	tabs: 
-	
-Utils.bind t.tabs[0], ->
-	new Body 
-		parent: @
-		x: 24
-		y: 32
-		text: "Tab 1"
-
-Utils.bind t.tabs[1], ->
-	new Body 
-		parent: @
-		x: 24
-		y: 32
-		text: "Tab 2"
+app.showNext(myView)
