@@ -223,6 +223,7 @@ class exports.Button extends Layer
 
 	_setTheme: (value) =>
 		@animateStop()
+
 		props = @customTheme?[value] ? _.defaults(
 			_.clone(@customOptions), 
 			theme[@model][@palette][value]
@@ -347,7 +348,18 @@ class exports.Button extends Layer
 		Math.abs(event.offset.y) > @height/2
 			@theme = "default"
 
+	_forceTheme: (customTheme, palette, theme) ->
+		@animateStop()
+		
+		_.assign @,
+			customTheme: customTheme?[palette] ? @customTheme
+			palette: palette
+			theme: theme
+
+		@_setTheme(theme)
+
 	# ---------------
 	# Public Methods
+
 	
 	onSelect: (callback) => @select = callback

@@ -161,25 +161,13 @@ class exports.Toggle extends Layer
 	_showActive: (button) =>
 		if not button
 			for button in @buttons
-				button.animateStop()
-				button.customTheme = @customTheme?.default
-				button.theme = "default"
-				button.animate( @customTheme?.default.default ? theme[MODEL].default.default)
+				button._forceTheme(@customTheme, "default", "default")
 			return
 
-		button.bringToFront()
-		button.animateStop()
-		button.palette = "active"
-		button.customTheme = @customTheme?.active
-		button.theme = "default"
-		button.animate( @customTheme?.active.default ? theme[MODEL].active.default)
+		button._forceTheme(@customTheme, "active", "default")
 
-		for sib in button.siblings
-			sib.animateStop()
-			sib.palette = "default"
-			sib.customTheme = @customTheme?.default
-			sib.theme = "default"
-			sib.animate( @customTheme?.default.default ? theme[MODEL].default.default)
+		for sib in _.without(@buttons, button)
+			sib._forceTheme(@customTheme, "default", "default")
 
 	# ---------------
 	# Public Methods

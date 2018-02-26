@@ -178,17 +178,13 @@ class exports.TabComponent extends Layer
 	_showActive: (num) =>
 		@tabs[num].bringToFront()
 		activeButton = @tabButtons[num]
-		
-		activeButton.blocker.opacity = 1
-		activeButton.palette = "active"
-		activeButton.theme = "default"	
-		activeButton._setTheme("default")
 
-		for tab in _.without(@tabButtons, activeButton)
-			tab.blocker.opacity = 0
-			tab.palette = "default"
-			tab.theme = "default"	
-			tab._setTheme("default")
+		activeButton.blocker.opacity = 1
+		activeButton._forceTheme(@customTheme, "active", "default")
+
+		for sib in _.without(@tabButtons, activeButton)
+			sib.blocker.opacity = 0
+			sib._forceTheme(@customTheme, "default", "default")
 
 		@emit "change:current", @current, @
 
