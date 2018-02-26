@@ -57,24 +57,20 @@ class exports.Toggle extends Layer
 			return button
 
 		# set positions
+		w = if options.width then (@width / 2) else _.maxBy(@children, 'width').width
 
-		maxW = _.maxBy(@buttons, 'width').width
-
-		for button in @buttons
-			button.width = maxW
-			button.x = (last?.maxX ? 1) - 1
-			last = button
-
-			button.customTheme = @customTheme
-			button.model = MODEL
-
-			do (button) =>
-				button.onSelect => @toggled = _.indexOf(@children, button) is 1
+		@buttons.forEach (layer, i) =>
+			_.assign layer,
+				customTheme: @customTheme
+				x: (i * w) - i
+				width: w + i
+				select: => @toggled = i is 1
+				model: MODEL
 
 		_.assign @,
 			backgroundColor: null
 			height: _.maxBy(@children, 'maxY')?.maxY 
-			width: last.maxX
+			width: options.width ? _.last(@children).maxX
 
 		# ---------------
 		# Events
