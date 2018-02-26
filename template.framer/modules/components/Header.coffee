@@ -16,12 +16,11 @@ class exports.Header extends Layer
 			shadowY: 1
 			shadowBlur: 6
 			shadowColor: 'rgba(0,0,0,.16)'
-		
-		_.defaults options, 
-			name: 'Header'
 			backgroundColor: "rgba(255, 255, 255, 1)"
+
+			name: 'Header'
 			title: ' '
-			showLayers: true
+			viewKey: ' '
 
 		_.assign @,
 			safari: options.safari
@@ -83,6 +82,14 @@ class exports.Header extends Layer
 				textAlign: "center"
 				text: new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})
 				color: '#000'
+
+			@viewKeyLayer = new Micro
+				parent: @
+				y: Align.center(-1)
+				x: 84
+				text: "{viewKey}"
+				color: grey
+				fontWeight: 600
 
 		if @app.chrome is "safari"
 
@@ -200,7 +207,8 @@ class exports.Header extends Layer
 		
 		delete @__constructor
 			
-		Utils.define @, 'title', options.title, @_setTitle
+		Utils.define @, 'title', options.title, @_setTitle, _.isString, 'View.title must be a string.'
+		Utils.define @, 'viewKey', options.viewKey, @_setViewKey
 
 		delete @__instancing
 		
@@ -237,6 +245,10 @@ class exports.Header extends Layer
 		_.assign @loadingLayer,
 			width: 1
 			visible: false
+
+
+	_setViewKey: (value) =>
+		@statusBar.viewKeyLayer.template = value
 
 
 	_setTime: =>

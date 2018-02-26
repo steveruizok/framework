@@ -84,14 +84,16 @@ class window.App extends FlowComponent
 			title: exports.defaultTitle
 			chrome: 'ios'
 			contentWidth: Screen.width
+			showKeys: true
 
 		super options
 
 		_.assign @,
 			chrome: options.chrome
+			showKeys: options.showKeys
+			contentWidth: options.contentWidth
 			_windowFrame: {}
 			views: []
-			contentWidth: Screen.width
 
 		# Transition
 		 
@@ -205,7 +207,11 @@ class window.App extends FlowComponent
 		# header changes
 		return if not @header
 
-		hasPrevious = prev? and next isnt @_stack[0]?.layer
+		# update the header's 'viewKey' using the next View's 'key'
+		if @showKeys then @header.viewKey = next?.key
+
+		# is there a previous layer? (and is the next layer the initial layer?)
+		hasPrevious = prev? and next isnt @_initial
 
 		# safari changes
 		if @header.safari

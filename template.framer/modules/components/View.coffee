@@ -77,7 +77,6 @@ class exports.View extends ScrollComponent
 
 	_updateSize: (windowFrame) =>
 		# perhaps doing nothing is the best thing to do
-		@keyLayer?.y = 8 + (@app.windowFrame.y - @y)
 		return
 
 			
@@ -103,18 +102,6 @@ class exports.View extends ScrollComponent
 		catch
 			throw "View ('#{@title ? @name}') must have a working `load` property (a callback). If it does have one, there's an error in it!"
 		@app.loading = false
-
-		if @key
-			@keyLayer = new TextLayer
-				name: "Key: #{@key}"
-				parent: @
-				fontSize: 12
-				fontWeight: 600
-				y: 8
-				width: @width
-				textAlign: 'center'
-				color: '#000'
-				text: @key
 
 	
 	_unloadView: (app, next, prev, direction) =>
