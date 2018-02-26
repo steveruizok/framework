@@ -1602,7 +1602,6 @@ utilsView.onLoad ->
 		s = new Separator
 			parent: @
 			x: 0
-			y: body.maxY + 32
 			width: 100
 		s.width = @width
 		
@@ -1645,7 +1644,6 @@ utilsView.onLoad ->
 		s = new Separator
 			parent: @
 			x: 0
-			y: body.maxY + 32
 			width: 100
 		s.width = @width
 		
@@ -1708,7 +1706,6 @@ utilsView.onLoad ->
 		s = new Separator
 			parent: @
 			x: 0
-			y: body.maxY + 32
 			width: 100
 		s.width = @width
 		
@@ -1757,7 +1754,6 @@ utilsView.onLoad ->
 		s = new Separator
 			parent: @
 			x: 0
-			y: body.maxY + 32
 			width: 100
 		s.width = @width
 		
@@ -1794,7 +1790,6 @@ utilsView.onLoad ->
 		s = new Separator
 			parent: @
 			x: 0
-			y: body.maxY + 32
 			width: 100
 		s.width = @width
 		
@@ -1848,6 +1843,9 @@ toMarkdownView = new View
 		bottom: 200
 
 toMarkdownView.onLoad ->
+		
+	@padding = {left: 16, top: 16, right: 16}
+	
 	Utils.bind @content, ->
 		# -----------------
 		# Utils.toMarkdown
@@ -1863,12 +1861,13 @@ toMarkdownView.onLoad ->
 		
 		body = new Body2
 			parent: @
-			x: 16
 			width: @width - 32
 			text: "Utils.toMarkdown will convert some basic markdown syntax into inline styles. It works with bold, italic, strike-thru, and code tags.\n\nIf it's not working, try `Utils.delay 0, -> Utils.toMarkdown(textLayer)`."
 			padding: {bottom: 16}
 		
 		Utils.toMarkdown(body)
+		
+		@parent.padding = null
 		
 		# examples
 		
@@ -1915,6 +1914,9 @@ distributeView = new View
 		bottom: 200
 
 distributeView.onLoad ->
+		
+	@padding = {left: 16, top: 16, right: 16}
+	
 	Utils.bind @content, ->
 		# -----------------
 		# Utils.distribute
@@ -1931,10 +1933,11 @@ distributeView.onLoad ->
 		
 		body = new Body2
 			parent: @
-			x: 16
 			width: @width - 32
 			text: "Utils.distrubute works the same way as the Distribute tools in Sketch or Framer's Design Mode. Give it an array of layers and a property (like 'x'), and it will try to evenly distribute the layers between the minimum and maximum values among the layers. You can also include values for where to start and where to end, and optionally animate the transition. The method includes alias names for 'midX' ('horizontal') and 'midY' ('vertical')."
 			padding: {bottom: 16}
+		
+		@parent.padding = null
 		
 		# horizontal
 		
@@ -2028,6 +2031,9 @@ alignView = new View
 		bottom: 200
 
 alignView.onLoad ->
+		
+	@padding = {left: 16, top: 16, right: 16}
+	
 	Utils.bind @content, ->
 		# -----------------
 		# Utils.align
@@ -2044,10 +2050,11 @@ alignView.onLoad ->
 	
 		body = new Body2
 			parent: @
-			x: 16
 			width: @width - 32
 			text: "Utils.Align works the same way the Align tools work in Sketch or Design Mode. Give it an array of layers and a direction ('top', 'bottom', 'middle', 'left', 'right', or 'center'), and it will set the layers to the correct minimum or maximum among those layers."
 			padding: {bottom: 16}
+		
+		@parent.padding = null
 		
 		# left
 		
@@ -2211,6 +2218,9 @@ randomTextView = new View
 		bottom: 200
 
 randomTextView.onLoad ->
+		
+	@padding = {left: 16, top: 16, right: 16}
+	
 	Utils.bind @content, ->
 	
 		title = new H4
@@ -2224,7 +2234,6 @@ randomTextView.onLoad ->
 		
 		body = new Body2
 			parent: @
-			x: 16
 			width: @width - 32
 			text: "Utils.randomText will generate *n* words of lorem ipsum text. By default, the string will be lower case words separated by a space, but you can return sentences or paragraphs as well."
 			padding: {bottom: 16}
@@ -2232,6 +2241,8 @@ randomTextView.onLoad ->
 		Utils.toMarkdown(body)
 				
 		# words
+		
+		@parent.padding = null
 		
 		content = new Content(@)
 		
@@ -2294,6 +2305,9 @@ isEmailView = new View
 		bottom: 200
 
 isEmailView.onLoad ->
+		
+	@padding = {left: 16, top: 16, right: 16}
+	
 	Utils.bind @content, ->
 	
 		title = new H4
@@ -2306,7 +2320,6 @@ isEmailView.onLoad ->
 		
 		body = new Body2
 			parent: @
-			x: 16
 			width: @width - 32
 			text: "Utils.isEmail will return `true` if the string is a valid email address, or `false` if it isn't. This works well with an TextInput's 'change:value' event:"
 		
@@ -2316,6 +2329,8 @@ isEmailView.onLoad ->
 			padding: {bottom: 16}
 		
 		Utils.toMarkdown(body)
+		
+		@parent.padding = null
 		
 		# validEmail
 		
@@ -2375,6 +2390,7 @@ isEmailView.onLoad ->
 		Utils.offsetY(@children, 16)
 	@updateContent()
 
+
 # Utils.copyTextToClipboard View
 
 copyTextView = new View
@@ -2383,6 +2399,9 @@ copyTextView = new View
 		bottom: 200
 
 copyTextView.onLoad ->
+		
+	@padding = {left: 16, top: 16, right: 16}
+	
 	Utils.bind @content, ->
 	
 		title = new H4
@@ -2395,12 +2414,13 @@ copyTextView.onLoad ->
 		
 		body = new Body2
 			parent: @
-			x: 16
 			width: @width - 32
 			text: "Utils.copyTextToClipboard will copy a given string to the user's clipboard, as if the user had selected the text and pressed Command + C."
 			padding: {bottom: 16}
 		
 		Utils.toMarkdown(body)
+		
+		@parent.padding = null
 		
 		# invalidEmail
 		
