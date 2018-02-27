@@ -43,13 +43,13 @@ class exports.DocComponent extends Layer
 			property = options[1]
 			format = options[2]
 			
-			template[key] = layer[property]
+			template[key] = layer[property] ? ''
 			formatter[key] = format
 			
 			layer.onChange property, (value) =>
 				@codeBlock.template = {"#{key}": value}
 				@height = _.maxBy(@children, 'maxY')?.maxY + 16
-			
+
 		@codeBlock.templateFormatter = formatter
 		@codeBlock.template = template
 			

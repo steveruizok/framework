@@ -51,6 +51,10 @@ class exports.Button extends Layer
 
 		_.assign @,
 			model: options.model
+			dark: options.dark
+			secondary: options.secondary
+			icon: options.icon
+			text: options.text
 
 		# ---------------
 		# Layers
@@ -91,7 +95,7 @@ class exports.Button extends Layer
 
 		Utils.linkProperties @, @loadingIcon, "color"
 
-		if options.icon? # show our icon...
+		if options.icon?.length > 0 # show our icon...
 			
 			@iconLayer = new Icon
 				name: 'Icon'

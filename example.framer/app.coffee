@@ -81,15 +81,20 @@ titleDiv = (options = {}) ->
 		text: options.text
 		x: options.x
 		y: options.y
+		color: options.color
 		
 	div = new Layer
 		name: 'Div'
 		parent: title
 		x: title.maxX
-		y: 10
-		width: options.width - (title.maxX) - 16
-		backgroundColor: grey40
+		y: Align.bottom(-10)
+		width: options.width - (title.maxX) - 32
+		color: new Color(options.color).alpha(.8)
 		height: 1
+		
+	title.onChange "text", =>
+		div.props =
+			y: Align.bottom(-10)
 
 # ----------------
 # App
@@ -356,6 +361,8 @@ buttonsView = new View
 buttonsView.onLoad ->
 	Utils.bind @content, ->
 		
+		@parent.padding = {}
+		
 		buttons = _.map _.range(24), (i) =>
 			button = new Button
 				name: 'Button'
@@ -364,62 +371,69 @@ buttonsView.onLoad ->
 				disabled: i % 2 is 1
 				dark: Math.floor(i/4) % 2 is 1
 				icon: if i >= 8 then 'star'
-				y: 32 + (i * 80)
+				y: 32 #+ (i * 80)
 				x: 32
 				text: if i >= 16 then '' else 'Getting Started'
-				
-			strings = []
-			if button.iconLayer?
-				strings.push 'icon: star'
-			if button.dark
-				strings.push 'dark: true'
-			if button.secondary
-				strings.push 'secondary: true'
-			if button.disabled
-				strings.push 'disabled: true'
-			string = strings.join('\n')
-				
-			label = new Code
-				name: '.'
-				parent: @
-				x: button.maxX + 32
-				text: string
-				color: if button.dark then '#FFF' else '#000'
-				
-			label.midY = button.midY
+			
+			string = ""
+			if button.dark then string += " dark"
+			if button.secondary then string += " secondary"
+			if button.disabled then string += " disabled"
+			string += " button"
+			if button.icon?.length > 0 then string += " with icon"
+			if button.text?.length is 0 then string += " and no text"
+			
+			button.name = _.startCase(string)
 			
 			return button
 		
-		dark = new Layer
-			name: '.'
-			parent: @
-			width: @width
-			y: buttons[4].y - 16
-			height: buttons[7].y - buttons[3].y
-			backgroundColor: black
-	
-		dark2 = new Layer
-			name: '.'
-			parent: @
-			width: @width
-			y: buttons[12].y - 16
-			height: buttons[15].y - buttons[11].y
-			backgroundColor: black
+		
+		for layer in @children
+		
+			content = new Layer
+				parent: @
+				width: @width
+				backgroundColor: if layer.dark then black80 else null
+				y: 32
 			
-		dark3 = new Layer
-			name: '.'
-			parent: @
-			width: @width
-			y: buttons[20].y - 16
-			height: buttons[23].y - buttons[19].y
-			backgroundColor: black
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
+				y: 16
+				text: layer.name
+				color: if layer.dark then white else black
+				
+			layer.props = 
+				parent: content
+				x: 16
+				
+			new DocComponent
+				parent: content
+				text: [
+					"new Button",
+					"icon: {icon}"
+					"secondary: {secondary}"
+					"dark: {dark}"
+					"disabled: {disabled}"
+					"text: {text}"
+					layer.extra ? ""
+					]
+				template:
+					icon: [layer, 'icon', (v) -> "'#{v}'"]
+					secondary: [layer, 'secondary']
+					dark: [layer, 'dark']
+					disabled: [layer, 'disabled']
+					text: [layer, 'text', (v) -> "'#{v}'"]
+			
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
+			content.height += 24
 		
-		dark.sendToBack()
-		dark2.sendToBack()
-		dark3.sendToBack()
+		Utils.offsetY(@children, 1)
+		
+	@updateContent()		
 	
-		
-		
 	addDocsLink(@, 'wiki/Button')
 
 
@@ -2572,7 +2586,7 @@ homeView.onLoad ->
 	addDocsLink(@, '', 'github-circle')
 
 
-app.showNext(homeView)
+app.showNext(buttonsView)
 
 
 # ----------------
