@@ -9,6 +9,10 @@ class exports.Header extends Layer
 
 		# ---------------
 		# Options
+
+		_.defaults options,
+			title: ' '
+			viewKey: ' '
 		
 		_.assign options,
 			width: Screen.width
@@ -19,8 +23,6 @@ class exports.Header extends Layer
 			backgroundColor: "rgba(255, 255, 255, 1)"
 
 			name: 'Header'
-			title: ' '
-			viewKey: ' '
 
 		_.assign @,
 			safari: options.safari

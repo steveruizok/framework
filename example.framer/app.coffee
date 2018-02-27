@@ -42,6 +42,8 @@ class RowLink extends Layer
 			
 			@linkLayer.onSelect (event) =>
 				app.showNext(@link)
+				
+		
 
 # Add Docs Link
 
@@ -71,6 +73,9 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 		
 		do (url) ->
 			docsLinkCircle.onTap -> window.open("https://github.com/ProjectRogueOne/framework/#{url}")
+			
+		if app.footer?
+			Utils.pin(docsLinkCircle, app.footer, 'top')
 
 # Title Div
 
@@ -2586,7 +2591,7 @@ homeView.onLoad ->
 	addDocsLink(@, '', 'github-circle')
 
 
-app.showNext(buttonsView)
+app.showNext(homeView)
 
 
 # ----------------
