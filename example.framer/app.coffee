@@ -72,11 +72,30 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 		do (url) ->
 			docsLinkCircle.onTap -> window.open("https://github.com/ProjectRogueOne/framework/#{url}")
 
+# Title Div
+
+titleDiv = (options = {}) ->
+	title = new H4
+		name: title
+		parent: options.parent
+		text: options.text
+		x: options.x
+		y: options.y
+		
+	div = new Layer
+		name: 'Div'
+		parent: title
+		x: title.maxX
+		y: 10
+		width: options.width - (title.maxX) - 16
+		backgroundColor: grey40
+		height: 1
 
 # ----------------
 # App
 
 app = new App
+	showKeys: false
 # 	chrome: "safari"
 
 
@@ -415,6 +434,8 @@ textInputsView = new View
 textInputsView.onLoad ->
 	Utils.bind @content, ->
 		
+		@parent.padding = {}
+		
 		new TextInput
 			name: 'Default TextInput'
 			parent: @
@@ -438,58 +459,42 @@ textInputsView.onLoad ->
 		for layer in @children
 			continue if not layer instanceof TextInput
 			
-			title = new H4
-				name: '.'
+			content = new Layer
 				parent: @
-				y: (last?.maxY ? 0) + 32
+				width: @width
+				backgroundColor: null
+				y: 32
+			
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
 				text: layer.name
 				
-			div = new Layer
-				name: '.'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
+			layer.props = 
+				parent: content
+				x: 16
 			
-			layer.y = title.maxY + 24
+			new DocComponent
+				parent: content
+				text: [
+					"new Stepper",
+					"disabled: {disabled}"
+					"placeholder: {placeholder}"
+					"value: {value}"
+					layer.extra ? ""
+					]
+				template:
+					disabled: [layer, 'disabled']
+					placeholder: [layer, 'placeholder', (v) -> "'#{v}'"]
+					value: [layer, 'value', (v) -> "'#{v}'"]
+			
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
 		
-			string = [
-				"new TextInput",
-				"placeholder: '#{layer.placeholder}'"
-				"value: '{value}'"
-				"disabled: #{layer.disabled}"
-				].join('\n\t')
-			
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 24
-				text: string
-			
-			copyIcon = new Icon
-				parent: @
-				y: label.midY - 12
-				x: Align.right(-16)
-				icon: 'content-copy'
-				color: grey
-				
-			do (layer, label, copyIcon) ->
-				
-				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label.text)
-				
-				layer.on "change:value", (value) -> 
-					label.template =
-						value: value
-			
-				label.template =
-					value: layer.value
-			
-			last = label
+		Utils.offsetY(@children, 32)
 		
+	@updateContent()
 	addDocsLink(@, 'wiki/TextInput')
 
 # Selects View
@@ -499,6 +504,8 @@ selectsView = new View
 
 selectsView.onLoad ->
 	Utils.bind @content, ->
+		
+		@parent.padding = {}
 		
 		new Select
 			name: 'Default Select'
@@ -522,67 +529,48 @@ selectsView.onLoad ->
 		for layer in @children
 			continue if not layer instanceof Select
 			
-			title = new H4
-				name: '.'
+			content = new Layer
 				parent: @
-				y: (last?.maxY ? 0) + 32
+				width: @width
+				backgroundColor: null
+				y: 32
+			
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
 				text: layer.name
 				
-			div = new Layer
-				name: '.'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
+			layer.props = 
+				parent: content
+				x: 16
 			
-			layer.y = title.maxY + 24
+			new DocComponent
+				parent: content
+				text: [
+					"new Select",
+					"selectedIndex: {selectedIndex}"
+					"disabled: {disabled}"
+					"value: {value}"
+					"options: [{options}]"
+					layer.extra ? ""
+					]
+				template:
+					selectedIndex: [layer, 'selectedIndex']
+					disabled: [layer, 'disabled']
+					value: [layer, 'value', (v) -> "'#{v}'"]
+					options: [layer, 'options', (v) -> 
+						return (v.map (o) -> return "'#{o}'").join(', ')
+						]
+			
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
 		
-			string = [
-				"new Select",
-				"options: [\n\t\t#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), '\n\t\t')}\n\t\t]"
-				"selectedIndex: {index}"
-				"value: {value}"
-				"disabled: {disabled}"
-				].join('\n\t')
-			
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 24
-				text: string
-			
-			copyIcon = new Icon
-				parent: @
-				y: label.midY - 12
-				x: Align.right(-16)
-				icon: 'content-copy'
-				color: grey
-				
-			do (layer, label, copyIcon) ->
-				
-				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label.text)
-					
-				layer.on "change:disabled", (bool) -> 
-					label.template =
-						disabled: bool
-					
-				layer.on "change:selectedIndex", (selectedIndex) -> 
-					label.template =
-						index: layer.selectedIndex
-						value: layer.value
-			
-				label.template =
-					index: layer.selectedIndex
-					value: layer.value
-					disabled: layer.disabled
-			
-			last = label
+		Utils.offsetY(@children, 32)
 		
+	@updateContent()
 	addDocsLink(@, 'wiki/Select')
+		
 
 # Checkbox
 
@@ -595,6 +583,8 @@ steppersView = new View
 
 steppersView.onLoad ->
 	Utils.bind @content, ->
+		
+		@parent.padding = {}
 	
 		stepper = new Stepper
 			name: 'Default Stepper'
@@ -628,58 +618,48 @@ steppersView.onLoad ->
 		for layer in @children
 			continue if not layer instanceof Stepper
 			
-			title = new H4
-				name: '.'
+			content = new Layer
 				parent: @
-				y: (last?.maxY ? 0) + 32
+				width: @width
+				backgroundColor: null
+				y: 32
+			
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
 				text: layer.name
 				
-			div = new Layer
-				name: '.'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
+			layer.props = 
+				parent: content
+				x: 16
 			
-			layer.y = title.maxY + 24
+			new DocComponent
+				parent: content
+				text: [
+					"new Stepper",
+					"icon: {icon}"
+					"min: {min}"
+					"max: {max}"
+					"value: {value}"
+					"options: [{options}]"
+					layer.extra ? ""
+					]
+				template:
+					icon: [layer, 'icon', (v) -> "'#{v}'"]
+					min: [layer, 'min']
+					max: [layer, 'max']
+					value: [layer, 'value', (v) -> "'#{v}'"]
+					options: [layer, 'options', (v) -> 
+						return (v.map (o) -> return "'#{o}'").join(', ')
+						]
+			
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
 		
-			string = [
-				"new Stepper",
-				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]",
-				"icon: #{layer.icon}",
-				"min: #{layer.min}",
-				"max: #{layer.max}",
-				"value: {value}"
-				].join('\n\t')
-				
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 24
-				text: string
-				
-			label.template = layer.value
-			
-			copyIcon = new Icon
-				parent: @
-				y: label.midY - 12
-				x: Align.right(-16)
-				icon: 'content-copy'
-				color: grey
-				
-			do (layer, label, copyIcon) ->
-				
-				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label.text)
-					
-				layer.on "change:value", =>
-					label.template = layer.value
-			
-			last = label
+		Utils.offsetY(@children, 32)
 		
+	@updateContent()
 		
 	addDocsLink(@, 'wiki/Stepper')
 
@@ -692,6 +672,8 @@ segmentsView = new View
 
 segmentsView.onLoad ->
 	Utils.bind @content, ->
+		
+		@parent.padding = {}
 	
 		# Segments
 			
@@ -739,59 +721,45 @@ segmentsView.onLoad ->
 		
 		for layer in @children
 			continue if not layer instanceof Segment
-			
-			title = new H4
-				name: '.'
+				
+			content = new Layer
 				parent: @
-				y: (last?.maxY ? 0) + 32
+				width: @width
+				backgroundColor: null
+				y: 32
+			
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
 				text: layer.name
 				
-			div = new Layer
-				name: '.'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
+			layer.props = 
+				parent: content
+				x: 16
 			
-			layer.y = title.maxY + 24
+			new DocComponent
+				parent: content
+				text: [
+					"new Segment",
+					"options: [{options}]"
+					"icon: {icon}"
+					"active: {active}"
+					layer.extra ? ""
+					]
+				template:
+					icon: [layer, 'icon']
+					active: [layer, 'active']
+					options: [layer, 'options', (v) -> 
+						return (v.map (o) -> return "'#{o}'").join(', ')
+						]
+			
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
 		
-			string = [
-				"new Segment",
-				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-				"icon: #{layer.icon}"
-				"active: {active}"
-				layer.extra ? ""
-				].join('\n\t')
-				
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 24
-				text: string
-				
-			label.template = layer.active
-			
-			copyIcon = new Icon
-				parent: @
-				y: label.midY - 12
-				x: Align.right(-16)
-				icon: 'content-copy'
-				color: grey
-				
-			do (layer, label, copyIcon) ->
-				
-				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label.text)
-					
-				layer.on "change:active", =>
-					label.template = layer.active
-			
-			last = label
-
-
+		Utils.offsetY(@children, 32)
+		
+	@updateContent()
 	addDocsLink(segmentsView, 'wiki/Segment')
 
 # Toggles View
@@ -804,11 +772,19 @@ togglesView = new View
 togglesView.onLoad ->
 	Utils.bind @content, ->
 	
+	
+		@parent.padding = {}
+		
 		# toggles
 		
 		new Toggle 
 			name: 'Toggle'
 			parent: @ 
+		
+		new Toggle 
+			name: 'Toggle'
+			parent: @ 
+			width: @width - 32
 			
 		new Toggle 
 			name: 'Toggled Toggle'
@@ -844,59 +820,43 @@ togglesView.onLoad ->
 		for layer in @children
 			continue if not layer instanceof Toggle
 			
-			title = new H4
-				name: 'Title'
+			content = new Layer
 				parent: @
-				y: (last?.maxY ? 0) + 32
+				width: @width
+				backgroundColor: null
+			
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
+				y: 32
 				text: layer.name
 				
-			div = new Layer
-				name: 'Code'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
+			layer.props = 
+				parent: content
+				x: 16
 			
-			layer.y = title.maxY + 24
+			new DocComponent
+				parent: content
+				text: [
+					"new Toggle",
+					"options: [{options}]"
+					"icon: #{layer.icon}"
+					"toggled: {toggled}"
+					]
+				template:
+					icon: [layer, 'icon']
+					toggled: [layer, 'toggled']
+					options: [layer, 'options', (v) -> 
+						return (v.map (o) -> return "'#{o}'").join(', ')
+						]
+			
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
 		
-			string = [
-				"new Toggle",
-				"options: [#{_.join(_.map(layer.options, (n) -> return "'#{n}'"), ', ')}]"
-				"icon: #{layer.icon}"
-				"toggled: {toggled}"
-				].join('\n\t')
-							
-			label = new Code
-				name: 'Label'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 24
-				text: string
-				
-			label.template = layer.toggled
-			
-			copyIcon = new Icon
-				parent: @
-				y: label.midY - 12
-				x: Align.right(-16)
-				icon: 'content-copy'
-				color: grey
-				
-			do (layer, label, copyIcon) ->
-				
-				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label.text)
-					
-				layer.on "change:active", =>
-					label.template = layer.toggled
-			
-			last = label
+		Utils.offsetY(@children)
 	
-		
-		
-	
+	@updateContent()		
 	addDocsLink(@, 'wiki/Toggle')
 
 # Inputs View
