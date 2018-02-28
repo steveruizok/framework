@@ -27,6 +27,9 @@ class exports.Template extends Layer
 
 		super options
 
+		# ---------------
+		# Properties
+
 		_.assign @,
 			_isBlinking: false
 
@@ -109,26 +112,29 @@ class exports.Template extends Layer
 	# Public Methods
 
 	blink: =>
+		# store initial values
 		start = 
-			y: @exampleLayer.y
+			midY: @height / 2
 			height: @exampleLayer.height
 
-		@exampleLayer.once Events.AnimationEnd, ->
-			# open eye
-			@animate
-				y: start.y
-				height: start.height
+		# when the "close eye" animation ends... (Step 1)
+		@exampleLayer.once Events.AnimationEnd, =>
 
-			@exampleLayer.once Events.AnimationEnd, ->
+			# ... and when "open eye" animation ends... (Step 3)
+			@exampleLayer.once Events.AnimationEnd, =>
 				@_isBlinking = false
 
-		# close eye
+			# run "open eye" animation (Step 2):
+			@exampleLayer.animate
+				midY: start.midY
+				height: start.height
+
+		# run "close eye" animation (Step 0):
 		@exampleLayer.animate
 			y: @height / 2
 			height: @borderWidth
 
 		@_isBlinking = true
-
 
 	# ---------------
 	# Special Definitions
