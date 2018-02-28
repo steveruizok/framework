@@ -2792,7 +2792,6 @@ isEmailView.onLoad ->
 		Utils.offsetY(@children, 16)
 	@updateContent()
 
-
 # Utils.copyTextToClipboard View
 
 copyTextView = new View
@@ -3014,8 +3013,7 @@ homeView.onLoad ->
 	addDocsLink(@, '', 'github-circle')
 
 
-app.showNext(checkboxView)
-
+app.showNext(homeView)
 
 # ----------------
 # Debugging
