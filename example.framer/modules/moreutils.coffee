@@ -809,10 +809,11 @@ Utils.px = (num) ->
 #
 # Utils.linkProperties(layerA, layerB, 'x')
 #
-Utils.linkProperties = (layerA, layerB, props...) =>
-	for prop in props
-		do (prop) =>
-			layerA.on "change:#{prop}", => layerB[prop] = layerA[prop]
+Utils.linkProperties = (layerA, layerB, props...) ->
+	props.forEach (prop) ->
+		update = -> layerB[prop] = layerA[prop]
+		layerA.on "change:#{prop}", update
+		update()
 
 
 

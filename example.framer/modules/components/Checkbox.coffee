@@ -32,6 +32,11 @@ class exports.Checkbox extends Layer
 
 		super options
 
+		if @parent?
+			@parent.checkboxes ?= []
+			@parent.checked ?= []
+			unless _.includes(@parent.checkboxes, @) then @parent.checkboxes.push(@)
+
 		@props =
 			x: @x - 4
 			y: @y - 4
@@ -42,7 +47,8 @@ class exports.Checkbox extends Layer
 		@iconLayer = new Icon
 			name: "Icon"
 			parent: @
-			point: Align.center
+			x: 0
+			y: Align.center()
 			icon: 'checkbox-blank-outline'
 			color: options.color
 
@@ -51,9 +57,15 @@ class exports.Checkbox extends Layer
 		# ---------------
 		# Events
 
-		@onTap => @checked = !@checked
-		@onMouseOver => @hovered = true
-		@onMouseOut => @hovered = false
+		@onTap => 
+			return if @disabled 
+			@checked = !@checked
+		@onMouseOver => 
+			return if @disabled 
+			@hovered = true
+		@onMouseOut => 
+			return if @disabled 
+			@hovered = false
 
 		# ---------------
 		# Definitions
@@ -109,6 +121,10 @@ class exports.Checkbox extends Layer
 		if not bool
 			@iconLayer.icon = 'checkbox-blank-outline'
 			return
+
+		if @parent?
+			@parent.checked = @parent.checkboxes.map (cb) -> cb.checked
+			@parent.emit "change:checked", @parent.checked, @parent
 
 		@iconLayer.icon = 'checkbox-marked'
 		return

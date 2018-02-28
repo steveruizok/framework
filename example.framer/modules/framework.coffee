@@ -28,6 +28,7 @@ dumbthing?.style.width = "0px"
 { Select } = require 'components/Select'
 { Stepper } = require 'components/Stepper'
 { TextInput } = require 'components/TextInput'
+{ Template } = require 'components/Template'
 { View } = require 'components/View'
 { CarouselComponent } = require 'components/CarouselComponent'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
@@ -55,7 +56,8 @@ _.assign exports,
 		'Link', 
 		'Separator', 
 		'TransitionPage', 
-		'View', 
+		'View',
+		'Template',
 		'CarouselComponent', 
 		'SortableComponent'
 		'PageTransitionComponent'

@@ -21,22 +21,19 @@ class exports.Radiobox extends Layer
 
 			checked: false
 			disabled: false
-			group: undefined
-			label: undefined
 
 		_.assign options,
 			backgroundColor: null
 
-		@group = options.group ? throw 'Radiobox requires a group property (an array).'
-
-		@customOptions = {
+		@customOptions =
 			color: options.color
-		}
-
-		options.labelLayer = options.label
-		delete options.label
 
 		super options
+
+		if @parent?
+			@parent.radioboxes ?= []
+			@parent.selectedIndex ?= -1
+			unless _.includes(@parent.radioboxes, @) then @parent.radioboxes.push(@)
 
 		@props =
 			x: @x - 4
@@ -47,7 +44,8 @@ class exports.Radiobox extends Layer
 		
 		@iconLayer = new Icon
 			parent: @
-			point: Align.center
+			x: 0
+			y: Align.center()
 			icon: 'radiobox-blank'
 			color: options.color
 
@@ -57,9 +55,17 @@ class exports.Radiobox extends Layer
 		# ---------------
 		# Events
 
-		@onTap => @checked = true
-		@onMouseOver => @hovered = true
-		@onMouseOut => @hovered = false
+		@onTap => 
+			return if @disabled
+			@checked = true
+
+		@onMouseOver =>
+			return if @disabled
+			@hovered = true
+
+		@onMouseOut =>
+			return if @disabled
+			@hovered = false
 
 
 		# ---------------
@@ -74,7 +80,6 @@ class exports.Radiobox extends Layer
 		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, "Radiobox.hovered must be a boolean (true or false)."
 		Utils.define @, 'error', options.disabled, @_showError, _.isBoolean, "Radiobox.error must be a boolean (true or false)."
 		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Radiobox.disabled must be a boolean (true or false)."
-		Utils.define @, 'labelLayer', options.labelLayer, @_setLabelLayer, isLayer, "Radiobox.labelLayer must be a Layer type."
 	
 		delete @__instancing
 		
@@ -102,10 +107,12 @@ class exports.Radiobox extends Layer
 			@iconLayer.icon = 'radiobox-blank'
 			return
 
-		@group.active = _.indexOf(@group, @)
+		if @parent?
+			@parent.selectedIndex = _.indexOf(@parent.radioboxes, @)
+			@parent.emit "change:selectedIndex", @parent.selectedIndex, @parent
 
-		for rb in _.without(@group, @)
-			rb.checked = false
+		for sib in @siblings
+			sib.checked = false
 
 		@iconLayer.icon = 'radiobox-marked'
 		return

@@ -83,7 +83,7 @@ titleDiv = (options = {}) ->
 	title = new H4
 		name: title
 		parent: options.parent
-		text: options.text
+		text: _.startCase(options.text)
 		x: options.x
 		y: options.y
 		color: options.color
@@ -591,9 +591,432 @@ selectsView.onLoad ->
 	addDocsLink(@, 'wiki/Select')
 		
 
-# Checkbox
+# Checkbox View
 
-# Radiobox
+checkboxView = new View
+	title: 'Checkbox'
+	contentInset:
+		bottom: 128
+
+checkboxView.onLoad ->
+	Utils.bind @content, ->
+	
+	
+		@parent.padding = {}
+		
+		# checkboxes
+		
+		new Checkbox 
+			name: 'Checkbox'
+			parent: @ 
+		
+		new Checkbox 
+			name: 'Checked Checkbox'
+			parent: @ 
+			checked: true
+		
+		new Checkbox 
+			name: 'Disabled Checkbox'
+			parent: @ 
+			disabled: true
+			
+		# set positions and create code labels
+		
+		for layer in @children
+			continue if not layer instanceof Checkbox
+			
+			content = new Layer
+				parent: @
+				width: @width
+				backgroundColor: null
+			
+			titleDiv
+				parent: content
+				width: @width 
+				x: 16
+				y: 32
+				text: layer.name
+				
+			layer.props = 
+				parent: content
+				x: 16
+			
+			new DocComponent
+				parent: content
+				text: [
+					"new Checkbox",
+					"checked: {checked}"
+					"disabled: {disabled}"
+					]
+				template:
+					checked: [layer, 'checked']
+					disabled: [layer, 'disabled']
+					
+			Utils.offsetY(content.children, 32)
+			Utils.contain(content)
+			
+		# checkboxes group
+			
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+		
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Checkbox Group"
+			
+		rbContent2 = new Layer
+			parent: content
+			x: 16
+			y: 24
+			backgroundColor: null
+		
+		for i in _.range(3)
+			rb = new Checkbox 
+				name: 'Checkbox'
+				parent: rbContent2
+				y: 32 * i
+				width: 200
+				
+		Utils.contain(rbContent2)
+		
+		new DocComponent
+			parent: content
+			text: [
+				"cbContainer = new Layer"
+				""
+				"for i in [0...3]"
+				"\tnew Checkbox"
+				"\t\tparent: cbContainer"
+				""
+				"print rbContent.checkboxes.length"
+				"# » {checkboxes}"
+				""
+				"print rbContent.checked"
+				"# » {checked}"
+				]
+			tabbed: false
+			template:
+				checkboxes: [rbContent2, 'checkboxes', (v) -> v.length]
+				checked: [rbContent2, 'checked']
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		# checkboxes group with labels
+			
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+		
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Checkbox Group with Labels"
+			
+		rbContent2 = new Layer
+			parent: content
+			x: 16
+			y: 24
+			backgroundColor: null
+		
+		for i in _.range(3)
+			rb = new Checkbox 
+				name: 'Checkbox'
+				parent: rbContent2
+				y: 32 * i
+				width: 200
+				checked: i is 2
+				
+			new Body2
+				parent: rb
+				x: 40
+				y: Align.center()
+				text: 'Label ' + i
+				
+		Utils.contain(rbContent2)
+		
+		new DocComponent
+			parent: content
+			text: [
+				"cbContainer = new Layer"
+				""
+				"for i in [0...3]"
+				"\tcb = new Checkbox"
+				"\t\tparent: cbContainer"
+				"\t\twidth: 200"
+				""
+				"\tnew Body2"
+				"\t\tparent: cb"
+				"\t\text: 'Label ' + i"
+				]
+			tabbed: false
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		Utils.offsetY(@children)
+	
+	@updateContent()
+	addDocsLink(@, 'wiki/Checkbox')
+
+# Radiobox View
+
+radioboxView = new View
+	title: 'Radiobox'
+	contentInset:
+		bottom: 128
+
+radioboxView.onLoad ->
+	Utils.bind @content, ->
+	
+		@parent.padding = {}
+		
+		# radiobox
+		
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+			
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Radiobox"
+		
+		rb0 = new Radiobox 
+			name: 'Radiobox'
+			parent: content
+			x: 16
+			y: 32
+		
+		new DocComponent
+			parent: content
+			text: [
+				"new Radiobox"
+				"\tchecked: {checked}"
+				"\tdisabled: {disabled}"
+				]
+			tabbed: false
+			template:
+				checked: [rb0, 'checked']
+				disabled: [rb0, 'disabled']
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		# radiobox disabled
+		
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+		
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Radiobox disabled"
+		
+		rb1 = new Radiobox 
+			name: 'Radiobox'
+			parent: content
+			x: 16
+			y: 32
+			disabled: true
+		
+		new DocComponent
+			parent: content
+			text: [
+				"new Radiobox"
+				"\tchecked: {checked}"
+				"\tdisabled: {disabled}"
+				]
+			tabbed: false
+			template:
+				checked: [rb1, 'checked']
+				disabled: [rb1, 'disabled']
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		# checkboxes group
+			
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+		
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Radiobox Group"
+			
+		rbContent2 = new Layer
+			parent: content
+			x: 16
+			y: 24
+			backgroundColor: null
+		
+		for i in _.range(3)
+			new Radiobox 
+				name: 'Radiobox'
+				parent: rbContent2
+				x: 32 * i
+				
+		Utils.contain(rbContent2)
+		
+		new DocComponent
+			parent: content
+			text: [
+				"rbContainer = new Layer"
+				""
+				"for i in [0...3]"
+				"\tnew Radiobox"
+				"\t\tparent: rbContainer"
+				""
+				"print rbContent.radioboxes.length"
+				"# » {radioboxes}"
+				""
+				"print rbContent.selectedIndex"
+				"# » {selectedIndex}"
+				]
+			tabbed: false
+			template:
+				radioboxes: [rbContent2, 'radioboxes', (v) -> v.length]
+				selectedIndex: [rbContent2, 'selectedIndex']
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		# checkboxes group with start value
+			
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+		
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Radiobox Group With Starting Choice"
+			
+		rbContent2 = new Layer
+			parent: content
+			x: 16
+			y: 24
+			backgroundColor: null
+		
+		for i in _.range(3)
+			new Radiobox 
+				name: 'Radiobox'
+				parent: rbContent2
+				x: 32 * i
+				checked: i is 2
+				
+		Utils.contain(rbContent2)
+		
+		new DocComponent
+			parent: content
+			text: [
+				"rbContainer = new Layer"
+				""
+				"for i in [0...3]"
+				"\tnew Radiobox"
+				"\t\tparent: rbContainer"
+				""
+				"rbContainer.checkboxes[2].checked = true"
+				""
+				"print rbContent.radioboxes.length"
+				"# » {radioboxes}"
+				""
+				"print rbContent.selectedIndex"
+				"# » {selectedIndex}"
+				]
+			tabbed: false
+			template:
+				radioboxes: [rbContent2, 'radioboxes', (v) -> v.length]
+				selectedIndex: [rbContent2, 'selectedIndex']
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		# checkboxes group with labels
+			
+		content = new Layer
+			parent: @
+			width: @width
+			backgroundColor: null
+		
+		titleDiv
+			parent: content
+			width: @width 
+			x: 16
+			y: 32
+			text: "Radiobox Group With Starting Choice"
+			
+		rbContent2 = new Layer
+			parent: content
+			x: 16
+			y: 24
+			backgroundColor: null
+		
+		for i in _.range(3)
+			rb = new Radiobox 
+				name: 'Radiobox'
+				parent: rbContent2
+				y: 32 * i
+				width: 200
+				checked: i is 2
+				
+			new Body2
+				parent: rb
+				x: 40
+				y: Align.center()
+				text: 'Label ' + i
+				
+		Utils.contain(rbContent2)
+		
+		new DocComponent
+			parent: content
+			text: [
+				"rbContainer = new Layer"
+				""
+				"for i in [0...3]"
+				"\trb = new Radiobox"
+				"\t\tparent: rbContainer"
+				"\t\twidth: 200"
+				""
+				"\tnew Body2"
+				"\t\tparent: rb"
+				"\t\text: 'Label ' + i"
+				]
+			tabbed: false
+			template:
+				radioboxes: [rbContent2, 'radioboxes', (v) -> v.length]
+				selectedIndex: [rbContent2, 'selectedIndex']
+				
+		Utils.offsetY(content.children, 32)
+		Utils.contain(content)
+		
+		Utils.offsetY(@children)
+	
+	@updateContent()
+	addDocsLink(@, 'wiki/Toggle')
 
 # Steppers View
 
@@ -2519,12 +2942,12 @@ homeView.onLoad ->
 		new RowLink
 			parent: @
 			text: 'Checkbox'
-			link: inputsView
+			link: checkboxView
 			
 		new RowLink
 			parent: @
 			text: 'Radiobox'
-			link: inputsView
+			link: radioboxView
 			
 		new RowLink
 			parent: @
@@ -2591,7 +3014,7 @@ homeView.onLoad ->
 	addDocsLink(@, '', 'github-circle')
 
 
-app.showNext(homeView)
+app.showNext(checkboxView)
 
 
 # ----------------

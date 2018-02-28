@@ -6,6 +6,16 @@
 updateTheme = (values = {}) ->
 	theme =
 		# --------------------------
+		# Template (example)
+		template:
+			default:
+				borderWidth: 5
+				borderColor: grey
+				backgroundColor: grey30
+			selected:
+				borderColor: black
+				backgroundColor: grey30
+		# --------------------------
 		# Icons
 		icons: icons
 		# --------------------------

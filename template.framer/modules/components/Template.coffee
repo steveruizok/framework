@@ -1,9 +1,9 @@
 Theme = require "components/Theme"
 theme = undefined
 
-MODEL = "component"
+MODEL = "template"
 
-class exports.NewComponent extends Layer
+class exports.Template extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
 		@__constructor = true
@@ -14,17 +14,34 @@ class exports.NewComponent extends Layer
 
 		_.defaults options,
 			name: 'New Component'
+			borderRadius: "50%"
 			animationOptions:
 				time: .2
 				colorModel: 'husl'
 
-		@customTheme = undefined
+		@customTheme = @_getCustomTheme(
+			options.backgroundColor
+			)
+
 		@customOptions = {}
 
 		super options
 
+		_.assign @,
+			_isBlinking: false
+
 		# ---------------
 		# Layers
+
+		@exampleLayer = new Layer
+			parent: @
+			name: "Disc"
+			point: Align.center()
+			size: @height / 2
+			borderRadius: "50%"
+			backgroundColor: white.alpha(.5)
+
+		Utils.linkProperties(@, @exampleLayer, "borderColor", "borderWidth")
 
 		# ---------------
 		# Cleanup
@@ -34,6 +51,8 @@ class exports.NewComponent extends Layer
 		# ---------------
 		# Events
 
+		@onTap -> @selected = !@selected
+
 		# ---------------
 		# Definitions
 		
@@ -41,7 +60,7 @@ class exports.NewComponent extends Layer
 		
 		#				Property	Initial value 		Callback 		Validation		Error
 		Utils.define @, 'theme', 	'default', 			@_setTheme
-		Utils.define @, 'selected',	options.selected,	@showSelected,	_.isBoolean,	'Selected must be a boolean (true or false).'
+		Utils.define @, 'selected',	options.selected,	@_showSelected,	_.isBoolean,	'Template.selected must be a boolean (true or false).'
 		
 		
 		delete @__instancing
@@ -50,31 +69,18 @@ class exports.NewComponent extends Layer
 	# ---------------
 	# Private Methods
 
-	_getCustomTheme: (color, backgroundColor) ->
-		color = new Color(color)
+	_getCustomTheme: (backgroundColor) ->
+		return if not backgroundColor
+
 		bg = new Color(backgroundColor)
 
 		return {
 			default:
-				color: color
 				borderColor: bg.darken(10)
 				backgroundColor: bg
-				shadowColor: 'rgba(0,0,0,.16)'
-			disabled:
-				color: color.alpha(.15)
-				borderColor: color.alpha(.15)
-				backgroundColor: bg.alpha(0)
-				shadowColor: 'rgba(0,0,0,0)'
-			touched:
-				color: color
+			selected:
 				borderColor: bg.darken(20)
 				backgroundColor: bg.darken(20)
-				shadowColor: 'rgba(0,0,0,0)'
-			hovered:
-				color: color
-				borderColor: bg.darken(20)
-				backgroundColor: bg.darken(10)
-				shadowColor: 'rgba(0,0,0,.16)'
 			}
 
 
@@ -88,9 +94,44 @@ class exports.NewComponent extends Layer
 		if @__instancing then @props = props 
 		else @animate props
 
+
+	_showSelected: (bool) ->
+		if bool
+			# show selected
+			@theme = "selected"
+			return
+
+		# show not selected	
+		@theme = "default"
+
+
 	# ---------------
 	# Public Methods
+
+	blink: =>
+		start = 
+			y: @exampleLayer.y
+			height: @exampleLayer.height
+
+		@exampleLayer.once Events.AnimationEnd, ->
+			# open eye
+			@animate
+				y: start.y
+				height: start.height
+
+			@exampleLayer.once Events.AnimationEnd, ->
+				@_isBlinking = false
+
+		# close eye
+		@exampleLayer.animate
+			y: @height / 2
+			height: @borderWidth
+
+		@_isBlinking = true
 
 
 	# ---------------
 	# Special Definitions
+
+	@define "isBlinking",
+		get: -> @_isBlinking
