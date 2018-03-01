@@ -702,7 +702,11 @@ checkboxView.onLoad ->
 			tabbed: false
 			template:
 				checkboxes: [rbContent2, 'checkboxes', (v) -> v.length]
-				checked: [rbContent2, 'checked']
+				checked: [
+					rbContent2, 
+					'checked', 
+					(v) -> "[#{v.join(', ')}]"
+					]
 				
 		Utils.offsetY(content.children, 32)
 		Utils.contain(content)
