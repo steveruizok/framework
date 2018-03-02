@@ -43,10 +43,10 @@ class exports.Select extends Layer
 		@textLayer = new Body1
 			name: '.'
 			parent: @
-			width: @width
+			width: @width - ((theme[MODEL].default.padding ? 12) * 2)
 			x: theme[MODEL].default.padding ? 12
 			y: Align.center()
-			backgroundColor: theme[MODEL].default.backgroundColor ? white
+			backgroundColor: null
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
 			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
@@ -158,6 +158,8 @@ class exports.Select extends Layer
 				x: @screenFrame.x
 				visible: true
 
+			@app.modal = @optionContainer
+
 			@optionContainer.placeBehind(@app.header)
 
 			@optionContainer.animate
@@ -165,6 +167,8 @@ class exports.Select extends Layer
 			return
 
 		# opened is false
+
+		@app.modal = undefined
 
 		@optionContainer.once Events.AnimationEnd, =>
 			_.assign @optionContainer,

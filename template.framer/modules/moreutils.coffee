@@ -247,6 +247,7 @@ Utils.define = (layer, property, value, callback, validation, error) ->
 
 			layer["_#{property}"] = value
 			layer.emit("change:#{property}", value, layer)
+		configurable: true
 			
 	if callback? and typeof callback is 'function'
 		layer.on("change:#{property}", callback)

@@ -109,8 +109,11 @@ class exports.View extends ScrollComponent
 		
 		return if @preserveContent
 
+		@app.modal?.destroy()
 		child.destroy() for child in _.without(@children, @content)
 		child.destroy() for child in @content.children
+
+		@updateContent()
 
 		if @oneoff and direction is 'back'
 			@destroy()

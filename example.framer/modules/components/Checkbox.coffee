@@ -35,10 +35,7 @@ class exports.Checkbox extends Layer
 		if @parent?
 			@parent.checkboxes ?= []
 			@parent.checked ?= []
-			unless _.includes(@parent.checkboxes, @)
-				@parent.checkboxes.push(@)
-				@parent.checked.push(options.checked)
-
+			unless _.includes(@parent.checkboxes, @) then @parent.checkboxes.push(@)
 
 		@props =
 			x: @x - 4
@@ -126,7 +123,7 @@ class exports.Checkbox extends Layer
 			return
 
 		if @parent?
-			@parent.checked = @parent.checkboxes.map (cb, i) -> cb.checked
+			@parent.checked = @parent.checkboxes.map (cb) -> cb.checked
 			@parent.emit "change:checked", @parent.checked, @parent
 
 		@iconLayer.icon = 'checkbox-marked'
