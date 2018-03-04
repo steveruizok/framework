@@ -158,6 +158,7 @@ class exports.Segment extends Layer
 		
 		return customTheme
 
+
 	_showActive: (button) =>
 		if not button
 			for button in @buttons
