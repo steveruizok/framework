@@ -14,14 +14,7 @@ class exports.Stepper extends Layer
 
 		_.defaults options,
 			name: 'Stepper'
-			height: 48
-			borderRadius: 4
-			shadowY: 2
-			shadowBlur: 6
-			shadowColor: 'rgba(0,0,0,.16)'
 			clip: true
-			animationOptions:
-				time: .2
 
 			options: ["minus", "plus"]
 			icon: true
@@ -40,6 +33,8 @@ class exports.Stepper extends Layer
 
 		super options
 
+		_.assign @, theme.stepper
+
 		# ---------------
 		# Layers
 
@@ -56,6 +51,7 @@ class exports.Stepper extends Layer
 			padding: {left: 24, right: 24}
 			textAlign: 'center'
 			width: @width
+			fontSize: @fontSize
 			text: options.value
 
 		# Buttons
@@ -66,15 +62,16 @@ class exports.Stepper extends Layer
 				parent: @
 				x: 0
 				y: 0
-				color: options.color
 				text: if @icon then '' else option
 				icon: if @icon then option
+				dark: options.dark
+				secondary: options.secondary
+				color: options.color
 				backgroundColor: options.backgroundColor
-
-			customTheme = @customTheme
+				borderRadius: 0
 			
-			button.palette = 'active'
-			button.model = 'segment'
+			# button.palette = 'active'
+			# button.model = 'segment'
 
 			radius = switch i
 				when 0 then "#{Utils.px(button.borderRadius)} 0px 0px #{Utils.px(button.borderRadius)}"
@@ -100,12 +97,8 @@ class exports.Stepper extends Layer
 
 		_.assign @buttons[1],
 			select: => @value++
-			x: Align.right()
+			x: Align.right(@borderWidth + @buttons[1].borderWidth)
 			width: maxW
-
-		_.assign @,
-			backgroundColor: white
-			height: _.maxBy(@children, 'maxY')?.maxY
 
 		delete @__constructor
 

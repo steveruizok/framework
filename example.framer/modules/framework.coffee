@@ -279,10 +279,10 @@ class window.App extends FlowComponent
 			x: @x
 			maxX: @maxX
 			maxY: @height - (@footer?.height ? 0)
-			height: @height - (@footer?.height ? 0) - (@header?.height - 0)
+			height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
 			width: @width
 			size: {
-				height: @height - (@footer?.height ? 0) - (@header?.height - 0)
+				height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
 				width: @width
 			}
 		}

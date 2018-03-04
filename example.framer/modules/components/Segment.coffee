@@ -198,5 +198,6 @@ class exports.Segment extends Layer
 			@activeLayer = @children[num]
 
 			@emit "change:active", num, @options[num], @children[num]
+			@emit "change:value", @value, @
 
 
