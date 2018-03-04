@@ -4,7 +4,7 @@ require 'framework'
 # Setup
 { theme } = require 'components/Theme' # not usually needed
 
-Canvas.backgroundColor = bg3
+Canvas.backgroundColor = "#222222"
 Framer.Extras.Hints.disable()
 
 # dumb thing that blocks events in the upper left-hand corner
