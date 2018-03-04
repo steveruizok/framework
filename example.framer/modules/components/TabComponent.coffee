@@ -14,8 +14,9 @@ class exports.TabComponent extends Layer
 
 		_.defaults options,
 			name: 'Tab Component'
-			width: 250
 			backgroundColor: null
+			shadowBlur: 0
+			shadowSpread: 0
 			animationOptions:
 				time: .2
 				colorModel: 'husl'
@@ -32,6 +33,15 @@ class exports.TabComponent extends Layer
 
 		# ---------------
 		# Layers
+
+		@topLine = new Layer
+			parent: @
+			height: theme[MODEL].default.default.borderWidth
+			backgroundColor: theme[MODEL].default.default.borderColor
+			y: 40 - theme[MODEL].default.default.borderWidth
+			width: @width
+
+		Utils.linkProperties @, @topLine, 'width'
 		
 		@content = new Layer
 			name: "Content"
@@ -40,8 +50,7 @@ class exports.TabComponent extends Layer
 			y: Align.bottom()
 			width: @width
 			height: @height - 40
-			shadowY: -theme[MODEL].default.default.borderWidth
-			shadowColor: theme[MODEL].default.default.borderColor
+		
 
 		# tabs
 
@@ -97,7 +106,7 @@ class exports.TabComponent extends Layer
 				backgroundColor: theme[MODEL].active.default.backgroundColor
 				opacity: 0
 
-			Utils.linkProperties button, button.blocker, "width"
+			Utils.constrain button.blocker, 'left', 'right'	
 			Utils.pin button.blocker, button, 'left'
 
 			return button

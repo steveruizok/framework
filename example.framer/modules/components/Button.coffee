@@ -329,7 +329,7 @@ class exports.Button extends Layer
 
 
 	_doSelect: (event) =>
-		return if @disabled
+		return if @disabled or @app.isTransitioning
 
 		if @loadTime > 0
 			@loading = true

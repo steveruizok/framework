@@ -1,5 +1,5 @@
-require "framework"
-# require "myTheme"
+# require "framework"
+require "myTheme"
 
 app = new App
 # 	chrome: "safari"

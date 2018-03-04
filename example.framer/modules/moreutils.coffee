@@ -634,16 +634,26 @@ Utils.hug = (layer, padding = {}) ->
 		child.x = left + (child.x - left) + (padding.left ? 0)
 
 ###
-Change a layer's size to contain its layer's children.
+Increase or decrease a layer's size to contain its layer's children.
 
 @param {Layer} layer The parent layer to change size.
+@param {Boolean} fit Whether to limit size change to increase only.
 
 	Utils.contain(layerA)
 ###
-Utils.contain = (layer) ->
+Utils.contain = (layer, fit = false) ->
+	maxChildX = _.maxBy(layer.children, 'maxX')?.maxX
+	maxChildY = _.maxBy(layer.children, 'maxY')?.maxY
+
+	if fit
+		layer.props = 
+			width: Math.max(layer.width, maxChildX)
+			height: Math.max(layer.height, maxChildY)
+		return 
+
 	layer.props = 
-		width: _.maxBy(layer.children, 'maxX')?.maxX
-		height: _.maxBy(layer.children, 'maxY')?.maxY
+		width: maxChildX
+		height: maxChildY
 
 
 # get a status color based on a standard deviation

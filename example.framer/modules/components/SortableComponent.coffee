@@ -33,8 +33,10 @@ class exports.SortableComponent extends Layer
 			defaultState: options.defaultState
 			draggingState: options.draggingState
 
+
 		# ---------------
 		# Layers
+
 
 		# ---------------
 		# Events
@@ -42,11 +44,13 @@ class exports.SortableComponent extends Layer
 		@on "change:children", @_updateChildren
 		@_context.on "layer:destroy", @_checkForLostChildren
 
+
 		# ---------------
 		# Definitions
 
 		delete @__constructor
 		delete @__instancing
+
 
 	# ---------------
 	# Private Methods
@@ -84,6 +88,8 @@ class exports.SortableComponent extends Layer
 			@_setEvents(layer)
 				
 			return position
+
+		@emit "change:current", @current, @
 	
 
 	_setEvents: (layer) =>
@@ -120,6 +126,8 @@ class exports.SortableComponent extends Layer
 		layer.on Events.DragStart, @_startSearch
 		layer.on Events.Drag, @_duringSearch
 		layer.on Events.DragEnd, @_endSearch
+
+		layer.handle?.on Events.Tap, (event) -> event.stopPropagation()
 		
 		# make a note that this layer has already been treated
 		layer._hasSortableEvents = true
@@ -139,14 +147,14 @@ class exports.SortableComponent extends Layer
 	_startSearch: (event) ->
 		return if @handle? and not Utils.pointInLayer(event.point, @handle)
 
-		@_sortableStarted = true
+		@_isSorting = true
 		@bringToFront()
 		@animate "dragging"
 	
 
 	# while the user is dragging...
 	_duringSearch: ->
-		if not @_sortableStarted
+		if not @_isSorting
 			@midY = @position.midY
 			return
 
@@ -167,8 +175,22 @@ class exports.SortableComponent extends Layer
 	
 	# ... and when the user ends the drag
 	_endSearch: ->
-		return if not @_sortableStarted
+		return if not @_isSorting
 
-		delete @_sortableStarted
-		@_takePosition(@position)
-		@animate 'default'
+		delete @_isSorting
+
+		_.defer =>
+			@_takePosition(@position)
+			@animate 'default'
+			@parent.emit "change:current", @parent.current, @parent
+
+
+	# ---------------
+	# Public Methods
+
+
+	# ---------------
+	# Special Definitions
+
+	@define "current",
+		get: -> return @positions.map (p) -> return p.layer

@@ -58,16 +58,16 @@ class exports.Link extends TextLayer
 		# @onMouseOver => @hovered = true
 		# @onMouseOut => @hovered = false
 
-		if Utils.isMobile()
-			@onTap @_doSelect
+		
+		@onTap @_doSelect
+		
+		# if Utils.isMobile()
+		# 	@onTap @_doSelect
 
-		else
+		# else
 
-			@onTouchStart (event) => @_showTouching(true, null, event)
-			@onTouchEnd (event) => @_showTouching(false, null, event)
-
-			@onTap @_showTapped
-			@onPan @_panOffTouch
+			# @onTapStart (event) => @_showTouching(true, null, event)
+			# @onTap (event) => @_showTouching(false, null, event)
 
 		for child in @children
 			if !options.showNames
@@ -118,43 +118,35 @@ class exports.Link extends TextLayer
 		@ignoreEvents = false
 
 	_doSelect: (event) =>
-		return if @disabled
+		return if @disabled or @app.isTransitioning
+		return if Math.max(event.offset.x) > 12 or Math.max(event.offset.y) > 12
 
 		try @select(event, @)
 		@emit "select", @
 
-	_panOffTouch: (event) => 
-		return if @_isTouching is false
-		return if @disabled
-		return if @theme is "default"
-
-		if Math.abs(event.offset.x) > @width/2 or
-		Math.abs(event.offset.y) > @height/2
-			@theme = "default"
-
-	_showTapped: =>
-		return if @disabled
-		return if @_isTouching is true
-
-		@theme = "touched"
-		Utils.delay .1, => @theme = "default"
-
 
 	_showTouching: (isTouching, silent = false, event) =>
 		return if @disabled
-		@animateStop()
+
 		
 		if isTouching
 			# show touching
 			@_isTouching = true
 			@theme = "touched"
+			print 'ok'
 			return
-		
+
+
 		# show not touching
 		@_isTouching = false
 		@theme = "default"
 
-		unless silent then @_doSelect(event)
+		return if Math.abs(event.offset.x) > 12 or
+			Math.abs(event.offset.y) > 12
+
+		print event
+
+		@_doSelect(event)
 
 	# ---------------
 	# Public Methods

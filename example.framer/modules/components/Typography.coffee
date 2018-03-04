@@ -1,10 +1,11 @@
 Theme = require "components/Theme"
-theme = Theme.theme
 
 { Link } = require 'components/Link'
 framework = require 'framework'
 
-updateTypography = ->
+updateTypography = () ->
+	theme = Theme.theme
+
 	for className, style of theme.typography
 		do (className, style) =>
 
@@ -14,9 +15,8 @@ updateTypography = ->
 
 					theme = Theme.theme 
 
-					_.defaults options, theme.typography[className]
-					_.defaults options, theme.typography[style.style]
-
+					defaults = _.defaults(_.clone(theme.typography[className]), theme.typography[style.style])
+					_.defaults options, defaults
 
 					super options
 
@@ -26,9 +26,8 @@ updateTypography = ->
 
 					theme = Theme.theme 
 
-					_.defaults options, theme.typography[className]
-					_.defaults options, theme.typography[style.style]
-
+					defaults = _.defaults(_.clone(theme.typography[className]), theme.typography[style.style])
+					_.defaults options, defaults
 
 					super options
 

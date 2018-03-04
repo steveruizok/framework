@@ -68,6 +68,10 @@ class exports.View extends ScrollComponent
 		@content.on "change:children", @_fitChildrenToPadding
 		@app.on "change:windowFrame", @_updateSize
 
+		@content.on "change:point", (value) =>
+			return unless @app.current is @
+			@app.viewPoint = {x: -@content.x, y: -@content.y}
+
 	# ---------------
 	# Private Functions
 	

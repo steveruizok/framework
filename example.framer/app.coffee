@@ -1,5 +1,5 @@
 require 'framework'
-
+# require 'myTheme'
 
 # Setup
 { theme } = require 'components/Theme' # not usually needed
@@ -11,6 +11,254 @@ Framer.Extras.Hints.disable()
 dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
 dumbthing?.style.width = "0px"
 
+# HomeView Container
+
+class HomeViewContainer extends Layer 
+	constructor: (options = {}) ->
+	
+		_.defaults options,
+			name: options.title
+			borderRadius: 2
+			width: Screen.width
+			backgroundColor: white
+			clip: true
+			
+			title: 'Title'
+			links:
+				Color: colorsView
+	
+		super options
+		
+		titleRow = new Layer
+			parent: @
+			backgroundColor: linen ? grey30
+			width: @width
+			height: 32
+		
+		new H2
+			parent: titleRow
+			text: options.title
+			x: 16
+			color: black
+			padding: {top: 16, bottom: 16}
+			
+		Utils.contain(titleRow, true)
+		
+		_.forIn options.links, (value, key) =>
+			new RowLink
+				parent: @
+				text: key
+				link: value
+		
+		Utils.offsetY(@children, 0)
+		Utils.contain(@)
+		@height -= 1
+		
+		for layer in @children
+			layer.name = '.'
+
+# Component Header
+
+class ComponentHeader extends Layer 
+	constructor: (options = {}) ->
+	
+		_.defaults options,
+			borderRadius: 2
+			width: Screen.width
+			backgroundColor: white
+			clip: true
+			
+			title: 'Title'
+			body: "The body of this component's description."
+	
+		super options
+		
+		# the component's title
+		
+		titleRow = new Layer
+			parent: @
+			backgroundColor: linen ? grey30
+			width: @width
+			height: 32
+		
+		title = new H2
+			parent: titleRow
+			text: options.title
+			x: 16
+			color: black
+			padding: {top: 16, bottom: 16}
+			
+		Utils.contain(titleRow, true)
+		
+		# the description of the component
+		
+		body = new Body 
+			parent: @
+			x: 16
+			width: @width - 32
+			text: options.body
+		
+		Utils.toMarkdown(body)
+		
+		
+		Utils.offsetY(@children, 16)
+		Utils.contain(@)
+		@height += 16
+
+# Component Example
+class ComponentExample extends Layer
+	constructor: (options = {}) ->
+
+		# ---------------
+		# Options
+		
+		_.defaults options,
+			name: "Component Example"
+			width: Screen.width
+			backgroundColor: white
+			
+			title: 'Title'
+			body: undefined
+			doc: undefined
+			content: undefined
+			text: undefined 
+			tabbed: undefined
+			template: undefined 
+			dark: false
+		
+		super options
+		
+		if options.dark then @backgroundColor = black80
+		
+		# the component's title
+		
+		titleRow = new Layer
+			parent: @
+			name: '.'
+			backgroundColor: linen ? grey30
+			width: @width
+			height: 32
+		
+		numberCircle = new Layer
+			parent: titleRow
+			name: '.'
+			height: 32
+			width: 40
+			backgroundColor: null
+			
+		number = new H4 
+			parent: numberCircle
+			name: '.'
+			text: '1'
+			color: grey60
+			y: 64
+			width: numberCircle.width
+			textAlign: "center"
+			text: _.filter(@parent?.children, (c) -> 
+				c instanceof ComponentExample
+				)?.length
+			
+		Utils.constrain(numberCircle, 'height')
+		
+		title = new H4
+			parent: titleRow
+			text: options.title
+			name: '.'
+			x: 54
+			width: @width - 108
+			color: black
+			padding: {top: 64, bottom: 16}
+			
+		Utils.contain(titleRow, true)
+		
+		
+		# the description of the component
+		
+		if options.body?
+			body = new Body
+				name: '.'
+				parent: @
+				x: 54
+				width: @width - 70
+				text: options.body
+			
+			Utils.toMarkdown(body)
+		
+		options.content?.props = 
+			parent: @
+			x: 54
+		
+		if options.text?
+			doc = new DocComponent
+				name: '.'
+				parent: @
+				width: @width
+				text: options.text
+				tabbed: options.tabbed
+				template: options.template
+			
+		Utils.offsetY(@children, 16)
+			
+		Utils.contain(@, true)
+		
+		
+		# body border
+		
+		bodyBorder = new Layer
+			parent: @
+			name: '.'
+			x: 0
+			y: titleRow.maxY
+			width: 40
+			height: @height - titleRow.height - (doc?.height ? 0) 
+			backgroundColor: null
+
+# Icon Example
+class IconExample extends Layer
+	constructor: (options = {}) ->
+		
+		_.defaults options,
+			name: '.'
+			icon: "star"
+			height: 48
+			width: 200
+			backgroundColor: null
+		
+		super options
+		
+		@iconLayer = new Icon
+			parent: @
+			icon: options.icon
+		
+		@iconLabel = new Code
+			parent: @
+			text: "{label}"
+		
+		Utils.align @children, 'middle'
+		Utils.offsetX(@children, 16)
+		
+		# definitions
+		Utils.define @, "icon", options.icon, @_setLayers
+		
+		# Events
+		@onTap (event) => 
+			return if Math.abs(event.offset.y) > 16
+			
+			Utils.copyTextToClipboard("'#{@icon}'")
+			
+			@iconLayer.animate
+				color: blue
+				options: { time: .07 }
+					
+			Utils.delay .1, =>
+				@iconLayer.animate
+					color: black
+					options: { time: .5 }
+		
+	_setLayers: (string) ->
+		@iconLayer.icon = string
+		@iconLabel.template = if string.length > 0 then "'#{string}'" else ""
+
 # Row Link
 
 class RowLink extends Layer
@@ -18,25 +266,35 @@ class RowLink extends Layer
 		
 		_.defaults options,
 			text: 'Hello world'
-			width: Screen.width - 32
-			x: 16
 			link: null
+			height: 52
+			shadowY: 1
+			shadowColor: grey30
 			backgroundColor: null
 		
 		super options
 		
 		_.assign @,
 			link: options.link
+			width: @parent?.width
 			
 		# layers
 		
 		@linkLayer = new H4Link
 			parent: @
-			x: 12
+			x: 16
+			y: Align.center()
 			text: options.text
-			color: if @link then yellow80
+			color: if @link then black else grey60
+			width: @width
 		
-		@height = @linkLayer.height
+		chevron = new Icon
+			parent: @
+			color: if @link then black else grey60
+			size: 16
+			icon: "chevron-right"
+			x: Align.right(-16)
+			y: Align.center()
 			
 		if @link?
 			
@@ -55,7 +313,7 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 			size: 40
 			borderRadius: 20
 			backgroundColor: blue
-			x: Align.right(-12)
+			x: Align.right(-8)
 			y: Align.bottom(-16)
 			borderWidth: 1
 			borderColor: blue60
@@ -72,7 +330,7 @@ addDocsLink = (view, url, icon = 'code-tags') ->
 			color: white
 		
 		do (url) ->
-			docsLinkCircle.onTap -> window.open("https://github.com/ProjectRogueOne/framework/#{url}")
+			docsLinkCircle.onTap -> window.open("https://github.com/steveruizok/framework/#{url}")
 			
 		if app.footer?
 			Utils.pin(docsLinkCircle, app.footer, 'top')
@@ -101,11 +359,12 @@ titleDiv = (options = {}) ->
 		div.props =
 			y: Align.bottom(-10)
 
+
 # ----------------
 # App
 
 app = new App
-	showKeys: false
+# 	showKeys: false
 # 	chrome: "safari"
 
 
@@ -184,38 +443,123 @@ typographyView.onLoad ->
 
 iconsView = new View
 	title: 'Icons'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30 ? grey20
+	contentInset:
+		bottom: 128
 
 iconsView.onLoad ->
-	Utils.bind @content, ->
-		
-		i = 0
-		for ic in _.entries(theme.icons)[0..50]
-			icon = new Icon
-				name: '.'
-				icon: ic[0]
-				parent: @
-				x: 48
-				y: 16 + (i * 50)
-				i++
-				
-			label = new Code
-				parent: @
-				name: '.'
-				x: icon.maxX + 48
-				text: "'#{ic[0]}'"
-				color: black
-			
-			label.midY = icon.midY
-			
-		label = new Body
-			parent: @
-			name: '.'
-			y: label.maxY + 48
-			x: Align.center
-			textAlign: 'center'
-			text: "For full list, see\nhttp://www.materialdesignicons.com"
-			color: black
 	
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Icon"
+		body: "Framework includes over 2,000 icons drawn from www.materialdesignicons.com."
+	
+	# examples
+	
+	icon = new Icon
+		name: 'Default Icon'
+		parent: @
+	
+	icon = new Icon
+		name: 'Icon with Icon'
+		icon: "menu"
+		parent: @
+	
+	icon = new Icon
+		name: 'Icon with Color'
+		icon: "account"
+		color: red
+		parent: @
+	icon.extra = '\tcolor: red'
+	
+	icon = new Icon
+		name: 'Icon with Size'
+		icon: "arrow-left"
+		parent: @
+		size: 64
+	icon.extra = '\tsize: 64'
+		
+	i = 0
+	for layer in @children
+		continue unless layer instanceof Icon
+		
+		c = "black"
+		
+		i++
+		
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			body: layer.body
+			content: layer
+			tabbed: false
+			text: [
+				"new Icon",
+				"\ticon: '#{layer.icon}'"
+				"\tcolor: #{c}"
+				layer.extra ? ""
+				]
+
+	# search for icon
+	
+	content = new Layer
+		backgroundColor: null
+	
+	textInput = new TextInput
+		parent: content
+		placeholder: "Search for Icons"
+		value: ""
+		
+	resultsLabel = new Label
+		parent: content
+		text: "Results: ({results})"
+		padding: {top: 16, bottom: 16}
+		
+	iconExamples = _.range(7).map ->
+		new IconExample
+			parent: content
+			icon: 'star'
+		
+	andMoreLabel = new Label
+		parent: content
+		text: "...plus {more} more."
+			
+	iconNames = _.keys(theme.icons)
+		
+	updateIcons = (value = " ") ->
+		v = value?.toLowerCase()
+		icons = _.filter(iconNames, (c) ->
+			c[0...v.length] is v or _.includes(c, v)
+			)
+		
+		iconExamples.forEach (example, i) ->
+			example.icon = icons[i] ? ''
+		
+		resultsLabel.visible = icons.length > 0
+		resultsLabel.template = icons.length
+		extra = icons.length - iconExamples.length
+		andMoreLabel.visible = extra > 0
+		andMoreLabel.template = extra
+			
+	updateIcons(' ')
+	textInput.on "change:value", updateIcons
+	
+	Utils.offsetY(content.children, 8)
+	Utils.contain(content)
+	content.height += 32
+	
+	new ComponentExample
+		parent: @content
+		title: "Search for icons"
+		body: "For an even better search, check www.materialdesignicons.com. Tap icons to copy their icon name as a string."
+		content: content
+
+	Utils.offsetY(@content.children)
+	@updateContent()
 	addDocsLink(@, 'wiki/Icon')
 
 
@@ -236,209 +580,154 @@ iconsView.onLoad ->
 
 linksView = new View
 	title: 'Links'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 	
 linksView.onLoad ->
-	Utils.bind @content, ->
+	
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Link"
+		body: "A Link is a TextLayer that runs its `select` method when tapped. All of the Typography styles automatically get link versions when created. For example, `H2` has `H2Link`."
+	
+	# buttons
 		
-		new H2Link
-			parent: @
-			name: 'Default Link'
-			text: 'Click here'
-			x: 16
-			
-		new H2Link
-			parent: @
-			name: 'Link with Select'
-			text: 'Click here'
-			x: 16
-			select: => print "Clicked!"
-			
-		new H2Link
-			parent: @
-			name: 'Disabled Link'
-			text: 'Click here'
-			x: 16
-			disabled: true
-			select: => print "Clicked!"
-			
-		new H2Link
-			parent: @
-			name: 'Link with Custom Color'
-			text: 'Click here'
-			x: 16
-			color: red
-			select: => print "Clicked!"
+	new H3Link
+		name: 'Default Link'
+		parent: @
+		text: 'Click here'
+		x: 16
 		
-		last = undefined
+	new H3Link
+		name: 'Link with Select'
+		parent: @
+		text: 'Click here'
+		x: 16
+		select: -> @x += 10
 		
-		for layer, i in @children
-			continue if not layer instanceof Link
-			
-			title = new H4
-				name: '.'
-				parent: @
-				y: (last?.maxY ? 0) + 32
-				text: layer.name
-				
-			div = new Layer
-				name: '.'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
-			
-			layer.y = title.maxY + 24
-			
-			s = if i is 0 then "null" else "print 'Clicked!'"
-			c = if i is 3 then 'red' else 'black'
+	new H3Link
+		name: 'Disabled Link'
+		parent: @
+		text: 'Click here'
+		x: 16
+		disabled: true
+		select: -> @x += 10
 		
-			string = [
-				"new H2Link",
-				"text: #{layer.text}",
-				"color: #{c}",
-				"disabled: #{layer.disabled}",
-				"select: -> #{s}"
-				].join('\n\t')
-				
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 16
-				text: string
-				
-			label.template = layer.value
-			
-			do (label, layer) ->
-				layer.on "change:value", =>
-					label.template = layer.value
-			
-			last = label
+	l = new H3Link
+		name: 'Link with Custom Color'
+		parent: @
+		text: 'Click here'
+		x: 16
+		color: red
+		select: -> @x += 10
+	
+	l.extra = "\tcolor: red"
 		
-		# other links 
-		title = new H4
-			name: '.'
-			parent: @
-			y: (last?.maxY ? 0) + 56
-			text: "All Links"
-			
-		div = new Layer
-			name: '.'
-			parent: @
-			x: title.maxX + 16
-			y: title.y + 10
-			width: @width - (title.maxX + 16) - 16
-			backgroundColor: grey40
-			height: 1
+	i = 0
+	for layer in @children
+		continue unless layer instanceof H3Link
 		
-		last = undefined
+		s = if i > 0 then "link.onSelect -> @x += 10" else ""
+		i++ 
 		
-		i = 0
-		for k, v of theme.typography
-			if window[k + 'Link']
-				textExample = new window[k + 'Link']
-					parent: @
-					y: (last?.maxY ? title.maxY) + 24
-					text: k + 'Link'
-					x: 16
-				
-				label = new Code
-					parent: @
-					name: '.'
-					x: 16
-					y: textExample.maxY + 4
-					text: "new #{k}Link"
-					color: black
-				
-				last = label
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			body: layer.body
+			content: layer
+			tabbed: false
+			text: [
+				"link = new H3Link",
+				"\ttext: #{layer.text}"
+				layer.extra ? ""
+				""
+				s
+				]
 	
 		
-	
+	Utils.offsetY(@content.children)
+	@updateContent()
 	addDocsLink(@, 'wiki/Link')
 
 # Buttons View
 
 buttonsView = new View
 	title: 'Buttons'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 	
 buttonsView.onLoad ->
-	Utils.bind @content, ->
-		
-		@parent.padding = {}
-		
-		buttons = _.map _.range(24), (i) =>
-			button = new Button
-				name: 'Button'
-				parent: @
-				secondary: i % 4 > 1
-				disabled: i % 2 is 1
-				dark: Math.floor(i/4) % 2 is 1
-				icon: if i >= 8 then 'star'
-				y: 32 #+ (i * 80)
-				x: 32
-				text: if i >= 16 then '' else 'Getting Started'
-			
-			string = ""
-			if button.dark then string += " dark"
-			if button.secondary then string += " secondary"
-			if button.disabled then string += " disabled"
-			string += " button"
-			if button.icon?.length > 0 then string += " with icon"
-			if button.text?.length is 0 then string += " and no text"
-			
-			button.name = _.startCase(string)
-			
-			return button
-		
-		
-		for layer in @children
-		
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: if layer.dark then black80 else null
-				y: 32
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				y: 16
-				text: layer.name
-				color: if layer.dark then white else black
-				
-			layer.props = 
-				parent: content
-				x: 16
-				
-			new DocComponent
-				parent: content
-				text: [
-					"new Button",
-					"icon: {icon}"
-					"secondary: {secondary}"
-					"dark: {dark}"
-					"disabled: {disabled}"
-					"text: {text}"
-					layer.extra ? ""
-					]
-				template:
-					icon: [layer, 'icon', (v) -> "'#{v}'"]
-					secondary: [layer, 'secondary']
-					dark: [layer, 'dark']
-					disabled: [layer, 'disabled']
-					text: [layer, 'text', (v) -> "'#{v}'"]
-			
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
-			content.height += 24
-		
-		Utils.offsetY(@children, 1)
-		
-	@updateContent()		
 	
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Button"
+		body: "A Button is a button that runs its `select` method when tapped."
+	
+	# buttons
+		
+	buttons = _.map _.range(24), (i) =>
+		button = new Button
+			name: 'Button'
+			parent: @
+			secondary: i % 4 > 1
+			disabled: i % 2 is 1
+			dark: Math.floor(i/4) % 2 is 1
+			icon: if i >= 8 then 'star'
+			y: 32 #+ (i * 80)
+			x: 32
+			text: if i >= 16 then '' else 'Getting Started'
+		
+		string = ""
+		if button.dark then string += " dark"
+		if button.secondary then string += " secondary"
+		if button.disabled then string += " disabled"
+		string += " button"
+		if button.icon?.length > 0 then string += " with icon"
+		if button.text?.length is 0 then string += " and no text"
+		
+		button.name = _.startCase(string)
+		
+		return button
+	
+	
+	for layer in @children
+		continue unless layer instanceof Button
+		
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			body: layer.body
+			content: layer
+			dark: layer.dark
+			text: [
+				"new Button",
+				"icon: {icon}"
+				"secondary: {secondary}"
+				"dark: {dark}"
+				"disabled: {disabled}"
+				"text: {text}"
+				layer.extra ? ""
+				]
+			template:
+				icon: [layer, 'icon', (v) -> "'#{v}'"]
+				secondary: [layer, 'secondary']
+				dark: [layer, 'dark']
+				disabled: [layer, 'disabled']
+				text: [layer, 'text', (v) -> "'#{v}'"]
+		
+		
+	Utils.offsetY(@content.children)
+	@updateContent()		
 	addDocsLink(@, 'wiki/Button')
 
 
@@ -449,70 +738,64 @@ buttonsView.onLoad ->
 
 textInputsView = new View
 	title: 'TextInputs'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 
 textInputsView.onLoad ->
-	Utils.bind @content, ->
-		
-		@parent.padding = {}
-		
-		new TextInput
-			name: 'Default TextInput'
-			parent: @
-		
-		new TextInput
-			name: 'TextInput with Placeholder'
-			parent: @
-			placeholder: 'Favorite naturalists'
-		
-		new TextInput
-			name: 'TextInput with Value'
-			parent: @
-			value: 'Alexander von Humboldt'
-			
-		new TextInput
-			name: 'Disabled TextInput'
-			parent: @
-			value: 'Dame Jane Morris Goodall'
-			disabled: true
 	
-		for layer in @children
-			continue if not layer instanceof TextInput
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "TextInput"
+		body: "A TextInput allows the user to enter text."
+	
+	# selects
 			
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: null
-				y: 32
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				text: layer.name
-				
-			layer.props = 
-				parent: content
-				x: 16
-			
-			new DocComponent
-				parent: content
-				text: [
-					"new Stepper",
-					"disabled: {disabled}"
-					"placeholder: {placeholder}"
-					"value: {value}"
-					layer.extra ? ""
-					]
-				template:
-					disabled: [layer, 'disabled']
-					placeholder: [layer, 'placeholder', (v) -> "'#{v}'"]
-					value: [layer, 'value', (v) -> "'#{v}'"]
-			
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
+	new TextInput
+		name: 'Default TextInput'
+		parent: @
+	
+	new TextInput
+		name: 'TextInput with Placeholder'
+		parent: @
+		placeholder: 'Favorite naturalists'
+	
+	new TextInput
+		name: 'TextInput with Value'
+		parent: @
+		value: 'Alexander von Humboldt'
 		
-		Utils.offsetY(@children, 32)
+	new TextInput
+		name: 'Disabled TextInput'
+		parent: @
+		value: 'Dame Jane Morris Goodall'
+		disabled: true
+
+	for layer in @children
+		continue unless layer instanceof TextInput
 		
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			body: layer.body
+			content: layer
+			text: [
+				"new Stepper",
+				"disabled: {disabled}"
+				"placeholder: {placeholder}"
+				"value: {value}"
+				layer.extra ? ""
+				]
+			template:
+				disabled: [layer, 'disabled']
+				placeholder: [layer, 'placeholder', (v) -> "'#{v}'"]
+				value: [layer, 'value', (v) -> "'#{v}'"]
+			
+	Utils.offsetY(@content.children, 32)
 	@updateContent()
 	addDocsLink(@, 'wiki/TextInput')
 
@@ -520,73 +803,67 @@ textInputsView.onLoad ->
 
 selectsView = new View
 	title: 'Selects'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 
 selectsView.onLoad ->
-	Utils.bind @content, ->
-		
-		@parent.padding = {}
-		
-		new Select
-			name: 'Default Select'
-			parent: @
-		
-		new Select
-			name: 'Select with Selected Index'
-			parent: @
-			selectedIndex: 2
-		
-		new Select
-			name: 'Select with Options'
-			parent: @
-			options: ['Red', 'Orange', 'Yellow', 'Green', 'Blue']
-			
-		new Select
-			name: 'Disabled Select'
-			parent: @
-			disabled: true
 	
-		for layer in @children
-			continue if not layer instanceof Select
-			
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: null
-				y: 32
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				text: layer.name
-				
-			layer.props = 
-				parent: content
-				x: 16
-			
-			new DocComponent
-				parent: content
-				text: [
-					"new Select",
-					"selectedIndex: {selectedIndex}"
-					"disabled: {disabled}"
-					"value: {value}"
-					"options: [{options}]"
-					layer.extra ? ""
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Select"
+		body: "A select is a drop down menu of `options`."
+	
+	# selects
+	
+	new Select
+		name: 'Default Select'
+		parent: @
+	
+	new Select
+		name: 'Select with Selected Index'
+		parent: @
+		selectedIndex: 2
+	
+	new Select
+		name: 'Select with Options'
+		parent: @
+		options: ['Red', 'Orange', 'Yellow', 'Green', 'Blue']
+		
+	new Select
+		name: 'Disabled Select'
+		parent: @
+		disabled: true
+
+	for layer in @children
+		continue unless layer instanceof Select
+		
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			body: layer.body
+			content: layer
+			text: [
+				"new Select",
+				"selectedIndex: {selectedIndex}"
+				"disabled: {disabled}"
+				"value: {value}"
+				"options: [{options}]"
+				layer.extra ? ""
+				]
+			template:
+				selectedIndex: [layer, 'selectedIndex']
+				disabled: [layer, 'disabled']
+				value: [layer, 'value', (v) -> "'#{v}'"]
+				options: [layer, 'options', (v) -> 
+					return (v.map (o) -> return "'#{o}'").join(', ')
 					]
-				template:
-					selectedIndex: [layer, 'selectedIndex']
-					disabled: [layer, 'disabled']
-					value: [layer, 'value', (v) -> "'#{v}'"]
-					options: [layer, 'options', (v) -> 
-						return (v.map (o) -> return "'#{o}'").join(', ')
-						]
-			
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
-		
-		Utils.offsetY(@children, 32)
-		
+	
+	Utils.offsetY(@content.children)
 	@updateContent()
 	addDocsLink(@, 'wiki/Select')
 		
@@ -595,179 +872,144 @@ selectsView.onLoad ->
 
 checkboxView = new View
 	title: 'Checkbox'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
 	contentInset:
 		bottom: 128
 
 checkboxView.onLoad ->
-	Utils.bind @content, ->
 	
+	@content.backgroundColor = white
 	
-		@parent.padding = {}
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Checkbox"
+		body: "A checkbox is an icon that can be `checked`. It may also be part of a group of icons, any one or more of which may be checked."
 		
-		# checkboxes
+	# checkboxes
+	
+	cbs1 = new Checkbox 
+		name: 'Checkbox'
+	
+	cbs2 = new Checkbox 
+		name: 'Checked Checkbox'
+		checked: true
+	
+	cbs3 = new Checkbox 
+		name: 'Disabled Checkbox'
+		disabled: true
 		
-		new Checkbox 
-			name: 'Checkbox'
-			parent: @ 
+	# set positions and create code labels
+	
+	for layer in [cbs1, cbs2, cbs3]
+		continue unless layer instanceof Checkbox
 		
-		new Checkbox 
-			name: 'Checked Checkbox'
-			parent: @ 
-			checked: true
-		
-		new Checkbox 
-			name: 'Disabled Checkbox'
-			parent: @ 
-			disabled: true
-			
-		# set positions and create code labels
-		
-		for layer in @children
-			continue if not layer instanceof Checkbox
-			
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: null
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				y: 32
-				text: layer.name
-				
-			layer.props = 
-				parent: content
-				x: 16
-			
-			new DocComponent
-				parent: content
-				text: [
-					"new Checkbox",
-					"checked: {checked}"
-					"disabled: {disabled}"
-					]
-				template:
-					checked: [layer, 'checked']
-					disabled: [layer, 'disabled']
-					
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
-			
-		# checkboxes group
-			
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
-		
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Checkbox Group"
-			
-		rbContent2 = new Layer
-			parent: content
-			x: 16
-			y: 24
-			backgroundColor: null
-		
-		for i in _.range(3)
-			rb = new Checkbox 
-				name: 'Checkbox'
-				parent: rbContent2
-				y: 32 * i
-				width: 200
-				
-		Utils.contain(rbContent2)
-		
-		new DocComponent
-			parent: content
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			body: layer.body
+			content: layer
 			text: [
-				"cbContainer = new Layer"
-				""
-				"for i in [0...3]"
-				"\tnew Checkbox"
-				"\t\tparent: cbContainer"
-				""
-				"print rbContent.checkboxes.length"
-				"# » {checkboxes}"
-				""
-				"print rbContent.checked"
-				"# » {checked}"
+				"new Checkbox",
+				"checked: {checked}"
+				"disabled: {disabled}"
 				]
-			tabbed: false
 			template:
-				checkboxes: [rbContent2, 'checkboxes', (v) -> v.length]
-				checked: [
-					rbContent2, 
-					'checked', 
-					(v) -> "[#{v.join(', ')}]"
-					]
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
+				checked: [layer, 'checked']
+				disabled: [layer, 'disabled']
 		
-		# checkboxes group with labels
-			
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
+	# checkboxes group
 		
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Checkbox Group with Labels"
-			
-		rbContent2 = new Layer
-			parent: content
-			x: 16
-			y: 24
-			backgroundColor: null
-		
-		for i in _.range(3)
-			rb = new Checkbox 
-				name: 'Checkbox'
-				parent: rbContent2
-				y: 32 * i
-				width: 200
-				checked: i is 2
-				
-			new Body2
-				parent: rb
-				x: 40
-				y: Align.center()
-				text: 'Label ' + i
-				
-		Utils.contain(rbContent2)
-		
-		new DocComponent
-			parent: content
-			text: [
-				"cbContainer = new Layer"
-				""
-				"for i in [0...3]"
-				"\tcb = new Checkbox"
-				"\t\tparent: cbContainer"
-				"\t\twidth: 200"
-				""
-				"\tnew Body2"
-				"\t\tparent: cb"
-				"\t\text: 'Label ' + i"
-				]
-			tabbed: false
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
-		
-		Utils.offsetY(@children)
+	cbContent = new Layer
+		y: 24
+		backgroundColor: null
 	
+	for i in _.range(3)
+		rb = new Checkbox 
+			name: 'Checkbox'
+			parent: cbContent
+			y: 32 * i
+	
+	Utils.offsetY(cbContent.children)
+	Utils.contain(cbContent)
+	
+	new ComponentExample
+		parent: @content
+		title: "Checkbox Group"
+		body: "If checkboxes have the same parent, the parent will get two properties: `checkboxes`, an array of the parent's child checkboxes; and `checked`, an array of its checkboxes' checked states."
+		content: cbContent
+		text: [
+			"cbContainer = new Layer"
+			""
+			"for i in [0...3]"
+			"\tnew Checkbox"
+			"\t\tparent: cbContainer"
+			""
+			"Utils.offsetY(cbContainer.children)"
+			"Utils.contain(cbContainer)"
+			""
+			"print cbContent.checkboxes.length"
+			"# » {checkboxes}"
+			""
+			"print cbContent.checked"
+			"# » {checked}"
+			]
+		tabbed: false
+		template:
+			checkboxes: [cbContent, 'checkboxes', (v) -> v.length]
+			checked: [
+				cbContent, 
+				'checked', 
+				(v) -> "[#{v.join(', ')}]"
+				]
+	
+	# checkboxes group with labels
+	
+		
+	cbContent1 = new Layer
+		y: 24
+		backgroundColor: null
+	
+	for i in _.range(3)
+		rb = new Checkbox 
+			name: 'Checkbox'
+			parent: cbContent1
+			width: 200
+			checked: i is 2
+			
+		new Body2
+			parent: rb
+			x: 40
+			y: Align.center()
+			text: 'Label ' + i
+			
+	Utils.offsetY(cbContent1.children)
+	Utils.contain(cbContent1)
+	
+	new ComponentExample
+		parent: @content
+		title: "Checkbox Labels"
+		body: "Labels and other content may be added as a Checkbox's child layers. To make these clickable too, make the Checkbox large enough to include them."
+		content: cbContent1
+		text: [
+			"cbContainer = new Layer"
+			""
+			"for i in [0...3]"
+			"\tcb = new Checkbox"
+			"\t\tparent: cbContainer"
+			"\t\twidth: 200"
+			""
+			"\tnew Body2"
+			"\t\tparent: cb"
+			"\t\text: 'Label ' + i"
+			""
+			"Utils.offsetY(cbContainer.children)"
+			"Utils.contain(cbContainer)"
+			]
+		tabbed: false
+
+	Utils.offsetY(@content.children, 0)
 	@updateContent()
 	addDocsLink(@, 'wiki/Checkbox')
 
@@ -775,436 +1017,358 @@ checkboxView.onLoad ->
 
 radioboxView = new View
 	title: 'Radiobox'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
 	contentInset:
 		bottom: 128
 
 radioboxView.onLoad ->
-	Utils.bind @content, ->
+	@content.backgroundColor = white
 	
-		@parent.padding = {}
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Radiobox"
+		body: "A radiobox is part of a group where only one radiobox may be `checked` at once."
 		
-		# radiobox
-		
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
+	# radiobox
+	
+	rb0 = new Radiobox 
+		name: 'Radiobox'
+		x: 16
+		y: 32
+	
+	new ComponentExample
+		parent: @content
+		title: 'Radiobox'
+		content: rb0
+		text: [
+			"new Radiobox"
+			"\tchecked: {checked}"
+			"\tdisabled: {disabled}"
+			]
+		tabbed: false
+		template:
+			checked: [rb0, 'checked']
+			disabled: [rb0, 'disabled']
 			
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Radiobox"
+	
+	# radiobox disabled
+	
+	rb1 = new Radiobox 
+		name: 'Radiobox'
+		x: 16
+		y: 32
+		disabled: true
+					
+	new ComponentExample
+		parent: @content
+		title: 'Radiobox (disabled)'
+		content: rb1
+		text: [
+			"new Radiobox"
+			"\tchecked: {checked}"
+			"\tdisabled: {disabled}"
+			]
+		tabbed: false
+		template:
+			checked: [rb1, 'checked']
+			disabled: [rb1, 'disabled']
+	
+	# checkboxes group
 		
-		rb0 = new Radiobox 
+	rbContainer = new Layer
+		x: 16
+		y: 24
+		backgroundColor: null
+	
+	for i in _.range(3)
+		new Radiobox 
 			name: 'Radiobox'
-			parent: content
-			x: 16
-			y: 32
-		
-		new DocComponent
-			parent: content
-			text: [
-				"new Radiobox"
-				"\tchecked: {checked}"
-				"\tdisabled: {disabled}"
-				]
-			tabbed: false
-			template:
-				checked: [rb0, 'checked']
-				disabled: [rb0, 'disabled']
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
-		
-		# radiobox disabled
-		
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
-		
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Radiobox disabled"
-		
-		rb1 = new Radiobox 
+			parent: rbContainer
+			
+	Utils.offsetY(rbContainer.children)
+	Utils.contain(rbContainer)
+					
+	new ComponentExample
+		parent: @content
+		title: 'Radiobox Group'
+		content: rbContainer
+		text: [
+			"rbContainer = new Layer"
+			""
+			"for i in [0...3]"
+			"\tnew Radiobox"
+			"\t\tparent: rbContainer"
+			""
+			"Utils.offsetY(rbContainer.children)"
+			"Utils.contain(rbContainer)"
+			""
+			"print rbContent.radioboxes.length"
+			"# » {radioboxes}"
+			""
+			"print rbContent.selectedIndex"
+			"# » {selectedIndex}"
+			]
+		tabbed: false
+		template:
+			radioboxes: [rbContainer, 'radioboxes', (v) -> v.length]
+			selectedIndex: [rbContainer, 'selectedIndex']
+	
+	# checkboxes group with start value
+	
+	rbContainer = new Layer
+		x: 16
+		y: 24
+		backgroundColor: null
+	
+	for i in _.range(3)
+		new Radiobox 
 			name: 'Radiobox'
-			parent: content
-			x: 16
-			y: 32
-			disabled: true
-		
-		new DocComponent
-			parent: content
-			text: [
-				"new Radiobox"
-				"\tchecked: {checked}"
-				"\tdisabled: {disabled}"
-				]
-			tabbed: false
-			template:
-				checked: [rb1, 'checked']
-				disabled: [rb1, 'disabled']
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
-		
-		# checkboxes group
+			parent: rbContainer
+			checked: i is 2
 			
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
-		
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Radiobox Group"
+	Utils.offsetY(rbContainer.children)
+	Utils.contain(rbContainer)
+					
+	new ComponentExample
+		parent: @content
+		title: 'Radiobox Group with Starting Checked'
+		content: rbContainer
+		text: [
+			"rbContainer = new Layer"
+			""
+			"for i in [0...3]"
+			"\tnew Radiobox"
+			"\t\tparent: rbContainer"
+			""
+			"Utils.offsetY(rbContainer.children)"
+			"Utils.contain(rbContainer)"
+			""
+			"rbContainer.checkboxes[2].checked = true"
+			]
+		tabbed: false
+		template:
+			radioboxes: [rbContainer, 'radioboxes', (v) -> v.length]
+			selectedIndex: [rbContainer, 'selectedIndex']
+	
+	
+	# checkboxes group with labels
+	
+	rbContainer = new Layer
+		x: 16
+		y: 24
+		backgroundColor: null
+	
+	for i in _.range(3)
+		rb = new Radiobox 
+			name: 'Radiobox'
+			parent: rbContainer
+			width: 200
 			
-		rbContent2 = new Layer
-			parent: content
-			x: 16
-			y: 24
-			backgroundColor: null
-		
-		for i in _.range(3)
-			new Radiobox 
-				name: 'Radiobox'
-				parent: rbContent2
-				x: 32 * i
-				
-		Utils.contain(rbContent2)
-		
-		new DocComponent
-			parent: content
-			text: [
-				"rbContainer = new Layer"
-				""
-				"for i in [0...3]"
-				"\tnew Radiobox"
-				"\t\tparent: rbContainer"
-				""
-				"print rbContent.radioboxes.length"
-				"# » {radioboxes}"
-				""
-				"print rbContent.selectedIndex"
-				"# » {selectedIndex}"
-				]
-			tabbed: false
-			template:
-				radioboxes: [rbContent2, 'radioboxes', (v) -> v.length]
-				selectedIndex: [rbContent2, 'selectedIndex']
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
-		
-		# checkboxes group with start value
+		new Body2
+			parent: rb
+			x: 40
+			y: Align.center()
+			text: 'Label ' + i
 			
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
-		
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Radiobox Group With Starting Choice"
-			
-		rbContent2 = new Layer
-			parent: content
-			x: 16
-			y: 24
-			backgroundColor: null
-		
-		for i in _.range(3)
-			new Radiobox 
-				name: 'Radiobox'
-				parent: rbContent2
-				x: 32 * i
-				checked: i is 2
-				
-		Utils.contain(rbContent2)
-		
-		new DocComponent
-			parent: content
-			text: [
-				"rbContainer = new Layer"
-				""
-				"for i in [0...3]"
-				"\tnew Radiobox"
-				"\t\tparent: rbContainer"
-				""
-				"rbContainer.checkboxes[2].checked = true"
-				""
-				"print rbContent.radioboxes.length"
-				"# » {radioboxes}"
-				""
-				"print rbContent.selectedIndex"
-				"# » {selectedIndex}"
-				]
-			tabbed: false
-			template:
-				radioboxes: [rbContent2, 'radioboxes', (v) -> v.length]
-				selectedIndex: [rbContent2, 'selectedIndex']
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
-		
-		# checkboxes group with labels
-			
-		content = new Layer
-			parent: @
-			width: @width
-			backgroundColor: null
-		
-		titleDiv
-			parent: content
-			width: @width 
-			x: 16
-			y: 32
-			text: "Radiobox Group With Starting Choice"
-			
-		rbContent2 = new Layer
-			parent: content
-			x: 16
-			y: 24
-			backgroundColor: null
-		
-		for i in _.range(3)
-			rb = new Radiobox 
-				name: 'Radiobox'
-				parent: rbContent2
-				y: 32 * i
-				width: 200
-				checked: i is 2
-				
-			new Body2
-				parent: rb
-				x: 40
-				y: Align.center()
-				text: 'Label ' + i
-				
-		Utils.contain(rbContent2)
-		
-		new DocComponent
-			parent: content
-			text: [
-				"rbContainer = new Layer"
-				""
-				"for i in [0...3]"
-				"\trb = new Radiobox"
-				"\t\tparent: rbContainer"
-				"\t\twidth: 200"
-				""
-				"\tnew Body2"
-				"\t\tparent: rb"
-				"\t\text: 'Label ' + i"
-				]
-			tabbed: false
-			template:
-				radioboxes: [rbContent2, 'radioboxes', (v) -> v.length]
-				selectedIndex: [rbContent2, 'selectedIndex']
-				
-		Utils.offsetY(content.children, 32)
-		Utils.contain(content)
-		
-		Utils.offsetY(@children)
+	Utils.offsetY(rbContainer.children)
+	Utils.contain(rbContainer)
+					
+	new ComponentExample
+		parent: @content
+		title: 'Radiobox Group with Labels'
+		content: rbContainer
+		text: [
+			"rbContainer = new Layer"
+			""
+			"for i in [0...3]"
+			"\trb = new Radiobox"
+			"\t\tparent: rbContainer"
+			"\t\twidth: 200"
+			""
+			"\tnew Body2"
+			"\t\tparent: rb"
+			"\t\ttext: 'Label ' + i"
+			""
+			"Utils.offsetY(rbContainer.children)"
+			"Utils.contain(rbContainer)"
+			]
+		tabbed: false
+		template:
+			radioboxes: [rbContainer, 'radioboxes', (v) -> v.length]
+			selectedIndex: [rbContainer, 'selectedIndex']
+	
+	Utils.offsetY(@content.children)
 	
 	@updateContent()
-	addDocsLink(@, 'wiki/Toggle')
+	addDocsLink(@, 'wiki/Radiobox')
 
 # Steppers View
 
 steppersView = new View
 	title: 'Steppers'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 
 steppersView.onLoad ->
-	Utils.bind @content, ->
-		
-		@parent.padding = {}
+	@content.backgroundColor = white
 	
-		stepper = new Stepper
-			name: 'Default Stepper'
-			parent: @
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Stepper"
+		body: "A stepper allows a user to increase or decrease a value."
+	
+	stepper = new Stepper
+		name: 'Default Stepper'
+		parent: @
+	
+	stepper = new Stepper
+		name: 'Stepper at Mininum Value'
+		parent: @
+		value: 0
 		
-		stepper = new Stepper
-			name: 'Stepper at Mininum Value'
-			parent: @
-			value: 0
-			
-		stepper = new Stepper
-			name: 'Stepper at Maximum Value'
-			parent: @
-			value: 10
-			
-		stepper = new Stepper
-			name: 'Stepper with Min, Max and Value'
-			parent: @
-			min: 50
-			max: 100
-			value: 42
-			
-		stepper = new Stepper
-			name: 'Stepper with Custom Options'
-			parent: @
-			options: ['Less', 'More']
-			icon: false
-			
-		# set positions and create code labels
+	stepper = new Stepper
+		name: 'Stepper at Maximum Value'
+		parent: @
+		value: 10
 		
-		for layer in @children
-			continue if not layer instanceof Stepper
-			
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: null
-				y: 32
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				text: layer.name
-				
-			layer.props = 
-				parent: content
-				x: 16
-			
-			new DocComponent
-				parent: content
-				text: [
-					"new Stepper",
-					"icon: {icon}"
-					"min: {min}"
-					"max: {max}"
-					"value: {value}"
-					"options: [{options}]"
-					layer.extra ? ""
+	stepper = new Stepper
+		name: 'Stepper with Min, Max and Value'
+		parent: @
+		min: 50
+		max: 100
+		value: 42
+		
+	stepper = new Stepper
+		name: 'Stepper with Custom Options'
+		parent: @
+		options: ['Less', 'More']
+		icon: false
+	
+		
+	for layer in @children
+		continue unless layer instanceof Stepper
+		
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			content: layer
+			text: [
+				"new Stepper",
+				"icon: {icon}"
+				"min: {min}"
+				"max: {max}"
+				"value: {value}"
+				"options: [{options}]"
+				layer.extra ? ""
+				]
+			template:
+				icon: [layer, 'icon', (v) -> "#{v}"]
+				min: [layer, 'min']
+				max: [layer, 'max']
+				value: [layer, 'value', (v) -> "#{v}"]
+				options: [layer, 'options', (v) -> 
+					return (v.map (o) -> return "'#{o}'").join(', ')
 					]
-				template:
-					icon: [layer, 'icon', (v) -> "'#{v}'"]
-					min: [layer, 'min']
-					max: [layer, 'max']
-					value: [layer, 'value', (v) -> "'#{v}'"]
-					options: [layer, 'options', (v) -> 
-						return (v.map (o) -> return "'#{o}'").join(', ')
-						]
-			
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
-		
-		Utils.offsetY(@children, 32)
-		
+	
+	Utils.offsetY(@content.children)
 	@updateContent()
-		
 	addDocsLink(@, 'wiki/Stepper')
 
 # Segments View
 
 segmentsView = new View
 	title: 'Segments'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
 	contentInset:
 		bottom: 128
 
 segmentsView.onLoad ->
-	Utils.bind @content, ->
-		
-		@parent.padding = {}
 	
-		# Segments
-			
-		new Segment 
-			name: 'Default Segment'
-			parent: @ 
-			
-		fw = new Segment 
-			name: 'Segment with Set Width'
-			parent: @ 
-			width: @width - 32
-			
-		fw.extra = "width: 343"
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Segment"
+		body: "A segment is a group of two or more buttons, only one of which may be the group's `active` button at a time."
+	
+	# Segments
 		
-		new Segment 
-			name: 'Segment with Active'
-			parent: @ 
-			active: 1
+	new Segment 
+		name: 'Default Segment'
+		parent: @ 
 		
-		new Segment 
-			name: 'Segment with Three Options'
-			parent: @ 
-			options: ['Good', 'Nuetral', 'Evil']
+	fw = new Segment 
+		name: 'Segment with Set Width'
+		parent: @ 
+		width: 300
+	
+	fw.extra = "width: 300"
+	
+	new Segment 
+		name: 'Segment with Active'
+		parent: @ 
+		active: 1
+	
+	new Segment 
+		name: 'Segment with -1 Active'
+		parent: @ 
+		active: -1
+	
+	new Segment 
+		name: 'Segment with Three Options'
+		parent: @ 
+		options: ['Good', 'Nuetral', 'Evil']
+	
+	new Segment 
+		name: 'Segment with Icons'
+		parent: @
+		options: ['phone', 'email', 'snapchat']
+		icon: true
+	
+	new Segment 
+		name: 'Segment with Custom Colors'
+		parent: @ 
+		options: ['phone', 'email', 'snapchat']
+		icon: true
+		color: white
+		backgroundColor: blue60
+	
+	new Segment 
+		name: 'Segment with Blank Options'
+		parent: @ 
+		options: [' ', ' ', ' ']
 		
-		new Segment 
-			name: 'Segment with Icons'
-			parent: @
-			options: ['phone', 'email', 'snapchat']
-			icon: true
-		
-		new Segment 
-			name: 'Segment with Custom Colors'
-			parent: @ 
-			options: ['phone', 'email', 'snapchat']
-			icon: true
-			color: white
-			backgroundColor: blue60
-		
-		new Segment 
-			name: 'Segment with Blank Options'
-			parent: @ 
-			options: [' ', ' ', ' ']
-			
-		# set positions and create code labels
-		
-		for layer in @children
-			continue if not layer instanceof Segment
-				
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: null
-				y: 32
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				text: layer.name
-				
-			layer.props = 
-				parent: content
-				x: 16
-			
-			new DocComponent
-				parent: content
-				text: [
-					"new Segment",
-					"options: [{options}]"
-					"icon: {icon}"
-					"active: {active}"
-					layer.extra ? ""
+	# set positions and create code labels
+	
+	for layer in @children
+		continue unless layer instanceof Segment
+	
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			content: layer
+			text: [
+				"new Segment",
+				"options: [{options}]"
+				"icon: {icon}"
+				"active: {active}"
+				layer.extra ? ""
+				]
+			template:
+				icon: [layer, 'icon']
+				active: [layer, 'active']
+				options: [layer, 'options', (v) -> 
+					return (v.map (o) -> return "'#{o}'").join(', ')
 					]
-				template:
-					icon: [layer, 'icon']
-					active: [layer, 'active']
-					options: [layer, 'options', (v) -> 
-						return (v.map (o) -> return "'#{o}'").join(', ')
-						]
-			
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
-		
-		Utils.offsetY(@children, 32)
-		
+	
+	Utils.offsetY(@content.children)
 	@updateContent()
 	addDocsLink(segmentsView, 'wiki/Segment')
 
@@ -1212,194 +1376,94 @@ segmentsView.onLoad ->
 
 togglesView = new View
 	title: 'Toggles'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
 	contentInset:
 		bottom: 128
 
 togglesView.onLoad ->
-	Utils.bind @content, ->
 	
+	@content.backgroundColor = white
 	
-		@parent.padding = {}
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Toggle"
+		body: "A toggle is a pair of buttons, used to express a binary choice."
+	
+	# toggles
+	
+	new Toggle 
+		name: 'Toggle'
+		parent: @ 
+	
+	t = new Toggle 
+		name: 'Toggle with Width'
+		parent: @ 
+		width: 300
+	
+	t.extra = "width: 300"
+	
+	new Toggle 
+		name: 'Toggled Toggle'
+		parent: @ 
+		toggled: true
+	
+	new Toggle 
+		name: 'Null Toggle'
+		parent: @ 
+		toggled: null
+	
+	new Toggle 
+		name: 'Toggle with Options'
+		parent: @ 
+		options: ['Good', 'Evil']
+	
+	new Toggle 
+		name: 'Toggle with Icons'
+		parent: @ 
+		options: ['pizza', 'apple']
+		icon: true
+	
+	new Toggle 
+		name: 'Toggle with Custom Colors'
+		parent: @ 
+		options: ['phone', 'email']
+		icon: true
+		color: white
+		backgroundColor: blue60
+	
+	new Toggle 
+		name: 'Blank Toggle'
+		parent: @ 
+		options: [' ', ' ']
 		
-		# toggles
-		
-		new Toggle 
-			name: 'Toggle'
-			parent: @ 
-		
-		new Toggle 
-			name: 'Toggle'
-			parent: @ 
-			width: @width - 32
+	# set positions and create code labels
+	
+	for layer in @children
+		continue unless layer instanceof Toggle
 			
-		new Toggle 
-			name: 'Toggled Toggle'
-			parent: @ 
-			toggled: true
-		
-		new Toggle 
-			name: 'Toggle with Options'
-			parent: @ 
-			options: ['Good', 'Evil']
-		
-		new Toggle 
-			name: 'Toggle with Icons'
-			parent: @ 
-			options: ['pizza', 'apple']
-			icon: true
-		
-		new Toggle 
-			name: 'Toggle with Custom Colors'
-			parent: @ 
-			options: ['phone', 'email']
-			icon: true
-			color: white
-			backgroundColor: blue60
-		
-		new Toggle 
-			name: 'Blank Toggle'
-			parent: @ 
-			options: [' ', ' ']
-			
-		# set positions and create code labels
-		
-		for layer in @children
-			continue if not layer instanceof Toggle
-			
-			content = new Layer
-				parent: @
-				width: @width
-				backgroundColor: null
-			
-			titleDiv
-				parent: content
-				width: @width 
-				x: 16
-				y: 32
-				text: layer.name
-				
-			layer.props = 
-				parent: content
-				x: 16
-			
-			new DocComponent
-				parent: content
-				text: [
-					"new Toggle",
-					"options: [{options}]"
-					"icon: #{layer.icon}"
-					"toggled: {toggled}"
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			content: layer
+			text: [
+				"new Toggle",
+				"options: [{options}]"
+				"icon: #{layer.icon}"
+				"toggled: {toggled}"
+				layer.extra ? ""
+				]
+			template:
+				icon: [layer, 'icon']
+				toggled: [layer, 'toggled']
+				options: [layer, 'options', (v) -> 
+					return (v.map (o) -> return "'#{o}'").join(', ')
 					]
-				template:
-					icon: [layer, 'icon']
-					toggled: [layer, 'toggled']
-					options: [layer, 'options', (v) -> 
-						return (v.map (o) -> return "'#{o}'").join(', ')
-						]
-			
-			Utils.offsetY(content.children, 32)
-			Utils.contain(content)
 		
-		Utils.offsetY(@children)
-	
+	Utils.offsetY(@content.children)
 	@updateContent()		
 	addDocsLink(@, 'wiki/Toggle')
-
-# Inputs View
-
-inputsView = new View
-	title: 'Inputs'
-
-inputsView.onLoad ->
-	Utils.bind @content, ->
-		
-		# text input
-		
-		label = new Label 
-			parent: @
-			text: 'First Name'
-		
-		input = new TextInput
-			parent: @
-			y: label.maxY
-			placeholder: 'Your first name'
-			
-		error = new Micro
-			parent: @
-			y: input.maxY
-			text: 'This website only accepts users named Sean.'
-		
-		input.on "change:value", (value) ->
-			error.color =
-				if value.toLowerCase() is 'sean'
-					green
-				else if value is ""
-					gray
-				else
-					red
-					
-			checkbox.disabled = value.toLowerCase() isnt 'sean'
-			checkSubmit()
-			
-# 		# radiobox
-		
-		radioBoxlabel = new Label
-			parent: @
-			x: 16
-			y: error.maxY + 16
-			text: 'Select your city'
-			
-		radioboxes = []
-		
-		lastY = radioBoxlabel.maxY
-		
-		for city, i in ['London', 'Chicago', 'DeKalb']
-			radioboxes[i] = new Radiobox
-				parent: @
-				group: radioboxes
-				x: 16
-				y: lastY
-	
-			label = new Body2
-				parent: @
-				x: radioboxes[i].maxX + 8
-				y: lastY
-				text: city
-				
-			radioboxes[i].labelLayer = label
-			
-			lastY = radioboxes[i].maxY + 3
-		
-		# check box
-		
-		label = new Label
-			parent: @
-			text: 'Agree to Conditions'
-			y: _.last(radioboxes).maxY + 16
-			
-		checkbox = new Checkbox
-			parent: @
-			y: label.y + 7
-			x: label.maxX + 8
-			disabled: true
-		
-		checkbox.on "change:checked", (bool) ->
-			checkSubmit()
-		
-		# submit button
-		
-		submit = new Button
-			parent: @
-			x: 16
-			y: checkbox.maxY + 32
-			text: 'Submit'
-			disabled: true
-			
-		checkSubmit = ->
-			submit.disabled = !(input.value.toLowerCase() is 'sean' and checkbox.checked and _.some(radioboxes, {'checked': true}))
-	
-
-	addDocsLink(@, 'wiki/Inputs')
 
 
 # ----------------
@@ -1409,178 +1473,246 @@ inputsView.onLoad ->
 
 sortableComponentView = new View
 	title: 'SortableComponent'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 
 sortableComponentView.onLoad ->
-	Utils.bind @content, ->
+	
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "SortableComponent"
+		body: "A Sortable allows the user to drag its children into new positions."
+	
+	# sortable
+	
+	sortable = new SortableComponent
+		parent: @
+		x: Align.center()
+		width: @width * .618
+	
+	for i in _.range(3)
 		
-		title = new H4
-			name: '.'
-			parent: @
-			y: (sortable?.maxY ? 0) + 32
-			text: 'Default SortableComponent'
+		new Layer
+			parent: sortable
+			name: 'Layer ' + i
+			x: 0
+			y: 16
+			width: sortable.width
+			height: 48
+	
+	Utils.offsetY(sortable.children, 8)
 			
-		div = new Layer
-			name: '.'
-			parent: @
-			x: title.maxX + 16
-			y: title.y + 10
-			width: @width - (title.maxX + 16) - 16
-			backgroundColor: grey40
-			height: 1
+	new ComponentExample
+		parent: @content
+		title: "Sortable Component"
+		content: sortable
+		tabbed: false
+		text: [
+			"sortable = new Sortable"
+			""
+			"for i in [0...3]"
+			"\tnew Layer"
+			"\t\tparent: sortable"
+			"\t\tname: 'Layer ' + i"
+			"\t\theight: 40"
+			""
+			"Utils.offsetY(sortable.children, 8)"
+			""
+			"print sortable.current"
+			""
+			"# » [{current}]"
+			]
+		template:
+			current: [sortable, 'current', (arr) -> arr.map( (l) -> "<Layer id:#{l.id} name:#{l.name} >").join(", ")]
+	
+	# Sortable with handle
+	
+	sortable = new SortableComponent
+		parent: @
+		x: Align.center()
+		width: @width * .618
+		backgroundColor: null
+	
+	for i in _.range(4)
 		
-		sortable = new SortableComponent
-			parent: @
-			x: Align.center()
-			y: title.maxY + 24	
-			width: @width * .618
+		last = new Layer
+			parent: sortable
+			y: 0
+			width: sortable.width
+			height: 48
+			backgroundColor: grey30
+			borderColor: grey
+			borderWidth: 1
+			animationOptions:
+				time: .2
+				curve: 'linear'
 		
-		for i in _.range(3)
-			
-			last = new Layer
-				parent: sortable
-				x: 0
-				y: (last?.maxY ? -16) + 16
-				width: sortable.width
-				height: 48
-				
-		last = undefined
-		
-		# Sortable with handle
-		
-		title = new H4
-			name: '.'
-			parent: @
-			y: (sortable?.maxY ? 0) + 32
-			text: 'SortableComponent using Handles'
-			
-		div = new Layer
-			name: '.'
-			parent: @
-			x: title.maxX + 16
-			y: title.y + 10
-			width: @width - (title.maxX + 16) - 16
-			backgroundColor: grey40
-			height: 1
-		
-		sortable = new SortableComponent
-			parent: @
-			x: Align.center()
-			y: title.maxY + 24	
-			width: @width * .618
+		last.handle = new Layer
+			parent: last
+			x: Align.right()
+			height: last.height
+			width: 40
 			backgroundColor: null
 		
-		for i in _.range(4)
+		new Icon
+			parent: last.handle
+			x: Align.right(-8)
+			y: Align.center()
+			icon: 'drag'
+	
+	Utils.offsetY(sortable.children, -1)
 			
-			last = new Layer
-				parent: sortable
-				y: (last?.maxY ? 1) - 1
-				width: sortable.width
-				height: 48
-				backgroundColor: grey30
-				borderColor: grey
-				borderWidth: 1
-				animationOptions:
-					time: .2
-					curve: 'linear'
+	new ComponentExample
+		parent: @content
+		title: "Sortable Component with Handles"
+		content: sortable
+		tabbed: false
+		text: [
+			"sortable = new Sortable"
+			""
+			"for i in [0...3]"
+			"\trow = new Layer"
+			"\t\tparent: sortable"
+			"\t\theight: 40"
+			""
+			"\trow.handle = new Layer"
+			"\t\tparent: row"
+			"\t\tsize: 40"
+			"\t\tx: Align.right()"
+			""
+			"Utils.offsetY(sortable.children)"
+			]
+		template: {}
+	
+	
+	# Sortable with dragging states
+	
+	sortable = new SortableComponent
+		parent: @
+		x: Align.center()
+		width: @width * .618
+		backgroundColor: null
+		draggingState:
+			scale: 1.2
+			backgroundColor: blue30
+			opacity: .8
+		defaultState:
+			scale: 1
+			backgroundColor: green30
+			opacity: 1
+	
+	for i in _.range(4)
+		
+		last = new Layer
+			parent: sortable
+			y: 0
+			width: sortable.width
+			height: 48
+			backgroundColor: green30
+			borderColor: green
+			borderWidth: 1
+	
+	Utils.offsetY(sortable.children)
 			
-			last.handle = new Layer
-				parent: last
-				x: Align.right()
-				height: last.height
-				width: 40
-				backgroundColor: null
-			
-			new Icon
-				parent: last.handle
-				x: Align.right(-8)
-				y: Align.center()
-				icon: 'drag'
-		
-		last = undefined
-		
-		# Sortable with dragging states
-		
-		title = new H4
-			name: '.'
-			parent: @
-			y: (sortable?.maxY ? 0) + 32
-			text: 'SortableComponent with Custom States'
-			
-		div = new Layer
-			name: '.'
-			parent: @
-			x: title.maxX + 16
-			y: title.y + 10
-			width: @width - (title.maxX + 16) - 16
-			backgroundColor: grey40
-			height: 1
-		
-		sortable = new SortableComponent
-			parent: @
-			x: Align.center()
-			y: title.maxY + 24	
-			width: @width * .618
-			backgroundColor: null
-			draggingState:
-				scale: 1.2
-				backgroundColor: blue30
-				opacity: .8
-			defaultState:
-				scale: 1
-				backgroundColor: green30
-				opacity: 1
-		
-		for i in _.range(4)
-			
-			last = new Layer
-				parent: sortable
-				y: (last?.maxY ? 1) - 1
-				width: sortable.width
-				height: 48
-				backgroundColor: green30
-				borderColor: green
-				borderWidth: 1
-			
-		last = undefined
-		
-		
-		
-		# Sortable with other content
-		
-		title = new H4
-			name: '.'
-			parent: @
-			y: (sortable?.maxY ? 0) + 32
-			text: 'SortableComponent with Other Content'
-			
-		div = new Layer
-			name: '.'
-			parent: @
-			x: title.maxX + 16
-			y: title.y + 10
-			width: @width - (title.maxX + 16) - 16
-			backgroundColor: grey40
-			height: 1
-		
-		sortable = new SortableComponent
-			parent: @
-			x: Align.center()
-			y: title.maxY + 24	
-			width: @width * .618
-			backgroundColor: null
-		
-		for i in _.range(3)
-			
-			last = new Button
-				parent: sortable
-				y: (last?.maxY ? -16) + 16
-				width: sortable.width
-				text: 'Sortable ' + i
-		
-		last = undefined
-			
+	new ComponentExample
+		parent: @content
+		title: sortable.name
+		content: sortable
+		tabbed: false
+		text: [
+			"sortable = new Sortable"
+			"\tdraggingState:"
+			"\t\tscale: 1.2"
+			"\t\tbackgroundColor: blue30"
+			"\t\topacity: .8"
+			"\tdefaultState:"
+			"\t\tscale: 1"
+			"\t\tbackgroundColor: green30"
+			"\t\topacity: 1"
+			""
+			"for i in [0...3]"
+			"\tnew Layer"
+			"\t\tparent: sortable"
+			"\t\theight: 40"
+			""
+			"Utils.offsetY(sortable.children)"
+			]
+		template: {}
+	
 		
 	
+	# Sortable with other content
+			
+	sortable = new SortableComponent
+		parent: @
+		x: Align.center()
+		width: @width * .618
+		backgroundColor: null
+	
+	for i in _.range(3)
+		cb = new Checkbox 
+			name: 'Checkbox'
+			parent: sortable
+			width: sortable.width
+			checked: i is 2
+			
+		new Body2
+			parent: cb
+			x: 40
+			y: Align.center()
+			text: 'Label ' + i
+		
+		cb.handle = new Layer
+			parent: cb
+			x: Align.right()
+			height: cb.height
+			width: 40
+			backgroundColor: null
+			propagateEvents: false
+		
+		new Icon
+			parent: cb.handle
+			x: Align.right(-8)
+			y: Align.center()
+			icon: 'drag'
+	
+	Utils.offsetY(sortable.children)
+	Utils.contain(sortable)
+			
+	new ComponentExample
+		parent: @content
+		title: "Sortable with other content"
+		content: sortable
+		tabbed: false
+		text: [
+			"sortable = new Sortable"
+			""
+			"for i in [0...3]"
+			"\trow = new Checkbox"
+			"\t\tparent: sortable"
+			"\t\twidth: 200"
+			""
+			"\tnew Body2"
+			"\t\tparent: row"
+			"\t\text: 'Label ' + i"
+			""
+			"\trow.handle = new Layer"
+			"\t\tparent: row"
+			"\t\tsize: 40"
+			"\t\tx: Align.right()"
+			""
+			"Utils.offsetY(sortable.children)"
+			"Utils.contain(sortable)"
+			]
+		template: {}
+	
+	Utils.offsetY(@content.children)
+	@updateContent()
 	addDocsLink(@, 'wiki/SortableComponent')
 
 # CarouselComponent
@@ -1589,8 +1721,6 @@ carouselComponentView = new View
 	title: 'Carousels'
 
 carouselComponentView.onLoad ->
-	Utils.bind @content, ->
-		
 	
 	addDocsLink(carouselComponentView, 'wiki/CarouselComponent')
 
@@ -1601,142 +1731,149 @@ tabComponentView = new View
 	padding: null
 
 tabComponentView.onLoad ->
-# 	@content.backgroundColor = grey30
-	Utils.bind @content, ->
-		
-		title = new H4
-			name: 'Title'
-			x: 16
-			y: 32
-			parent: @
-			fontWeight: 400
-			width: @width - 32
-			text: "**Tab Component**"
-		
-		Utils.toMarkdown(title)
-		
-		body = new Body2
-			parent: @
-			x: 16
-			width: @width - 32
-			text: "A TabComponent manages several layers, called `tabs`. The `active` or `current` tab is placed in front of the other tabs. The user can select a new `active` tab by tapping on the tab's button."
-		
-		Utils.toMarkdown(body)
-		
-		s = new Separator
-			parent: @
-			x: 0
-			width: 100
-		s.width = @width
-		
-		# examples
-		
-		# 1
 	
-		t1 = new TabComponent
-			parent: @
-			width: @width
-			
-		new DocComponent
-			parent: @
-			tabbed: false
-			text: [
-				"new TabComponent"
-				"\ttabs: ['Tab 1', 'Tab 2']"
-				"\tactive: {active}"
-				""
-				"print t1.current"
-				""
-				"# » {current}"
-			]
-			template:
-				active: [t1, 'active']
-				current: [t1, 'current', (v) -> 
-					"<Layer id:#{v.id} name:#{v.name} (0, 0)>"
-					]
-		
-		# 2
-		
-		t2 = new TabComponent
-			parent: @
-			width: @width
-			active: 1
-			
-		new DocComponent
-			parent: @
-			tabbed: false
-			text: [
-				"t2 = new TabComponent"
-				"\ttabs: ['Tab 1', 'Tab 2']"
-				"\tactive: {active}"
-				""
-				"print t2.current"
-				""
-				"# » {current}"
-			]
-			template:
-				active: [t2, 'active']
-				current: [t2, 'current', (v) -> 
-					"<Layer id:#{v.id} name:#{v.name} (0, 0)>"
-					]
-		
-		# 3
-			
-		t3 = new TabComponent
-			parent: @
-			width: @width
-			tabs: ["Fruit", "Veggies", "Liquor"]
-			height: 220
-			showSublayers: true
-			
-		new DocComponent
-			parent: @
-			tabbed: false
-			text: [
-				"t3 = new TabComponent"
-				"\ttabs: ['Fruit', 'Vegetables', 'Liquor']"
-				"\tactive: {active}"
-				""
-				"print t3.current"
-				""
-				"# » {current}"
-			]
-			template:
-				active: [t3, 'active']
-				current: [t3, 'current', (v) -> 
-					"<Layer id:#{v.id} name:#{v.name} (0, 0)>"
-					]
-		
-		Utils.bind t3.tabs[0], ->
-			new Body2
-				parent: @
-				x: 16
-				y: 16
-				width: @width - 32
-				text: "In botany, a fruit is the seed-bearing structure in flowering plants (also known as angiosperms) formed from the ovary after flowering. In common language usage, 'fruit' normally means the fleshy seed-associated structures of a plant that are sweet or sour, and edible in the raw state, such as apples."
-		
-		Utils.bind t3.tabs[1], ->
-			new Body2
-				parent: @
-				x: 16
-				y: 16
-				width: @width - 32
-				text: "In everyday usage, vegetables are certain parts of plants that are consumed by humans as food as part of a savory meal. Modern-day culinary usage of the term vegetable can be largely defined through culinary and cultural tradition."
-		
-		Utils.bind t3.tabs[2], ->
-			new Body2
-				parent: @
-				x: 16
-				y: 16
-				width: @width - 32
-				text: "A distilled beverage, spirit, liquor, hard liquor or hard alcohol is an alcoholic beverage produced by distillation of grains, fruit, or vegetables that have already gone through alcoholic fermentation. As distilled beverages contain significantly more alcohol, they are considered 'harder'."
-		
-		
-		Utils.offsetY @children, 32
-		
-	@updateContent()	
+	@content.backgroundColor = white
 	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "TabComponent"
+		body: "A TabComponent manages several layers, called `tabs`. The `active` or `current` tab is placed in front of the other tabs. The user can select a new `active` tab by tapping on the tab's button."
+		
+			
+	# examples
+	
+	# 1
+
+	t1 = new TabComponent
+			
+	new ComponentExample
+		parent: @content
+		title: "Tab Component"
+		content: t1
+		tabbed: false
+		text: [
+			"new TabComponent"
+			"\ttabs: ['Tab 1', 'Tab 2']"
+			"\tactive: {active}"
+			""
+			"print t1.current"
+			""
+			"# » {current}"
+		]
+		template:
+			active: [t1, 'active']
+			current: [t1, 'current', (v) -> 
+				"<Layer id:#{v.id} name:#{v.name}>"
+				]
+	
+	
+	# Active
+	
+	t2 = new TabComponent
+		active: 1
+			
+	new ComponentExample
+		parent: @content
+		title: "Tab Component with active tab"
+		content: t2
+		tabbed: false
+		text: [
+			"t2 = new TabComponent"
+			"\ttabs: ['Tab 1', 'Tab 2', 'Tab 3']"
+			"\tactive: {active}"
+			""
+			"print t2.current"
+			""
+			"# » {current}"
+		]
+		template:
+			active: [t2, 'active']
+			current: [t2, 'current', (v) -> 
+				"<Layer id:#{v.id} name:#{v.name}>"
+				]
+	
+	# Width
+
+	tw = new TabComponent
+		width: 300
+			
+	new ComponentExample
+		parent: @content
+		title: "Tab Component with set width"
+		content: tw
+		tabbed: false
+		text: [
+			"new TabComponent"
+			"\ttabs: ['Tab 1', 'Tab 2']"
+			"\twidth: 300"
+		]
+	
+	# content
+		
+	t3 = new TabComponent
+		tabs: ["Fruit", "Veggies", "Liquor"]
+		height: 220
+		width: 300
+		showSublayers: true
+		
+			
+	new ComponentExample
+		parent: @content
+		title: "Tab Component with content"
+		content: t3
+		tabbed: false
+		text: [
+			"t3 = new TabComponent"
+			"\ttabs: ['Fruit', 'Vegetables', 'Liquor']"
+			""
+			"new Body"
+			"\tparent: t3.tabs[0]"
+			"\ttext: 'In botany, a...'"
+			""
+			"new Body"
+			"\tparent: t3.tabs[1]"
+			"\ttext: 'In everyday usage...'"
+			""
+			"new Body"
+			"\tparent: t3.tabs[2]"
+			"\ttext: 'A distilled beverage...'"
+		]
+		template:
+			active: [t3, 'active']
+			current: [t3, 'current', (v) -> 
+				"<Layer id:#{v.id} name:#{v.name}>"
+				]
+	
+	Utils.bind t3.tabs[0], ->
+		new Body2
+			parent: @
+			x: 16
+			y: 16
+			width: t3.width - 32
+			text: "In botany, a fruit is the seed-bearing structure in flowering plants (also known as angiosperms) formed from the ovary after flowering. In common language usage, 'fruit' normally means the fleshy seed-associated structures of a plant that are sweet or sour, and edible in the raw state, such as apples."
+	
+	Utils.bind t3.tabs[1], ->
+		new Body2
+			parent: @
+			x: 16
+			y: 16
+			width: t3.width - 32
+			text: "In everyday usage, vegetables are certain parts of plants that are consumed by humans as food as part of a savory meal. Modern-day culinary usage of the term vegetable can be largely defined through culinary and cultural tradition."
+	
+	Utils.bind t3.tabs[2], ->
+		new Body2
+			parent: @
+			x: 16
+			y: 16
+			width: t3.width - 32
+			text: "A distilled beverage, spirit, liquor, hard liquor or hard alcohol is an alcoholic beverage produced by distillation of grains, fruit, or vegetables that have already gone through alcoholic fermentation. As distilled beverages contain significantly more alcohol, they are considered 'harder'."
+		
+		
+	Utils.offsetY @content.children
+	@updateContent()
 	addDocsLink(tabComponentView, 'wiki/TabComponent')
+
 
 # ----------------
 # Miscellaneous
@@ -1745,91 +1882,76 @@ tabComponentView.onLoad ->
 
 tooltipsView = new View
 	title: 'Tooltips'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
+	contentInset:
+		bottom: 128
 
 tooltipsView.onLoad ->
-	Utils.bind @content, ->
-		
-		new Tooltip
-			name: 'Default Tooltip'
-			parent: @
-			
-		new Tooltip
-			name: 'Tooltip Text'
-			parent: @
-			text: 'Context for the hovered element'
-		
-		new Tooltip
-			name: 'Tooltip Above'
-			parent: @
-			text: 'Tooltip above an element'
-			position: 'above'
-		
-		new Tooltip
-			name: 'Tooltip Right'
-			parent: @
-			text: 'Tooltip right of an element'
-			position: 'right'
-		
-		new Tooltip
-			name: 'Tooltip Below'
-			parent: @
-			text: 'Tooltip below an element'
-			position: 'below'
-		
-		new Tooltip
-			name: 'Tooltip Left'
-			parent: @
-			text: 'Tooltip left of an element'
-			position: 'left'
 	
-		for layer in @children
-			continue if not layer instanceof Tooltip
-			
-			title = new H4
-				name: '.'
-				parent: @
-				y: (last?.maxY ? 0) + 32
-				text: layer.name
-				
-			div = new Layer
-				name: '.'
-				parent: @
-				x: title.maxX + 16
-				y: title.y + 10
-				width: @width - (title.maxX + 16) - 16
-				backgroundColor: grey40
-				height: 1
-			
-			layer.y = title.maxY + 24
+	@content.backgroundColor = white
+	
+	new ComponentHeader
+		parent: @content
+		y: 0
+		title: "Tooltip"
+		body: "A tooltip shows some helper text about some other element. It may be `position`ed above, below, left or right of that other element."
+	
+	# tooltips
+	
+	new Tooltip
+		name: 'Default Tooltip'
+		parent: @
 		
-			string = [
+	new Tooltip
+		name: 'Tooltip Text'
+		parent: @
+		text: 'Context for the hovered element'
+	
+	new Tooltip
+		name: 'Tooltip Above'
+		parent: @
+		text: 'Tooltip above an element'
+		position: 'above'
+	
+	new Tooltip
+		name: 'Tooltip Right'
+		parent: @
+		text: 'Tooltip right of an element'
+		position: 'right'
+	
+	new Tooltip
+		name: 'Tooltip Below'
+		parent: @
+		text: 'Tooltip below an element'
+		position: 'below'
+	
+	new Tooltip
+		name: 'Tooltip Left'
+		parent: @
+		text: 'Tooltip left of an element'
+		position: 'left'
+	
+	
+	for layer in @children
+		continue unless layer instanceof Tooltip
+			
+		new ComponentExample
+			parent: @content
+			title: layer.name
+			content: layer
+			text: [
 				"new Tooltip",
 				"position: '#{layer.position}'",
 				"text: '#{layer.text}'",
-				].join('\n\t')
-				
-			label = new Code
-				name: '.'
-				parent: @
-				x: layer.x
-				y: layer.maxY + 24
-				text: string
-			
-			copyIcon = new Icon
-				parent: @
-				y: label.midY - 12
-				x: Align.right(-16)
-				icon: 'content-copy'
-				color: grey
-				
-			do (layer, label, copyIcon) ->
-				
-				copyIcon.onTap ->
-					Utils.copyTextToClipboard(label.text)
-					
-			
-			last = label
+				layer.extra ? ""
+				]
+			template:
+				position: [layer, 'position']
+				text: [layer, 'text']
 		
+	Utils.offsetY(@content.children)
+	@updateContent()
 	addDocsLink(@, 'wiki/Tooltip')
 
 # Example View
@@ -2856,161 +2978,76 @@ copyTextView.onLoad ->
 		Utils.offsetY(@children, 16)
 	@updateContent()
 
+
 # ----------------
 
 # Home View
 
 homeView = new View
 	title: 'Framework'
+	key: '0.0.0'
+	padding: {top: 16, left: 0, right: 0}
+	backgroundColor: linen ? grey30
 
 homeView.onLoad ->
-	Utils.bind @content, ->
-		# foundations
-		new H3
-			parent: @
-			text: 'Foundations'
-			y: 32
-			padding: {top: 24, bottom: 16}
+	
+	@content.props = 
+		clip: false
+	
+	new HomeViewContainer
+		parent: @content
+		title: "Foundations"
+		links:
+			Theme: undefined
+			Color: colorsView 
+			Typography: typographyView
+			Icon: iconsView
+	
+	new HomeViewContainer
+		parent: @content
+		title: "Buttons"
+		links:
+			Button: buttonsView
+			Link: linksView
+	
+	new HomeViewContainer
+		parent: @content
+		title: "Inputs"
+		links:
+			TextInput: textInputsView
+			Select: selectsView
+			Checkbox: checkboxView
+			Radiobox: radioboxView
+			Stepper: steppersView
+			Segment: segmentsView
+			Toggle: togglesView
+	
+	new HomeViewContainer
+		parent: @content
+		title: "Components"
+		links:
+			TabComponent: tabComponentView
+			SortableComponent: sortableComponentView
+			DocComponent: undefined
+			CarouselComponent: undefined
+	
+	new HomeViewContainer
+		parent: @content
+		title: "Structure"
+		links:
+			App: undefined
+			View: undefined 
+			Header: undefined
+			
+	new HomeViewContainer
+		parent: @content
+		title: "Misc"
+		links:
+			Tooltip: tooltipsView
+			Utils: utilsView
+	
 		
-		new RowLink
-			parent: @
-			text: 'Theme'
-			
-		new RowLink
-			parent: @
-			text: 'Color'
-			link: colorsView
-			
-		new RowLink
-			parent: @
-			text: 'Typography'
-			link: typographyView
-		
-		new RowLink
-			parent: @
-			text: 'Icon'
-			link: iconsView
-		
-		
-		# structure
-		new H3
-			parent: @
-			text: 'Structure'
-			padding: {top: 16, bottom: 16}
-		
-		new RowLink
-			parent: @
-			text: 'App'
-			
-		new RowLink
-			parent: @
-			text: 'View'
-			
-		new RowLink
-			parent: @
-			text: 'Header'
-		
-		# buttons
-		new H3
-			parent: @
-			text: 'Buttons'
-			padding: {top: 16, bottom: 16}
-			
-		new RowLink
-			parent: @
-			text: 'Link'
-			link: linksView
-			
-		new RowLink
-			parent: @
-			text: 'Button'
-			link: buttonsView
-		
-		# inputs
-		new H3
-			parent: @
-			text: 'Inputs'
-			padding: {top: 16, bottom: 16}
-			
-		new RowLink
-			parent: @
-			text: 'TextInput'
-			link: textInputsView
-			
-		new RowLink
-			parent: @
-			text: 'Select'
-			link: selectsView
-			
-		new RowLink
-			parent: @
-			text: 'Checkbox'
-			link: checkboxView
-			
-		new RowLink
-			parent: @
-			text: 'Radiobox'
-			link: radioboxView
-			
-		new RowLink
-			parent: @
-			text: 'Stepper'
-			link: steppersView
-			
-		new RowLink
-			parent: @
-			text: 'Segment'
-			link: segmentsView
-			
-		new RowLink
-			parent: @
-			text: 'Toggle'
-			link: togglesView
-		
-		
-		# components
-		new H3
-			parent: @
-			text: 'Components'
-			padding: {top: 16, bottom: 16}
-			
-		new RowLink
-			parent: @
-			text: 'TabComponent'
-			link: tabComponentView
-			
-		new RowLink
-			parent: @
-			text: 'SortableComponent'
-			link: sortableComponentView
-			
-		new RowLink
-			parent: @
-			text: 'DocComponent'
-			
-		new RowLink
-			parent: @
-			text: 'CarouselComponent'
-			
-		# misc
-		new H3
-			parent: @
-			text: 'Miscellaneous'
-			padding: {top: 16, bottom: 16}
-			
-		new RowLink
-			parent: @
-			text: 'Tooltip'
-			link: tooltipsView
-			
-		new RowLink
-			parent: @
-			text: 'Utils'
-			link: utilsView
-		
-		# set child positions
-		
-		Utils.offsetY(@children, 0)
+	Utils.offsetY(@content.children, 32)
 	
 	@updateContent()
 	
@@ -3019,8 +3056,9 @@ homeView.onLoad ->
 
 app.showNext(homeView)
 
+
 # ----------------
-# Debugging
+# Testing
 
 # app.views.forEach (view, i) ->
 # 	Utils.delay i, ->

@@ -35,6 +35,7 @@ class exports.Select extends Layer
 			optionElements: []
 			optionLayers: []
 
+
 		# ---------------
 		# Layers
 
@@ -52,6 +53,7 @@ class exports.Select extends Layer
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
 			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
 			
+
 		# Input
 		
 		@_input = document.createElement 'select'
@@ -60,11 +62,11 @@ class exports.Select extends Layer
 		_.assign @_input.style,
 			width: Utils.px(@width)
 			height: Utils.px(@height)
+			color: 'rgba(255, 255, 255, 0'
 			'-webkit-appearance': 'none'
 
-		last = 0
+		# Option Container
 
-		# option layer container
 		@optionContainer = new Layer
 			name: '.'
 			parent: @
@@ -80,24 +82,42 @@ class exports.Select extends Layer
 			theme[MODEL]["default"]
 			)
 
-		# create option layers
+
+		# Option Layers
+
 		@optionLayers = _.map options.options, (option, i) =>
+
+
+			opElement = document.createElement "option"
+
+			Utils.setAttributes opElement,
+				value: option
+
+			opElement.innerHTML = _.startCase(option)
+
+			if Utils.isMobile()
+				@_input.appendChild(opElement)
+
+			# debugging
+			# @_input.appendChild(opElement)
+
+
 			opLayer = new Option
 				name: '.'
 				handler: @
 				parent: @optionContainer
-				y: last
-				element: @optionElements[i]
+				element: opElement
 				index: i
 				value: option
-				
-			last += opLayer.height - 1
 
 			return opLayer
 
+		if @optionLayers.length > 0
+			Utils.offsetY(@optionLayers, -1)
+
 		_.assign @optionContainer,
 			minHeight: 1
-			maxHeight: last
+			maxHeight: _.maxBy(@optionLayers, 'maxY')?.maxY
 
 		# create icon layer
 		@iconLayer = new Icon
@@ -133,7 +153,10 @@ class exports.Select extends Layer
 		
 		@onMouseOver => @hovered = true
 		@onMouseOut => @hovered = false
-		@_input.oninput = @_setValue
+		
+		# wash me
+		@_input.oninput = => @selectedIndex = @_input.selectedIndex
+		
 		@_input.onblur = => @focused = false; @opened = false
 		@_input.onfocus = => @focused = true; @opened = true
 
@@ -150,6 +173,8 @@ class exports.Select extends Layer
 	# Private Methods
 
 	_setOpened: (bool) =>
+		return if Utils.isMobile()
+
 		if bool
 			# opened is true
 			_.assign @optionContainer,
@@ -181,13 +206,17 @@ class exports.Select extends Layer
 			height: @optionContainer.minHeight
 
 	_setSelected: (selectedIndex) =>
+
 		if -1 > selectedIndex > @optionLayers.length
 			throw 'Selected.selectedIndex must be more than -1 or less than its number of options.'
 		
-		@_setValue(@optionLayers[selectedIndex]?.value ? "")
+		@_input.selectedIndex = selectedIndex
+		@_setValue(selectedIndex)
 
-	_setValue: (value) =>
-		@textLayer.text = value
+
+	_setValue: (index) =>
+		value = @optionLayers[index]?.value
+		@textLayer.text = _.startCase(value)
 		@emit "change:value", value, @
 
 	# generic
@@ -290,13 +319,14 @@ class Option extends Layer
 			index: options.index
 			value: options.value
 		
+		
 		# ---------------
 		# Layers
 
 		@textLayer = new Body1
 			x: 0
 			y: 0
-			text: @value
+			text: _.startCase(@value)
 			padding: theme[MODEL].default.padding ? 12
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
 			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
@@ -308,6 +338,7 @@ class Option extends Layer
 			width: @parent.width
 
 		@textLayer.parent = @
+
 		
 		# ---------------
 		# Definitions

@@ -8,6 +8,7 @@ class exports.DocComponent extends Layer
 			name: "Documentation"
 			width: Screen.width
 			color: white
+			# height: 128
 			backgroundColor: black
 			tabbed: true
 			text: [
@@ -23,16 +24,46 @@ class exports.DocComponent extends Layer
 		
 		if typeof options.text is 'string' then options.text = [options.text]
 		
+
+		copyBg = new Layer
+			parent: @
+			width: 40
+			backgroundColor: black40
+
+		Utils.constrain copyBg, 'height'
+
+
+		@copyIcon = new Icon
+			name: 'Copy Icon'
+			parent: copyBg
+			y: 14
+			icon: 'content-copy'
+			color: blue
+		
+
+		@copyLabel = new Label
+			name: 'Copy Label'
+			parent: copyBg
+			y: @copyIcon.maxY
+			width: copyBg.width
+			textAlign: 'center'
+			fontSize: 10
+			text: 'COPY'
+			color: blue
+		
+		@copyIcon.midX = @copyLabel.midX
+
+
 		@codeBlock = new Code
 			name: 'Label'
 			parent: @
-			x: 12
-			y: 16
+			padding: {top: 16, left: 56, bottom: 16}
 			text: options.text.join(if options.tabbed then '\n\t' else '\n')
 			color: @color
 		
 		Utils.toMarkdown(@codeBlock)
 		
+
 		template = {}
 		formatter = {}
 		
@@ -48,27 +79,12 @@ class exports.DocComponent extends Layer
 			
 			layer.onChange property, (value) =>
 				@codeBlock.template = {"#{key}": value}
-				@height = _.maxBy(@children, 'maxY')?.maxY + 16
+				@height = @codeBlock?.maxY + 16
+				# Utils.contain(@children, true)
+
 
 		@codeBlock.templateFormatter = formatter
 		@codeBlock.template = template
-			
-		@copyIcon = new Icon
-			name: 'Copy Icon'
-			parent: @
-			y: 16
-			icon: 'content-copy'
-			color: grey
-			
-		@copyLabel = new Label
-			name: 'Copy Label'
-			parent: @
-			y: @copyIcon.maxY
-			x: Align.right(-8)
-			text: 'COPY'
-			color: grey
-			
-		@copyIcon.midX = @copyLabel.midX
 
 		# ---------------
 		# Cleanup
@@ -93,4 +109,4 @@ class exports.DocComponent extends Layer
 					color: @color
 					options: { time: .5 }
 					
-		@height = _.maxBy(@children, 'maxY')?.maxY + 16
+		@height = @codeBlock?.maxY + 16

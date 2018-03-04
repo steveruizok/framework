@@ -1,13 +1,15 @@
 framework = require "framework"
 theme = framework.theme.theme
 
+
+
 # -----------------
-# myTheme - A Custom Theme for Framework
+# myTheme - Example Custom Theme for Framework
 
 # This is an example "theme" for Framework. With themes, you can
-# add new components and set style over-rides without modifying
-# the base files, so that you can update Framework without losing
-# your changes.
+# add new components, add fonts, and set style over-rides without 
+# modifying the base files, so that you can update Framework layer
+# without losing your changes.
 
 
 
@@ -18,6 +20,7 @@ theme = framework.theme.theme
 # and place the component's name (as a string) into
 # the componentNames array.
 
+
 { Circle } = require 'myTheme-components/Circle'
 # { Square } = require 'myTheme-components/Square'
 
@@ -26,16 +29,37 @@ componentNames = [
 #	'Square'
 	]
 
+
+
 # -----------------
 # Fonts
 
-Utils.insertCSS("""
- 	@font-face {
-		font-family: 'MuktaMahee';
-		font-weight: 200;
-		src: url('modules/myTheme-components/fonts/MuktaMahee-Regular.ttf'); 
+# You can add fonts to your project by defing your fonts below. Start by 
+# placing your font files the font's file in the your theme's fonts folder 
+# (e.g. myTheme-components/fonts in the example below), then define the
+# font according to the following pattern. These fonts will be available 
+# everywhere: in Framer Cloud, offline, and on mobile devices.
+
+
+fonts = [
+	{
+		fontFamily: "Mukta Mahee"
+		fontWeight: 500
+		fontStyle: "normal"
+		src: "modules/myTheme-components/fonts/MuktaMahee-Regular.ttf"
+	}, {
+		fontFamily: "Mukta Mahee"
+		fontWeight: 600
+		fontStyle: "normal"
+		src: "modules/myTheme-components/fonts/MuktaMahee-SemiBold.ttf"
+	}, {
+		fontFamily: "Mukta Mahee"
+		fontWeight: 700
+		fontStyle: "normal"
+		src: "modules/myTheme-components/fonts/MuktaMahee-Bold.ttf"
 	}
-""")
+]
+
 
 
 # -----------------
@@ -60,6 +84,7 @@ shadeColors =
 	# blue: '#5399c3'
 	# green: '#599FA0'
 
+
 # You can also add colors without giving them the full shade treatment.
 # These colors will still be available as global variables in your project,
 # but they won't have shade50, shade40, etc.
@@ -70,22 +95,27 @@ soloColors =
 	blue: "#547190"
 
 
-# don't change this line -----------------------------
+
+# do not change ////////////////////////////////////////////////////////////
+# -------------------------------------------------------------------------
 framework.colors.updateColors(shadeColors, soloColors)
-# ----------------------------------------------------
+# -------------------------------------------------------------------------
+
 
 
 # -----------------
-# Theme
+# Component Styles
 
-# You can make changes to the default theme here.
-# Check components/Theme for the defaults - but don't 
-# change those defaults!
+# You can make changes to the default component styling here. The changes 
+# you make will be _merged_ into the defaults in modules/components/Theme.coffee. 
+# For example, if there's a borderRadius of 2 in the defaults that you want to 
+# change, you can over-write it with a different value. If you want to get rid 
+# of it, you'll  have to over-write it below with a value of zero.
+
+# Use those the Theme.coffee defaults as a reference -- but don't modify Theme.coffee!
+
 
 themeStyles = 
-	# ----------
-	# Typography
-	#
 	typography: 
 		Serif:
 			fontFamily: 'Times New Roman'
@@ -94,19 +124,40 @@ themeStyles =
 
 
 
-# -----------------
-# Blood-Slick machinery
+
+
+
+# /////////////////////////////////////////////////////////////////////////
+# -------------------------------------------------------------------------
+# Blood-Slick Machinery
 #
-# Here's where your components get processed.
 # Don't change this part!
+#
+
+# Update Styles
 
 framework.theme.updateTheme(themeStyles)
 framework.typography.updateTypography()
 
+# Add Fonts
+
+fontCSS = fonts.map( (font) ->
+	
+	"""
+@font-face {
+	font-family: #{font.fontFamily};
+	font-weight: #{font.fontWeight};
+	font-style: #{font.fontStyle};
+	src: url(#{font.src});
+}
+
+""").join('\n')
+
+Utils.insertCSS(fontCSS)
+
+# Add Components
 
 componentNames.forEach (componentName) =>
 	window[componentName] = class FrameworkComponent extends eval(componentName)
 		constructor: (options = {}) ->
-			@app = framework.app
 			super options
-

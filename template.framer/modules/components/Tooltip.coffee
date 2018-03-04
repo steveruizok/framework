@@ -120,26 +120,26 @@ class exports.Tooltip extends Layer
 				@diamond.props =
 					x: Align.center
 					y: Align.bottom(6)
-					rotationY: 40
-					rotationX: 0
+					scaleX: .7
+					scaleY: 1
 			when "below"
 				@diamond.props =
 					x: Align.center
 					y: -6
-					rotationY: 40
-					rotationX: 0
+					scaleX: .7
+					scaleY: 1
 			when "right"
 				@diamond.props =
 					x: -6
 					y: Align.center()
-					rotationY: 0
-					rotationX: 40
+					scaleX: 1
+					scaleY: .7
 			when "left"
 				@diamond.props =
 					x: Align.right(6)
 					y: Align.center()
-					rotationY: 0
-					rotationX: 40
+					scaleX: 1
+					scaleY: .7
 			else
 				throw 'Tooltip.position must be either "above", "right", "below", or "left".'
 

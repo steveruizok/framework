@@ -37,9 +37,6 @@ class exports.Checkbox extends Layer
 			@parent.checked ?= []
 			unless _.includes(@parent.checkboxes, @) then @parent.checkboxes.push(@)
 
-		@props =
-			x: @x - 4
-			y: @y - 4
 
 		# ---------------
 		# Layers
@@ -48,11 +45,12 @@ class exports.Checkbox extends Layer
 			name: "Icon"
 			parent: @
 			x: 0
-			y: Align.center()
+			y: 4
 			icon: 'checkbox-blank-outline'
 			color: options.color
 
 		Utils.linkProperties @, @iconLayer, "color"
+
 
 		# ---------------
 		# Events
@@ -67,6 +65,7 @@ class exports.Checkbox extends Layer
 			return if @disabled 
 			@hovered = false
 
+
 		# ---------------
 		# Definitions
 		
@@ -80,10 +79,12 @@ class exports.Checkbox extends Layer
 		
 		delete @__instancing
 
+
 		# ---------------
 		# Cleanup
 		
 		child.name = '.' for child in @children unless options.showSublayers
+
 
 	# ---------------
 	# Private Methods
@@ -108,7 +109,7 @@ class exports.Checkbox extends Layer
 			}
 
 	_setTheme: (value) =>
-		@animateStop()
+		@iconLayer.animateStop()
 		props = @customTheme?[value] ? _.defaults(
 			_.clone(@customOptions), 
 			theme[MODEL][value]
@@ -118,16 +119,16 @@ class exports.Checkbox extends Layer
 		else @animate props
 
 	_showChecked: (bool) =>
+
+		if @parent?.checkboxes?
+			@parent.checked = @parent.checkboxes.map (cb) -> cb.checked
+			@parent.emit "change:checked", @parent.checked, @parent
+
 		if not bool
 			@iconLayer.icon = 'checkbox-blank-outline'
 			return
 
-		if @parent?
-			@parent.checked = @parent.checkboxes.map (cb) -> cb.checked
-			@parent.emit "change:checked", @parent.checked, @parent
-
 		@iconLayer.icon = 'checkbox-marked'
-		return
 
 	_showError: (bool) =>
 		return if @disabled

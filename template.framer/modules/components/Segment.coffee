@@ -159,9 +159,6 @@ class exports.Segment extends Layer
 		return customTheme
 
 	_showActive: (button) =>
-		return if not button
-
-	_showActive: (button) =>
 		if not button
 			for button in @buttons
 				button._forceTheme(@customTheme, "default", "default")
@@ -192,7 +189,7 @@ class exports.Segment extends Layer
 			if not _.isNumber(num)
 				throw "Segment.active must be a number (the index of the active layer)."
 
-			if not @children[num]
+			if num >= 0 and not @children[num]
 				throw "Segment.active is out of range (no layer found at Toggle.children[#{num}])."
 
 			@_active = num

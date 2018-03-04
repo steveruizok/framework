@@ -187,9 +187,10 @@ class window.App extends FlowComponent
 		@_setWindowFrame()
 
 		# definitions
-		Utils.define @, 'focused', null, @_showFocused, _.isObject, "App.focused must be an html element."
-		Utils.define @, 'loading', false, @_showLoading, _.isBoolean, "App.loading must be a boolean (true or false)."
-
+		Utils.define @, 'focused', 		null, 		@_showFocused,	_.isObject,		"App.focused must be an html element."
+		Utils.define @, 'loading', 		false, 		@_showLoading, 	_.isBoolean,	"App.loading must be a boolean (true or false)."
+		Utils.define @, 'viewPoint',	{x:0, y:0}, undefined,		_.isObject, 	'App.viewPoint must be an point object (e.g. {x: 0, y: 0}).'
+		
 		# when transition starts, update the header
 		@onTransitionStart @_updateHeader
 
@@ -236,6 +237,7 @@ class window.App extends FlowComponent
 	
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next, direction) =>
+		@isTransitioning = false
 		return unless prev? and prev instanceof View
 
 		prev.sendToBack()
@@ -318,6 +320,10 @@ class window.App extends FlowComponent
 	
 	# show next view
 	showNext: (layer, loadingTime, options={}) ->
+		return if @isTransitioning
+
+		@isTransitioning = true
+
 		@_initial ?= layer
 
 		if @chrome is "safari" then loadingTime ?= _.random(.5, .75)
@@ -337,9 +343,12 @@ class window.App extends FlowComponent
 		@transition(layer, @_platformTransition, options)
 
 
+	# show previous view
 	showPrevious: (options={}) =>
 		return unless @previous
 		return if @isTransitioning
+
+		@isTransitioning = true
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
