@@ -158,6 +158,7 @@ class exports.Segment extends Layer
 		
 		return customTheme
 
+
 	_showActive: (button) =>
 		if not button
 			for button in @buttons
@@ -197,5 +198,6 @@ class exports.Segment extends Layer
 			@activeLayer = @children[num]
 
 			@emit "change:active", num, @options[num], @children[num]
+			@emit "change:value", @value, @
 
 

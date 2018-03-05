@@ -44,7 +44,7 @@ class exports.Select extends Layer
 		@textLayer = new Body1
 			name: '.'
 			parent: @
-			width: @width - ((theme[MODEL].default.padding ? 12) * 2)
+			width: @width# - ((theme[MODEL].default.padding ? 12) * 2)
 			x: theme[MODEL].default.padding ? 12
 			y: Align.center()
 			backgroundColor: null
@@ -62,7 +62,8 @@ class exports.Select extends Layer
 		_.assign @_input.style,
 			width: Utils.px(@width)
 			height: Utils.px(@height)
-			color: 'rgba(255, 255, 255, 0'
+			color: theme[MODEL].default.color
+			backgroundColor: theme[MODEL].default.backgroundColor
 			'-webkit-appearance': 'none'
 
 		# Option Container

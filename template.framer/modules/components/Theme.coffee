@@ -234,6 +234,16 @@ updateTheme = (values = {}) ->
 				borderColor: grey
 				backgroundColor: grey30
 		# --------------------------
+		# Stepper
+		stepper:
+			height: 48
+			borderRadius: 4
+			shadowY: 2
+			shadowBlur: 6
+			fontSize: 14
+			shadowColor: 'rgba(0,0,0,.16)'
+			backgroundColor: white
+		# --------------------------
 		# Tooltip
 		tooltip:
 			default:

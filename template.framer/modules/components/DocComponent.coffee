@@ -38,17 +38,18 @@ class exports.DocComponent extends Layer
 			parent: copyBg
 			y: 14
 			icon: 'content-copy'
-			color: blue70
+			color: blue
 		
 
 		@copyLabel = new Label
 			name: 'Copy Label'
 			parent: copyBg
 			y: @copyIcon.maxY
-			x: 8
+			width: copyBg.width
+			textAlign: 'center'
 			fontSize: 10
 			text: 'COPY'
-			color: blue70
+			color: blue
 		
 		@copyIcon.midX = @copyLabel.midX
 

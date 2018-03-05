@@ -493,7 +493,7 @@ Utils.StateManager = class StateManager
 
 # arrange layers in an array into a grid, using a set number of columns and row/column margins
 # @example    Utils.grid(layers, 4)
-grid: (array = [], cols = 4, rowMargin = 16, colMargin) ->
+Utils.grid = (array = [], cols = 4, rowMargin = 16, colMargin) ->
 	
 	g =
 		x: array[0].x
