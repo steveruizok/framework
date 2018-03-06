@@ -87,6 +87,7 @@ class window.App extends FlowComponent
 			chrome: 'ios'
 			contentWidth: Screen.width
 			showKeys: true
+			perspective: 1000
 
 		super options
 

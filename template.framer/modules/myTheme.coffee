@@ -43,20 +43,30 @@ componentNames = [
 
 fonts = [
 	{
-		fontFamily: "Mukta Mahee"
+		fontFamily: "Roboto"
+		fontWeight: 400
+		fontStyle: "normal"
+		src: "modules/myTheme-components/fonts/Roboto-Regular.ttf"
+	}, {
+		fontFamily: "Roboto"
 		fontWeight: 500
 		fontStyle: "normal"
-		src: "modules/myTheme-components/fonts/MuktaMahee-Regular.ttf"
+		src: "modules/myTheme-components/fonts/Roboto-Medium.ttf"
 	}, {
-		fontFamily: "Mukta Mahee"
+		fontFamily: "Roboto"
 		fontWeight: 600
 		fontStyle: "normal"
-		src: "modules/myTheme-components/fonts/MuktaMahee-SemiBold.ttf"
+		src: "modules/myTheme-components/fonts/Roboto-Bold.ttf"
 	}, {
-		fontFamily: "Mukta Mahee"
+		fontFamily: "Roboto Mono"
+		fontWeight: 500
+		fontStyle: "normal"
+		src: "modules/myTheme-components/fonts/RobotoMono-Medium.ttf"
+	}, {
+		fontFamily: "Montserrat"
 		fontWeight: 700
 		fontStyle: "normal"
-		src: "modules/myTheme-components/fonts/MuktaMahee-Bold.ttf"
+		src: "modules/myTheme-components/fonts/Montserrat-ExtraBold.ttf"
 	}
 ]
 
@@ -81,7 +91,8 @@ shadeColors =
 	# white: '#FFF'
 	# red: '#d96161'
 	# beige: '#eae5e0'
-	# blue: '#5399c3'
+	blue: '#21ccff'
+	linen: '#f4f3f1'
 	# green: '#599FA0'
 
 
@@ -116,11 +127,128 @@ framework.colors.updateColors(shadeColors, soloColors)
 
 
 themeStyles = 
-	typography: 
+	# --------------------------
+	# Typography
+	typography:
 		Serif:
-			fontFamily: 'Times New Roman'
+			color: black
+			fontFamily: 'Montserrat'
 		Sans:
-			fontFamily: 'Mukta Mahee'
+			color: black
+			fontFamily: 'Roboto'
+		Mono:
+			color: black40
+			fontFamily: 'Roboto Mono'
+			style: 
+				tabSize: 2
+		H1:
+			name: 'H1'
+			style: 'Serif'
+			fontSize: 80
+			letterSpacing: -3
+			lineHeight: 1
+			fontWeight: 600
+			color: black
+		H2:
+			name: 'H2'
+			style: 'Serif'
+			fontSize: 32
+			letterSpacing: -.5
+			lineHeight: 1.1
+			fontWeight: 500
+			color: black
+		H3:
+			name: 'H3'
+			style: 'Sans'
+			fontSize: 30
+			letterSpacing: -0.01
+			lineHeight: 1
+			fontWeight: 600
+			color: black
+		H4:
+			name: 'H4'
+			style: 'Sans'
+			fontSize: 18
+			letterSpacing: 0
+			lineHeight: 1.2
+			fontWeight: 600
+			color: black
+		H5:
+			name: 'H5'
+			style: 'Sans'
+			fontSize: 16
+			lineHeight: 1
+			letterSpacing: 0
+			fontWeight: 500
+			color: black
+		# H6:
+		# 	name: 'H5'
+		# 	style: 'Sans'
+		# 	fontSize: 11
+		# 	lineHeight: 1.6
+		# 	fontWeight: 600
+		# 	letterSpacing: 0
+		# 	color: black
+		Body:
+			name: 'Body'
+			style: 'Sans'
+			fontSize:  16
+			lineHeight: 1.25
+			fontWeight: 400
+			letterSpacing: 0
+			color: black
+		# Body1:
+		# 	name: 'Body1'
+		# 	style: 'Sans'
+		# 	fontSize:  16
+		# 	lineHeight: 1.25
+		# 	fontWeight: 500
+		# 	letterSpacing: 0
+		# 	color: black
+		# Body2:
+		# 	name: 'Body2'
+		# 	style: 'Sans'
+		# 	fontSize:  13
+		# 	lineHeight: 1.5
+		# 	fontWeight: 500
+		# 	letterSpacing: 0
+		# 	color: black
+		# Body3:
+		# 	name: 'Body3'
+		# 	style: 'Sans'
+		# 	fontSize:  11
+		# 	lineHeight: 1.6
+		# 	fontWeight: 500
+		# 	letterSpacing: 0
+		# 	color: black
+		# Code:
+		# 	name: 'Code'
+		# 	style: 'Mono'
+		# 	fontSize:  12
+		# 	lineHeight: 1.3
+		# 	fontWeight: 500
+		# 	letterSpacing: 0
+		# 	color: black
+		# 	fontFamily: 'Menlo'
+		# 	style:
+		# 		'tab-size': '4'
+		# Label:
+		# 	name: 'Label'
+		# 	style: 'Sans'
+		# 	fontSize:  13
+		# 	lineHeight: 2.5
+		# 	fontWeight: 600
+		# 	letterSpacing: 0
+		# 	color: black40
+		# Micro:
+		# 	name: 'Micro'
+		# 	style: 'Sans'
+		# 	fontSize:  11
+		# 	lineHeight: 1.6
+		# 	fontWeight: 500
+		# 	letterSpacing: 0
+		# 	padding: {top: 4}
+		# 	color: grey
 
 
 
@@ -137,7 +265,6 @@ themeStyles =
 # Update Styles
 
 framework.theme.updateTheme(themeStyles)
-framework.typography.updateTypography()
 
 # Add Fonts
 
@@ -154,6 +281,10 @@ fontCSS = fonts.map( (font) ->
 """).join('\n')
 
 Utils.insertCSS(fontCSS)
+
+# Update Typography
+
+framework.typography.updateTypography()
 
 # Add Components
 
