@@ -130,6 +130,7 @@ class exports.Button extends Layer
 			if options.width
 				@content.x = 0
 				@content.width = @width
+				@textLayer.width = @width
 				@textLayer.x = Align.center()
 				@loadingIcon.x = Align.center()
 
@@ -143,6 +144,7 @@ class exports.Button extends Layer
 				@content.x = 0
 				@content.width = @width
 				@textLayer.x = Align.center()
+				@textLayer.width = @width
 				@loadingIcon.x = Align.center()
 
 		# Fix position, now that we have our size

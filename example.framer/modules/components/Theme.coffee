@@ -494,6 +494,7 @@ updateTheme = (values = {}) ->
 	Utils.insertCSS("""
 		*:focus { outline: 0; }
 		textarea { resize: none; }
+		
 
 		pre {
 			tab-size: 10px;

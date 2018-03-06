@@ -62,7 +62,7 @@ class exports.Select extends Layer
 		_.assign @_input.style,
 			width: Utils.px(@width)
 			height: Utils.px(@height)
-			color: theme[MODEL].default.color
+			color: theme[MODEL].default.backgroundColor
 			backgroundColor: theme[MODEL].default.backgroundColor
 			'-webkit-appearance': 'none'
 
@@ -86,6 +86,9 @@ class exports.Select extends Layer
 
 		# Option Layers
 
+
+		# options
+
 		@optionLayers = _.map options.options, (option, i) =>
 
 
@@ -94,9 +97,15 @@ class exports.Select extends Layer
 			Utils.setAttributes opElement,
 				value: option
 
+			_.assign opElement.style,
+				padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
+				color: theme[MODEL].default.backgroundColor
+				backgroundColor: theme[MODEL].default.backgroundColor
+				'-webkit-appearance': 'none'
+
 			opElement.innerHTML = _.startCase(option)
 
-			if Utils.isMobile()
+			unless Utils.isDesktop()
 				@_input.appendChild(opElement)
 
 			# debugging
@@ -174,7 +183,7 @@ class exports.Select extends Layer
 	# Private Methods
 
 	_setOpened: (bool) =>
-		return if Utils.isMobile()
+		return if not Utils.isDesktop()
 
 		if bool
 			# opened is true
@@ -248,6 +257,7 @@ class exports.Select extends Layer
 				backgroundColor: bg.darken(10)
 				shadowColor: 'rgba(0,0,0,.16)'
 			}
+	
 
 	_setTheme: (value) =>
 		@animateStop()
@@ -258,6 +268,7 @@ class exports.Select extends Layer
 
 		if @__instancing then @props = props else @animate props
 	
+
 	_showHovered: (bool) =>
 		return if @disabled or @focused
 
@@ -268,6 +279,7 @@ class exports.Select extends Layer
 		# hovered is false
 		@theme = "default"
 	
+
 	_showFocused: (bool) =>
 		return if @disabled
 
@@ -277,6 +289,7 @@ class exports.Select extends Layer
 
 		# focused is false
 		@theme = "default"
+
 
 	_showDisabled: (bool) =>
 		if bool # disabled is true
