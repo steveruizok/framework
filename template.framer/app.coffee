@@ -47,7 +47,7 @@ landingView = new View
 
 landingView.onLoad -> # [4]
 # Utils.bind landingView, -> #[5]
-
+	
 	title = new H2
 		parent: @content
 		x: Align.center()

@@ -103,8 +103,9 @@ class exports.View extends ScrollComponent
 			return if @_initial and @preserveContent
 			@load(app, next, prev)
 			@_initial = true
-		catch
-			throw "View ('#{@title ? @name}') must have a working `load` property (a callback). If it does have one, there's an error in it!"
+		catch error
+			title = @key ? if _.trim(@title).length > 0 then @title else @name
+			throw "View ('#{title ? @name}'): #{error}"
 		@app.loading = false
 
 	

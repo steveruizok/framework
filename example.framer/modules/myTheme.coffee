@@ -143,7 +143,7 @@ themeStyles =
 				tabSize: 2
 		H1:
 			name: 'H1'
-			style: 'Sans'
+			style: 'Serif'
 			fontSize: 80
 			letterSpacing: -3
 			lineHeight: 1
