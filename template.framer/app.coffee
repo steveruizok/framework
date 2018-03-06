@@ -40,14 +40,13 @@ list_items = [0...6].map (i) ->
 # 0.0.0 Landing View
 
 landingView = new View
-	title: ' ' # [1]
+	title: 'Landing' # [1]
 	key: "0.0.0" # [2]
 	contentInset: # [3]
 		bottom: 0
 
 landingView.onLoad -> # [4]
 # Utils.bind landingView, -> #[5]
-	
 	title = new H2
 		parent: @content
 		x: Align.center()

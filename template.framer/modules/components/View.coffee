@@ -99,13 +99,19 @@ class exports.View extends ScrollComponent
 	# Private Methods
 
 	_loadView: (app, next, prev) =>
+		return if @_initial and @preserveContent
+		
 		try 
-			return if @_initial and @preserveContent
 			@load(app, next, prev)
-			@_initial = true
 		catch error
 			title = @key ? if _.trim(@title).length > 0 then @title else @name
-			throw "View ('#{title ? @name}'): #{error}"
+				
+			if not @load?
+				throw "View ('#{title}') must have a `load` method. Try `myView.onLoad -> ...`"
+			else
+				throw "View ('#{title}') #{error}"
+
+		@_initial = true	
 		@app.loading = false
 
 	
