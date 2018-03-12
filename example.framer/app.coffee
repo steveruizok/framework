@@ -3056,6 +3056,7 @@ homeView.onLoad ->
 
 app.showNext(homeView)
 
+app.getScreenshot()
 
 # ----------------
 # Testing

@@ -466,30 +466,24 @@ class window.App extends FlowComponent
 				@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 				)
 
-	@define "windowFrame",
-		get: -> return @_windowFrame
-
-
-	getScreenshot: (layer)
-		if not @_isDomToImageLoaded
-			load = new Promise( (resolve, reject) ->
-				Utils.domLoadScript(
-					"https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js", 
-					(script) => resolve()
-					).then( => 
-						@_isDomToImageLoaded = true
-						@takeScreenshot(options)
-					)
+	getScreenshot: (layer, options = {}) =>
+		unless @_isDomToImageLoaded?
+			Utils.domLoadScript(
+				"https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js", 
+				=> 
+					@_isDomToImageLoaded = true
+					@getScreenshot(layer, options)
+				)
 			return
 		
 		_.defaults options,
-			layer: app
+			layer: @
 			name: "screenshot"
 			type: "png"
 			style:
 				height: '100%'
 				width: '100%'
-		
+
 		node = options.layer._element
 		func = domtoimage['to' + _.startCase(options.type)]
 		
@@ -503,3 +497,9 @@ class window.App extends FlowComponent
 			(error) -> 
 				throw "Screenshot failed."
 			)
+	
+	@define "windowFrame",
+		get: -> return @_windowFrame
+
+
+	
