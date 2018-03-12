@@ -40,8 +40,7 @@ componentNames = [
 # font according to the following pattern. These fonts will be available 
 # everywhere: in Framer Cloud, offline, and on mobile devices.
 
-
-fonts = [
+localFonts = [
 	{
 		fontFamily: "Roboto"
 		fontWeight: 400
@@ -62,11 +61,13 @@ fonts = [
 		fontWeight: 500
 		fontStyle: "normal"
 		src: "modules/myTheme-components/fonts/RobotoMono-Medium.ttf"
-	}, {
+	}, 
+]
+
+webFonts = [
+	{
 		fontFamily: "Montserrat"
 		fontWeight: 700
-		fontStyle: "normal"
-		src: "modules/myTheme-components/fonts/Montserrat-ExtraBold.ttf"
 	}
 ]
 
@@ -255,6 +256,8 @@ themeStyles =
 
 
 
+
+
 # /////////////////////////////////////////////////////////////////////////
 # -------------------------------------------------------------------------
 # Blood-Slick Machinery
@@ -266,21 +269,20 @@ themeStyles =
 
 framework.theme.updateTheme(themeStyles)
 
+{ loadLocalFonts } = require 'components/fontloader'
+{ loadWebFonts } = require 'components/fontloader'
+
+# Update Styles
+
+framework.theme.updateTheme(themeStyles)
+
 # Add Fonts
 
-fontCSS = fonts.map( (font) ->
-	
-	"""
-@font-face {
-	font-family: #{font.fontFamily};
-	font-weight: #{font.fontWeight};
-	font-style: #{font.fontStyle};
-	src: url(#{font.src});
-}
+if localFonts.length > 0
+	loadLocalFonts(localFonts)
 
-""").join('\n')
-
-Utils.insertCSS(fontCSS)
+if webFonts.length > 0
+	loadWebFonts(webFonts)
 
 # Update Typography
 

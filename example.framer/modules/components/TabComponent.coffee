@@ -85,9 +85,8 @@ class exports.TabComponent extends Layer
 
 			button.__instancing = true
 			button.model = MODEL
-			button.palette = "default"
-			button.theme = "default"
-			button._setTheme("default")
+			
+			button._forceTheme(@customTheme, "default", "default")
 
 			radius = switch i
 				when 0 then "#{Utils.px(button.borderRadius)} 0px 0px 0px"
@@ -101,7 +100,6 @@ class exports.TabComponent extends Layer
 				parent: @
 				width: button.width - 2
 				x: button.x + 1
-				y: button.height - 2
 				height: 4
 				backgroundColor: theme[MODEL].active.default.backgroundColor
 				opacity: 0
@@ -112,6 +110,7 @@ class exports.TabComponent extends Layer
 			return button
 
 		Utils.linkProperties @, @content, "width"
+
 		@on "change:height", => 
 			@content.height = (@height - 40)
 			@content.y = Align.bottom()
@@ -189,6 +188,7 @@ class exports.TabComponent extends Layer
 		activeButton = @tabButtons[num]
 
 		activeButton.blocker.opacity = 1
+		activeButton.blocker.y = activeButton.maxY - 2
 		activeButton._forceTheme(@customTheme, "active", "default")
 
 		for sib in _.without(@tabButtons, activeButton)

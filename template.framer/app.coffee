@@ -121,9 +121,8 @@ listView = new View
 	title: "List View"
 	key: "1.0.0"
 
-listView.onLoad ->
 
-# Utils.bind listView, -> # un-comment to find errors
+listView.onLoad () ->
 	
 	# Iterate over items (see the "Data" code fold)
 	links = list_items.map (item, i) =>
@@ -146,7 +145,7 @@ listView.onLoad ->
 	# Events
 	
 	links.forEach (link, i) -> 
-		link.onSelect -> 
+		link.onSelect ->
 			detailView = new DetailView
 				item: list_items[i]
 			
@@ -163,15 +162,15 @@ class DetailView extends View
 		_.defaults options,
 			name: "Detail View"
 			key: "2.0.x"
-			item: items[0]
+			item: list_items[0]
 			padding: null
 			oneoff: true
 		
 		super options
-			
-		item = options.item
 		
-		@onLoad ->
+		item = options.item
+				
+		@onLoad (data) ->
 		
 # 		Utils.bind @, ->  # un-comment to find errors
 				
@@ -200,8 +199,8 @@ class DetailView extends View
 # ----------------
 # Kickoff / Testing [3]
 
-app.showNext(landingView)
-# app.showNext(listView)
+# app.showNext(landingView)
+app.showNext(listView)
 # app.showNext(new DetailView)
 
 

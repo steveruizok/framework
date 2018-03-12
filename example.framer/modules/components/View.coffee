@@ -17,8 +17,6 @@ class exports.View extends ScrollComponent
 				
 			padding: {}
 			title: ''
-			load: null
-			unload: null
 			key: null
 			clip: false
 			preserveContent: false
@@ -44,14 +42,19 @@ class exports.View extends ScrollComponent
 		# Definitions
 		
 		delete @__constructor
+
+		preload = new Promise( (resolve) -> resolve() )
+		
+		isPromise = (value) -> _.isObject(value) and _.isFunction(value.then)
 		
 		# 				Property			Initial value 			Callback 	Validation		Error
 		Utils.define @, 'title', 			options.title, 			undefined, 	_.isString, 	'View.title must be a string.'
 		Utils.define @, 'padding',			options.padding, 		undefined, 	_.isObject, 	'View.padding must be an object.'
-		Utils.define @, 'load', 			options.load, 			undefined, 	_.isFunction, 	'View.load must be a function.'
-		Utils.define @, 'unload', 			options.unload, 		undefined, 	_.isFunction, 	'View.unload must be a function.'
 		Utils.define @, 'oneoff', 			options.oneoff, 		undefined, 	_.isBoolean, 	'View.oneoff must be a boolean (true or false).'
-		Utils.define @, 'preserveContent',	options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
+		Utils.define @, 'preserveContent', options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
+		Utils.define @, 'load', 			undefined, 				undefined,	_.isFunction, 	'View.load must be a Function.'
+		Utils.define @, 'preload', 			preload, 				undefined, 	isPromise, 		'View.preload must be a Promise.'
+		Utils.define @, 'unload', 			undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
 		
 		delete @__instancing
 
@@ -66,22 +69,14 @@ class exports.View extends ScrollComponent
 		# Events
 		
 		@content.on "change:children", @_fitChildrenToPadding
-		@app.on "change:windowFrame", @_updateSize
 
 		@content.on "change:point", (value) =>
 			return unless @app.current is @
 			@app.viewPoint = {x: -@content.x, y: -@content.y}
 
+
 	# ---------------
-	# Private Functions
-	
-	_delayUpdateSize: =>
-		Utils.delay 1, @_updateSize
-
-
-	_updateSize: (windowFrame) =>
-		# perhaps doing nothing is the best thing to do
-		return
+	# Private Methods
 
 			
 	_fitChildrenToPadding: (children) =>
@@ -94,25 +89,6 @@ class exports.View extends ScrollComponent
 			if child.y < @padding.top then child.y = @padding.top
 			if child.width > w 
 				Utils.delay 0, -> child.width = w
-
-	# ---------------
-	# Private Methods
-
-	_loadView: (app, next, prev) =>
-		return if @_initial and @preserveContent
-		
-		try 
-			@load(app, next, prev)
-		catch error
-			title = @key ? if _.trim(@title).length > 0 then @title else @name
-				
-			if not @load?
-				throw "View ('#{title}') must have a `load` method. Try `myView.onLoad -> ...`"
-			else
-				throw "View ('#{title}') #{error}"
-
-		@_initial = true	
-		@app.loading = false
 
 	
 	_unloadView: (app, next, prev, direction) =>
@@ -143,7 +119,10 @@ class exports.View extends ScrollComponent
 		Utils.delay loadingTime, => @app.showNext(@)
 
 
-	onLoad: (callback) -> 	
+	onPreload: (callback) =>
+		@preload = new Promise callback
+
+	onLoad: (callback) =>
 		@load = callback
 
 

@@ -1,7 +1,9 @@
-require 'moreutils'
+require 'components/moreutils'
 theme = require 'components/Theme'
 colors = require 'components/Colors'
 typography = require 'components/Typography'
+{ loadWebFonts } = require 'components/fontloader'
+{ loadLocalFonts } = require 'components/fontloader'
 
 colors.updateColors()
 
@@ -91,6 +93,55 @@ class window.App extends FlowComponent
 
 		super options
 
+		@_wrapLayer = (flowLayer) ->
+
+			flowLayer._flowLayer = flowLayer
+
+			return flowLayer if flowLayer instanceof ScrollComponent
+			return flowLayer if flowLayer._flowWrapped
+
+			# Make the layer at least match the device size
+			flowLayer.width = Math.max(flowLayer.width, @width)
+			flowLayer.height = Math.max(flowLayer.height, @height)
+
+			size = @size
+			# Save the parent so we can clean up when we re-wrap this layer
+			if @ in flowLayer.ancestors()
+				content = flowLayer?.parent
+				scroll = content?.parent
+				if scroll instanceof ScrollComponent
+					previousWrappingScroll = scroll
+					previousWrappingContent = content
+			layer = layoutPage(flowLayer, size)
+			layer = layoutScroll(layer, size)
+			if flowLayer isnt layer and
+			   previousWrappingContent?.children.length is 0 and
+			   previousWrappingScroll?.children.length is 1 and
+			   previousWrappingScroll?.children[0] is previousWrappingContent
+				# we wrapped the layer
+				previousWrappingScroll.destroy()
+
+			# Mark the layer so we don't layout it twice'
+			layer._flowLayer = flowLayer
+
+			# Forward the scroll events from created scroll components
+			for scroll in [layer, layer.children...]
+
+				@_forwardScrollEvents(scroll)
+
+				if scroll instanceof ScrollComponent
+					inset = {}
+					inset.top = @header?.height or 0 if scroll.y is 0
+					inset.bottom = @footer?.height or 0 if scroll.maxY is @height
+					scroll.contentInset = inset
+					flowLayer._flowScroll = scroll
+
+			# Set the background color for he created scroll component
+			if layer instanceof ScrollComponent
+				layer.backgroundColor = @backgroundColor
+
+			return layer
+
 		_.assign @,
 			chrome: options.chrome
 			showKeys: options.showKeys
@@ -106,7 +157,7 @@ class window.App extends FlowComponent
 			when "ios"
 				@_iosTransition
 			else
-				@_defaultTransition
+				@_safariTransition
 
 		# layers
 
@@ -207,43 +258,6 @@ class window.App extends FlowComponent
 		# possibly... an app state dealing with an on-screen keyboard
 		return
 
-	_updateHeader: (prev, next, direction) =>
-		# header changes
-		return if not @header
-
-		# update the header's 'viewKey' using the next View's 'key'
-		if @showKeys then @header.viewKey = next?.key
-
-		# is there a previous layer? (and is the next layer the initial layer?)
-		hasPrevious = prev? and next isnt @_initial
-
-		# safari changes
-		if @header.safari
-			@footer.hasPrevious = hasPrevious
-			return
-
-		# ios changes
-		@header.backIcon.visible = hasPrevious
-		@header.backText.visible = hasPrevious
-		
-		if next.title 
-			@header.updateTitle(next.title)
-
-	# Update the next View before transitioning
-	_updateNext: (prev, next) =>
-		return if not next
-
-		next._loadView(@, next, prev)
-		
-	
-	# Reset the previous View after transitioning
-	_updatePrevious: (prev, next, direction) =>
-		@isTransitioning = false
-		return unless prev? and prev instanceof View
-
-		prev.sendToBack()
-		prev._unloadView(@, next, prev, direction)
-
 	_safariTransition: (nav, layerA, layerB, overlay) =>
 		options = {time: 0.01}
 		transition =
@@ -290,6 +304,28 @@ class window.App extends FlowComponent
 
 		@emit "change:windowFrame", @_windowFrame, @
 
+	_updateHeader: (prev, next, direction) =>
+		# header changes
+		return if not @header
+
+		# update the header's 'viewKey' using the next View's 'key'
+		if @showKeys then @header.viewKey = next?.key
+
+		# is there a previous layer? (and is the next layer the initial layer?)
+		hasPrevious = prev? and next isnt @_initial
+
+		# safari changes
+		if @header.safari
+			@footer.hasPrevious = hasPrevious
+			return
+
+		# ios changes
+		@header.backIcon.visible = hasPrevious
+		@header.backText.visible = hasPrevious
+		
+		if next.title 
+			@header.updateTitle(next.title)
+
 	_showLoading: (bool) =>
 		if bool
 			@focused?.blur()
@@ -298,8 +334,8 @@ class window.App extends FlowComponent
 
 			# show safari loading
 			if @chrome is "safari"
-				@header._expand()
 				@footer._expand()
+				@header._expand()
 				@header._showLoading(true)
 				return
 
@@ -311,10 +347,32 @@ class window.App extends FlowComponent
 
 		# show safari loading ended
 		if @chrome is "safari"
-			@header._expand()
 			@footer._expand()
+			@header._expand()
 			@header._showLoading(false)
 			return
+	
+	# Reset the previous View after transitioning
+	_updatePrevious: (prev, next, direction) =>
+		@isTransitioning = false
+		return unless prev? and prev instanceof View
+
+		prev.sendToBack()
+		prev._unloadView(@, next, prev, direction)
+
+
+	_transitionToNext: (layer, options) =>
+		@loading = false
+		@isTransitioning = false
+		@transition(layer, @_platformTransition, options)
+
+
+	_transitionToPrevious: (transition, animate, current, previous) =>
+		@loading = false
+		@isTransitioning = false
+		@_runTransition(transition, "back", animate, current, previous)
+
+		
 
 	# ---------------
 	# Public Methods
@@ -323,33 +381,51 @@ class window.App extends FlowComponent
 	showNext: (layer, loadingTime, options={}) ->
 		return if @isTransitioning
 
+		@_initial ?= true	
+
+		if @chrome is "safari" and not @_initial 
+			loadingTime ?= _.random(.5, .75)
+
+		# prepare to load
+
+		@focused?.blur()
+
 		@isTransitioning = true
 
-		@_initial ?= layer
+		Utils.delay .25, => @loading = @isTransitioning
 
-		if @chrome is "safari" then loadingTime ?= _.random(.5, .75)
+		# preload the new View
+		layer.preload.then(
 
-		@_updateNext(@current, layer)
+			# load up the new View with the response data
+			(response) =>
+				new Promise( (resolve) => 
+					Utils.bind( layer, -> layer.load(response) )
+					resolve()
+				)
 
-		# if loading time specified...
-		if loadingTime?
-			@loading = true
-			Utils.delay loadingTime, =>
-				@loading = false
-				@transition(layer, @_platformTransition, options)
-			return
+			).then( =>
+				# transition to new View
+				if loadingTime?
+					Utils.delay loadingTime, =>
+						@_transitionToNext(layer, options)
+					return
 
-		# otherwise, show next
-		@focused?.blur()
-		@transition(layer, @_platformTransition, options)
-
+				@_transitionToNext(layer, options)
+				)
 
 	# show previous view
 	showPrevious: (options={}) =>
 		return unless @previous
 		return if @isTransitioning
 
+		# prepare to load
+
+		@focused?.blur()
+
 		@isTransitioning = true
+
+		Utils.delay .25, => @loading = @isTransitioning
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
@@ -361,19 +437,69 @@ class window.App extends FlowComponent
 
 		previous = @_stack.pop()
 		current = @current
-		try current._loadView()
+		layer = current
 		
+
+		# force loading time on safari
+
 		if @chrome is "safari"
 			@loading = true
 			loadingTime = _.random(.3, .75)
-			Utils.delay loadingTime, =>
-				@loading = false
-				@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
-			return
 
-		@focused?.blur()
-		@_runTransition(previous?.transition, "back", options.animate, current, previous.layer)
+		# preload the new View
+		layer.preload.then(
 
+			# load up the new View with the response data
+			(response) =>
+				new Promise( (resolve) => 
+					Utils.bind( layer, -> layer.load(response) )
+					resolve()
+				)
+
+			).then( =>
+				# transition to new View
+				if loadingTime?
+					Utils.delay loadingTime, =>
+						@_transitionToPrevious(previous?.transition, options.animate, current, layer)
+					return
+
+				@_transitionToPrevious(previous?.transition, options.animate, current, layer)
+				)
 
 	@define "windowFrame",
 		get: -> return @_windowFrame
+
+
+	getScreenshot: (layer)
+		if not @_isDomToImageLoaded
+			load = new Promise( (resolve, reject) ->
+				Utils.domLoadScript(
+					"https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js", 
+					(script) => resolve()
+					).then( => 
+						@_isDomToImageLoaded = true
+						@takeScreenshot(options)
+					)
+			return
+		
+		_.defaults options,
+			layer: app
+			name: "screenshot"
+			type: "png"
+			style:
+				height: '100%'
+				width: '100%'
+		
+		node = options.layer._element
+		func = domtoimage['to' + _.startCase(options.type)]
+		
+		func(node, {cacheBust: true, style: options.style}).then( 
+			(d) ->
+				link = document.createElement('a')
+				link.download = options.name + '.' + options.type
+				link.href = d
+				link.click()
+		).catch( 
+			(error) -> 
+				throw "Screenshot failed."
+			)

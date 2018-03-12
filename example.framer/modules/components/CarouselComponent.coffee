@@ -44,10 +44,14 @@ class exports.CarouselComponent extends Layer
 			@snapToPage(page)
 
 		@onSwipeLeftEnd -> 
+			return if @pages.length <= 1
+
 			@rotatePages('right')
 			@emit "interaction"
 
 		@onSwipeRightEnd -> 
+			return if @pages.length <= 1
+			
 			@rotatePages('left')
 			@emit "interaction"
 
