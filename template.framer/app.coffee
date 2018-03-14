@@ -199,11 +199,9 @@ class DetailView extends View
 # ----------------
 # Kickoff / Testing [3]
 
-# app.showNext(landingView)
-app.showNext(listView)
+app.showNext(landingView)
+# app.showNext(listView)
 # app.showNext(new DetailView)
-
-
 
 ### Notes _____________________________________________________
 

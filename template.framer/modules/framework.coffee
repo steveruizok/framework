@@ -4,6 +4,7 @@ colors = require 'components/Colors'
 typography = require 'components/Typography'
 { loadWebFonts } = require 'components/fontloader'
 { loadLocalFonts } = require 'components/fontloader'
+Keyboard = require 'components/Keyboard'
 
 colors.updateColors()
 
@@ -100,6 +101,7 @@ class window.App extends FlowComponent
 			contentWidth: options.contentWidth
 			_windowFrame: {}
 			views: []
+			keyboard: Keyboard
 
 		# Transition
 		 

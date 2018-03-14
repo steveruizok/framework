@@ -4,6 +4,7 @@ colors = require 'components/Colors'
 typography = require 'components/Typography'
 { loadWebFonts } = require 'components/fontloader'
 { loadLocalFonts } = require 'components/fontloader'
+Keyboard = require 'components/Keyboard'
 
 colors.updateColors()
 
@@ -90,57 +91,9 @@ class window.App extends FlowComponent
 			contentWidth: Screen.width
 			showKeys: true
 			perspective: 1000
+			screenshot: true
 
 		super options
-
-		@_wrapLayer = (flowLayer) ->
-
-			flowLayer._flowLayer = flowLayer
-
-			return flowLayer if flowLayer instanceof ScrollComponent
-			return flowLayer if flowLayer._flowWrapped
-
-			# Make the layer at least match the device size
-			flowLayer.width = Math.max(flowLayer.width, @width)
-			flowLayer.height = Math.max(flowLayer.height, @height)
-
-			size = @size
-			# Save the parent so we can clean up when we re-wrap this layer
-			if @ in flowLayer.ancestors()
-				content = flowLayer?.parent
-				scroll = content?.parent
-				if scroll instanceof ScrollComponent
-					previousWrappingScroll = scroll
-					previousWrappingContent = content
-			layer = layoutPage(flowLayer, size)
-			layer = layoutScroll(layer, size)
-			if flowLayer isnt layer and
-			   previousWrappingContent?.children.length is 0 and
-			   previousWrappingScroll?.children.length is 1 and
-			   previousWrappingScroll?.children[0] is previousWrappingContent
-				# we wrapped the layer
-				previousWrappingScroll.destroy()
-
-			# Mark the layer so we don't layout it twice'
-			layer._flowLayer = flowLayer
-
-			# Forward the scroll events from created scroll components
-			for scroll in [layer, layer.children...]
-
-				@_forwardScrollEvents(scroll)
-
-				if scroll instanceof ScrollComponent
-					inset = {}
-					inset.top = @header?.height or 0 if scroll.y is 0
-					inset.bottom = @footer?.height or 0 if scroll.maxY is @height
-					scroll.contentInset = inset
-					flowLayer._flowScroll = scroll
-
-			# Set the background color for he created scroll component
-			if layer instanceof ScrollComponent
-				layer.backgroundColor = @backgroundColor
-
-			return layer
 
 		_.assign @,
 			chrome: options.chrome
@@ -148,6 +101,7 @@ class window.App extends FlowComponent
 			contentWidth: options.contentWidth
 			_windowFrame: {}
 			views: []
+			keyboard: Keyboard
 
 		# Transition
 		 
@@ -466,37 +420,61 @@ class window.App extends FlowComponent
 				@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 				)
 
-	getScreenshot: (layer, options = {}) =>
-		unless @_isDomToImageLoaded?
-			Utils.domLoadScript(
-				"https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js", 
-				=> 
-					@_isDomToImageLoaded = true
-					@getScreenshot(layer, options)
-				)
-			return
-		
-		_.defaults options,
-			layer: @
-			name: "screenshot"
-			type: "png"
-			style:
-				height: '100%'
-				width: '100%'
+	getScreenshot: (options = {}) =>
+		return new Promise (resolve, reject) =>
+				
+			_.defaults options,
+				layer: @
+				name: "screenshot"
+				type: "png"
+				style:
+					height: '100%'
+					width: '100%'
 
-		node = options.layer._element
-		func = domtoimage['to' + _.startCase(options.type)]
-		
-		func(node, {cacheBust: true, style: options.style}).then( 
-			(d) ->
-				link = document.createElement('a')
-				link.download = options.name + '.' + options.type
-				link.href = d
-				link.click()
-		).catch( 
-			(error) -> 
-				throw "Screenshot failed."
+			load = new Promise (rs, rj) ->
+				if @_isDomToImageLoaded?
+					rs()
+					return
+			
+				domtoimageCDN = "https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js"
+
+				Utils.domLoadScript domtoimageCDN, => 
+					@_isDomToImageLoaded = true
+					rs()
+
+			load.then( ->
+				node = options.layer._element
+				func = domtoimage['to' + _.startCase(options.type)]
+				
+				func(node, {cacheBust: true, style: options.style})
+				.then( (url) ->
+					link = document.createElement('a')
+					link.download = options.name + '.' + options.type
+					link.href = url
+					link.click()
+					resolve()
+				).catch (error) -> 
+					console.log(error)
 			)
+
+	screenshotViews: (views, options = {}) =>
+		i = 0
+			
+		loadNext = =>
+			view = views[i]
+			return if not view
+
+			@showNext(view)
+			i++
+			
+		@onTransitionEnd =>
+			Utils.delay 2.5, =>
+				o = _.clone(options)
+				o.name = @current?.key
+				@getScreenshot(o).then loadNext
+		
+		loadNext()
+		
 	
 	@define "windowFrame",
 		get: -> return @_windowFrame
