@@ -203,6 +203,8 @@ app.showNext(landingView)
 # app.showNext(listView)
 # app.showNext(new DetailView)
 
+# app.screenshotViews(app.views)
+
 ### Notes _____________________________________________________
 
 [1] The `chrome` property sets which device chrome to use.
