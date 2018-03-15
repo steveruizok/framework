@@ -19,6 +19,7 @@ dumbthing?.style.width = "0px"
 { Button } = require 'components/Button'
 { Radiobox } = require 'components/Radiobox'
 { Checkbox } = require 'components/Checkbox'
+{ Container } = require 'components/Container'
 { DocComponent } = require 'components/DocComponent'
 { Footer } = require 'components/Footer'
 { Header } = require 'components/Header'
@@ -48,6 +49,7 @@ _.assign exports,
 		'Header', 
 		'Radiobox',
 		'Checkbox',
+		'Container',
 		'DocComponent',
 		'Toggle',
 		'Tooltip',
@@ -359,6 +361,11 @@ class window.App extends FlowComponent
 				)
 
 			).then( =>
+				layer.updateContent()
+				
+				Utils.delay 0, =>
+					try layer.postload()
+
 				# transition to new View
 				if loadingTime?
 					Utils.delay loadingTime, =>

@@ -355,7 +355,8 @@ Offset an array of layers vertically.
 		time: .5
 ###
 Utils.offsetY = (layers = [], distance = 0, animate = false, animationOptions = {}) -> 
-	
+	return if layers.length <= 1
+
 	startY = layers[0].y
 	values = []
 	values = layers.map (layer, i) ->
@@ -368,6 +369,8 @@ Utils.offsetY = (layers = [], distance = 0, animate = false, animationOptions = 
 			layer.animate values[i], animationOptions
 		else
 			_.assign layer, values[i]
+
+	return layers
 
 ###
 Offset an array of layers horizontally.
@@ -386,7 +389,8 @@ Offset an array of layers horizontally.
 		time: .5
 ###
 Utils.offsetX = (layers = [], distance = 0, animate = false, animationOptions = {}) -> 
-	
+	return if layers.length <= 1
+
 	startX = layers[0].x
 	values = []
 	values = layers.map (layer, i) ->
@@ -399,6 +403,8 @@ Utils.offsetX = (layers = [], distance = 0, animate = false, animationOptions = 
 			layer.animate values[i], animationOptions
 		else
 			_.assign layer, values[i]
+
+	return layers
 
 # Create a timer instance to simplify intervals.
 # Thanks to https://github.com/marckrenn.
@@ -659,6 +665,7 @@ Utils.contain = (layer, fit = false, paddingX = 0, paddingY = 0) ->
 		width: maxChildX
 		height: maxChildY
 
+	return layer
 
 # get a status color based on a standard deviation
 # @example    Utils.getStatusColor(.04, false)

@@ -55,6 +55,7 @@ class exports.View extends ScrollComponent
 		Utils.define @, 'load', 			undefined, 				undefined,	_.isFunction, 	'View.load must be a Function.'
 		Utils.define @, 'preload', 			preload, 				undefined, 	isPromise, 		'View.preload must be a Promise.'
 		Utils.define @, 'unload', 			undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
+		Utils.define @, 'postload', 		undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
 		
 		delete @__instancing
 
@@ -125,6 +126,8 @@ class exports.View extends ScrollComponent
 	onLoad: (callback) =>
 		@load = callback
 
+	onPostload: (callback) =>
+		@postload = callback
 
 	onUnload: (callback) -> 
 		@unload = callback
