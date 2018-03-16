@@ -18,6 +18,8 @@ class exports.TextInput extends Layer
 		_.defaults options,
 			name: 'TextInput'
 			width: 260
+
+			password: false
 			placeholder: "Placeholder"
 			disabled: false
 			clip: true
@@ -100,6 +102,7 @@ class exports.TextInput extends Layer
 		Utils.define @, 'hovered', 	false, 				@_showHovered, 	_.isBoolean, 'TextInput.hovered must be a boolean.'
 		Utils.define @, 'focused', 	false,				@_showFocused, 	_.isBoolean, 'TextInput.focused must be a boolean.'
 		Utils.define @, 'disabled',	options.disabled,	@_showDisabled,	_.isBoolean, 'TextInput.disabled must be a boolean.'
+		Utils.define @, 'password',	options.password,	@_setPassword,	_.isBoolean, 'TextInput.password must be a boolean.'
 		
 		delete @__instancing
 
@@ -116,7 +119,8 @@ class exports.TextInput extends Layer
 			@app.focused = @_input
 			@focused = true
 
-		@value = options.value
+		_.assign @,
+			value: options.value
 
 		# ---------------
 		# Cleanup
@@ -125,6 +129,13 @@ class exports.TextInput extends Layer
 
 	# ---------------
 	# Private Functions
+	
+	_setPassword: (bool) =>
+		if bool
+			@_input.setAttribute "type", "password"
+			return
+
+		@_input.setAttribute "type", "text"
 	
 	_setValue: () =>
 		value = @_input.value

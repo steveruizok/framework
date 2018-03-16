@@ -259,6 +259,7 @@ Set all layers in an array to the same property or properties.
 
 @param {Array} layers The array of layers to align.
 @param {Object} options The properties to set.
+@param {Boolean} [minimum] Whether to use average values or minimum values for middle / center.
 @param {Boolean} [animate] Whether to animate to the new property.
 @param {Object} [animationOptions] The animation options to use.
 
@@ -270,7 +271,7 @@ Set all layers in an array to the same property or properties.
 		true
 		time: .5
 ###
-Utils.align = (layers = [], direction, animate, animationOptions = {}) -> 
+Utils.align = (layers = [], direction, minimum = true, animate, animationOptions = {}) -> 
 	minX = _.minBy(layers, 'x').x
 	maxX = _.maxBy(layers, 'maxX').maxX
 	minY = _.minBy(layers, 'y').y
@@ -279,10 +280,18 @@ Utils.align = (layers = [], direction, animate, animationOptions = {}) ->
 
 	options = switch direction
 		when "top" then {y: minY}
-		when "middle" then {midY: (maxY - minY)/2 + minY}
+		when "middle"
+			if minimum
+				{midY: _.minBy(layers, 'y').midY}
+			else 
+				{midY: (maxY - minY)/2 + minY}
 		when "bottom" then {maxY: maxY}
 		when "left" then {x: minY}
-		when "center" then {midX: (maxX - minX)/2 + minX}
+		when "center"
+			if minimum 
+				{midX: _.minBy(layers, 'x').midX}
+			else
+				{midX: (maxX - minX)/2 + minX}
 		when "right" then {maxX: maxX}
 		else {}
 
