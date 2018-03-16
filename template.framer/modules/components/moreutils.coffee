@@ -339,6 +339,27 @@ Utils.distribute = (layers = [], property, start, end, animate = false, animatio
 		_.assign layer, values[i]
 
 ###
+Stack layers.
+
+@param {Array} layers The array of layers to offset.
+@param {Number} distance The distance between each layer.
+@param {String} axis Whether to stack on the x or y axis.
+@param {Boolean} [animate] Whether to animate layers to the new position.
+@param {Object} [animationOptions] The animation options to use.
+
+###
+Utils.stack = (layers = [], distance = 0, axis = "vertical", animate = false, animationOptions = {}) ->
+	return if layers.length <= 1
+
+	if axis is "vertical" or axis is "y"
+		Utils.offsetY(layers, distance, animate, animationOptions)
+	else if axis is "horizontal" or axis is "x"
+		Utils.offsetX(layers, distance, animate, animationOptions)
+
+	return layers
+
+
+###
 Offset an array of layers vertically.
 
 @param {Array} layers The array of layers to offset.
@@ -616,28 +637,41 @@ Change a layer's size to fit around the layer's children.
 
 	Utils.hug(layerA, {top: 16, bottom: 24})
 ###
-Utils.hug = (layer, padding = {}) ->
+Utils.hug = (layer, padding) ->
 
-	if typeof padding is "number"
-		padding = 
-			top: padding
-			right: padding
-			bottom: padding
-			left: padding
+	def = 0
+	defStack = undefined
 
-	top = _.minBy(layer.children, 'y').y 
-	bottom = _.maxBy(layer.children, 'maxY').maxY
+	if typeof padding is "number" 
+		def = padding
+		defStack = padding
+		padding = {}
 
-	left = _.minBy(layer.children, 'x').x 
-	right = _.maxBy(layer.children, 'maxX').maxX
+	_.defaults padding,
+		top: def
+		bottom: def
+		left: def
+		right: def
+		stack: defStack
 
-	_.assign layer,
-		height: (bottom - top) + (padding.top ? 0) + (padding.bottom ? 0)
-		width: (right - left) + (padding.left ? 0) + (padding.right ? 0)
+	Utils.bind layer, ->
+		for child, i in @children
 
-	for child in layer.children
-		child.y = top + (child.y - top) + (padding.top ? 0)
-		child.x = left + (child.x - left) + (padding.left ? 0)
+			child.y += @padding.top
+
+			child.x += @padding.left
+
+			if @padding.right? > 0
+				@width = _.maxBy(@children, 'maxY')?.maxY + @padding.right
+
+		if @padding.stack? >= 0
+			Utils.offsetY(@children, @padding.stack)
+			Utils.delay 0, =>
+				Utils.contain(@, false, @padding.right, @padding.bottom)
+			return
+
+		Utils.contain(@, false, @padding.right, @padding.bottom)
+
 
 ###
 Increase or decrease a layer's size to contain its layer's children.

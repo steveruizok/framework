@@ -357,14 +357,14 @@ class window.App extends FlowComponent
 			(response) =>
 				new Promise( (resolve) => 
 					Utils.bind( layer, -> layer.load(response) )
-					resolve()
+					resolve(response)
 				)
 
-			).then( =>
+			).then( (response) =>
 				layer.updateContent()
 				
 				Utils.delay 0, =>
-					try layer.postload()
+					try layer.postload(response)
 
 				# transition to new View
 				if loadingTime?
@@ -414,10 +414,15 @@ class window.App extends FlowComponent
 			(response) =>
 				new Promise( (resolve) => 
 					Utils.bind( layer, -> layer.load(response) )
-					resolve()
+					resolve(response)
 				)
 
-			).then( =>
+			).then( (response) =>
+				layer.updateContent()
+				
+				Utils.delay 0, =>
+					try layer.postload(response)
+
 				# transition to new View
 				if loadingTime?
 					Utils.delay loadingTime, =>

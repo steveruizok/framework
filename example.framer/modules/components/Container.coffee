@@ -11,6 +11,7 @@ class exports.Container extends Layer
 				colorModel: 'rgb'
 			height: 8
 			width: 300
+			backgroundColor: null
 
 			padding: {}
 

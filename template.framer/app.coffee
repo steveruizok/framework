@@ -44,37 +44,58 @@ landingView = new View
 	key: "0.0.0" # [2]
 	contentInset: # [3]
 		bottom: 0
+		
+landingView.onPreload (resolve, reject) -> # [4]
+	preloadData = 
+		title: "Best App"
+	
+	resolve(preloadData)
 
-landingView.onLoad -> # [4]
-# Utils.bind landingView, -> #[5]
+landingView.onLoad (preloadData) -> # [5]
+		
 	title = new H2
 		parent: @content
 		x: Align.center()
 		y: 128
-		text: "Best App"
-		
-	input = new TextInput 
+		text: preloadData.title # [5.1]
+	
+	container = new Container # [6]
 		parent: @content
 		x: Align.center()
+		padding: 
+			left: 0
+			right: 0, 
+			top: 16, 
+			bottom: 16, 
+			stack: 4
+
+	label = new Label
+		parent: container
+		text: "Email"
+	
+	input = new TextInput 
+		parent: container
 		placeholder: "Enter your email"
+		width: container.width
 	
 	button = new Button
 		parent: @content
 		x: Align.center()
-		width: input.width
+		width: container.width
 		text: "Sign in"
 		disabled: true
-		
-	Utils.offsetY(@content.children, 32)
 	
 	# Events
 	
-	input.onChange "value", (v) ->
-		button.disabled = !Utils.isEmail(v)
+	input.onChange "value", (value) ->
+		inputIsEmail = Utils.isEmail(value)
+		button.disabled = not inputIsEmail # [7]
 		
 	button.onSelect -> 
-		app.showNext(listView, 1)
-	
+		app.showNext(listView, 1) #[8]
+
+landingView.onPostload (preloadData) -> #[9]
+	Utils.stack(@content.children, 16)
 
 ### Notes _____________________________________________________
 
@@ -89,29 +110,53 @@ landingView.onLoad -> # [4]
 	scroll components. You can set their options in the same way 
 	you would when creating a ScrollComponent instance.
 
-[4]	Every View *must* have an `onLoad` property. This is where
-	you will should all of the View's layers, events, and other
-	content. There's a very important reason for this: when the 
-	App navigates to a new View, it immediately runs this new 
-	View's `onLoad` function. Later, when the App navigates
-	away from that View, the View destroys all of its sublayers 
-	except for `View.content`, and then destroys all of 
-	`View.content`'s sublayers too. So long as all of those
-	layers were created inside of an `onLoad` function, the user
-	won't be able to tell the difference: the next time they
-	navigate to the View, all of that content will re-created 
-	for them before the transition occurs, as if it had been 
-	there all along!
+[4] Views have four "life cycle" methods. The first, `view.preload`, 
+	is a Promise. This allows for true preloading: if data needs  
+	to be fetched from an online source, you eventually resolve
+	this data into the next method, `view.load`.
 
-[5] While you must include an `onLoad`, it is also useful to 
-	leave that function blank while constructing your View.
-	Error handling doesn't work very well with `onLoad`: you
-	won't be able to tell where an error occurs inside of an
-	`onLoad` callback (the `onLoad` will simply throw a warning).
-	To solve for this, you can use `Utils.bind yourView, ->` 
-	to create a similar scope, build your View, get your errors,
-	and then comment out the `Utils.bind` line when everything 
-	is working the way it should.
+[5]	Every View *must* have an `load` property, set using
+	`view.onLoad`. This is where you should all of the View's 
+	content: layers, events, and functions that rely on them.
+	It gets passed whatever data came out of `view.preload`, as
+	shown at [5.1].
+	
+	There's a very important reason for building with `load`:   
+	when App navigates to a View, it immediately runs this new 
+	View's `load` function. Later, when the App navigates
+	away from that View, the View purges its descendants,
+	destroying destroys all of its sublayers except for 
+	`view.content`. Then it destroys all of `view.content`'s 
+	sublayers too. 
+	
+	However, so long as all of those layers were created inside 
+	of the View's `load` function, all of this destruction won't
+	matter to the user: the next time they navigate to the View, 
+	all of that content will re-created for them before the 
+	transition occurs, as if it had been there all along!
+
+[6] The Container class is a great parent: it automatically 
+	hugs its children, while giving them exactly the space you 
+	tell it to. Building with Containers gives you more control 
+	over spacing and positioning: set the paddings of your
+	containers, then use Utils.stack to place them one after the 
+	next.
+
+[7] Here we're using one of the new Utils methods, `Utils.isEmail` 
+	to validate whether the content of our email input is, in fact,
+	an email address. Then we're using the value it returns 
+	(true or false) to set the `disabled` status of our button.
+
+[8] Though Framework's preload function does support real asyncronous 
+	delays, sometimes we'll want to fake that delay. App's transition 
+	method, `app.showNext`, takes two arguments: the new View to
+	show, and how much fake delay we want to add.
+
+[9] Dependng on how complicated your views are, you may want to 
+	use the view's last method, `view.postload`, to clean up. 
+	This method fires after `view.load` completes and also has
+	access to any data that `view.preload` resolved. It's useful
+	for Utils.stack calls.
 
 ###
 
@@ -124,6 +169,8 @@ listView = new View
 
 listView.onLoad () ->
 	
+	app.getScreenshot()
+	
 	# Iterate over items (see the "Data" code fold)
 	links = list_items.map (item, i) =>
 		
@@ -133,13 +180,13 @@ listView.onLoad () ->
 			parent: @content
 			width: @width - 64
 			text: item.title
-			
+		
 		photo = new Layer
 			parent: link
 			x: Align.right()
 			size: link.height
 			image: item.image
-			
+		
 		return link
 		
 	# Events
@@ -203,7 +250,8 @@ app.showNext(landingView)
 # app.showNext(listView)
 # app.showNext(new DetailView)
 
-# app.screenshotViews(app.views)
+app.screenshotViews(app.views)
+
 
 ### Notes _____________________________________________________
 
