@@ -65,10 +65,11 @@ class exports.Container extends Layer
 				if child.x + child.width > paddedWidth
 					child.width = paddedWidth
 
-		if @padding.stack? >= 0
+		unless _.isUndefined(@padding.stack)
 			Utils.offsetY(@children, @padding.stack)
-			Utils.delay 0, =>
-				Utils.contain(@, true, @padding.right, @padding.bottom)
+
+		Utils.delay 0, =>
+			Utils.contain(@, true, @padding.right, @padding.bottom)
 
 
 	# ---------------

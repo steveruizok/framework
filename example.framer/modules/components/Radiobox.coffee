@@ -54,18 +54,22 @@ class exports.Radiobox extends Layer
 
 		# ---------------
 		# Events
+		if Utils.isMobile()
+			@onTapEnd  => 
+				return if @disabled
+				@checked = true
+		else
+			@onTap => 
+				return if @disabled
+				@checked = true
 
-		@onTap => 
-			return if @disabled
-			@checked = true
+			@onMouseOver =>
+				return if @disabled
+				@hovered = true
 
-		@onMouseOver =>
-			return if @disabled
-			@hovered = true
-
-		@onMouseOut =>
-			return if @disabled
-			@hovered = false
+			@onMouseOut =>
+				return if @disabled
+				@hovered = false
 
 
 		# ---------------
