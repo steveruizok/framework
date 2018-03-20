@@ -120,7 +120,6 @@ class exports.View extends ScrollComponent
 			@_unloadView()
 			@app.showNext(@)
 
-
 	onPreload: (callback) =>
 		@preload = new Promise callback
 

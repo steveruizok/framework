@@ -369,7 +369,7 @@ class window.App extends FlowComponent
 						try 
 							layer.load(response) 
 						catch error
-							throw "Error in #{layer.key ? layer.name ? ""} View.load: #{error}"
+							console.error(error)
 						)
 					resolve(response)
 		
@@ -381,7 +381,7 @@ class window.App extends FlowComponent
 						try 
 							layer.postload(response)
 						catch error
-							throw "Error in #{layer.key ? layer.name ? ""} View.postload: #{error}"
+							console.error(error)
 
 						# transition to new View
 						if loadingTime?
@@ -391,8 +391,8 @@ class window.App extends FlowComponent
 
 						@_transitionToNext(layer, options)
 				
-				).catch( (reason) -> throw new Error(reason) )
 			).catch( (reason) -> throw new Error(reason) )
+		).catch( (reason) -> throw new Error(reason) )
 
 	# show previous view
 	showPrevious: (options={}) =>
@@ -440,7 +440,7 @@ class window.App extends FlowComponent
 						try 
 							layer.load(response) 
 						catch error
-							throw "Error in #{layer.key ? layer.name ? ""} View.load: #{error}"
+							console.error(error)
 						)
 					resolve(response)
 		
@@ -452,8 +452,8 @@ class window.App extends FlowComponent
 						try 
 							layer.postload(response)
 						catch error
-							throw "Error in #{layer.key ? layer.name ? ""} View.postload: #{error}"
-
+							console.error(error)
+							
 						# transition to new View
 						if loadingTime?
 							Utils.delay loadingTime, =>
@@ -462,8 +462,8 @@ class window.App extends FlowComponent
 
 						@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 
-				).catch( (reason) -> throw new Error(reason) )
 			).catch( (reason) -> throw new Error(reason) )
+		).catch( (reason) -> throw new Error(reason) )
 
 	getScreenshot: (options = {}) =>
 		return new Promise (resolve, reject) =>
