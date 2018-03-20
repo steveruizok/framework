@@ -34,6 +34,7 @@ dumbthing?.style.width = "0px"
 { TextInput } = require 'components/TextInput'
 { Template } = require 'components/Template'
 { View } = require 'components/View'
+{ ProgressComponent } = require 'components/ProgressComponent'
 { CarouselComponent } = require 'components/CarouselComponent'
 { PageTransitionComponent } = require 'components/PageTransitionComponent'
 { SortableComponent } = require 'components/SortableComponent'
@@ -63,6 +64,7 @@ _.assign exports,
 		'TransitionPage', 
 		'View',
 		'Template',
+		"ProgressComponent"
 		'CarouselComponent', 
 		'SortableComponent'
 		'PageTransitionComponent'
@@ -336,6 +338,7 @@ class window.App extends FlowComponent
 	# show next view
 	showNext: (layer, loadingTime, options={}) ->
 		return if @isTransitioning
+		return if layer is @current
 
 		@_initial ?= true	
 

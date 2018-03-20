@@ -181,8 +181,7 @@ class exports.Button extends Layer
 
 
 		if Utils.isMobile()
-			@onTap @_doSelect
-
+			@onTapEnd @_doSelect
 		else
 			@onTouchStart (event) => @_showTouching(true, null, event)
 			@onTouchEnd (event) => @_showTouching(false, null, event)
