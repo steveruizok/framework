@@ -340,6 +340,11 @@ class window.App extends FlowComponent
 		return if @isTransitioning
 		return if layer is @current
 
+		# prepare to load
+
+		try @header._expand()
+		try @footer._expand()
+
 		@_initial ?= true	
 
 		if @chrome is "safari" and not @_initial 
@@ -357,26 +362,37 @@ class window.App extends FlowComponent
 		layer.preload.then(
 
 			# load up the new View with the response data
-			(response) =>
-				new Promise( (resolve) => 
-					Utils.bind( layer, -> layer.load(response) )
+			(response) => new Promise( 
+
+				(resolve) => 
+					Utils.bind( layer, -> 
+						try 
+							layer.load(response) 
+						catch error
+							throw "Error in #{layer.key ? layer.name ? ""} View.load: #{error}"
+						)
 					resolve(response)
-				)
+		
+			).then( 
+				(response) =>
+					layer.updateContent()
+					
+					Utils.delay 0, =>
+						try 
+							layer.postload(response)
+						catch error
+							throw "Error in #{layer.key ? layer.name ? ""} View.postload: #{error}"
 
-			).then( (response) =>
-				layer.updateContent()
-				
-				Utils.delay 0, =>
-					try layer.postload(response)
+						# transition to new View
+						if loadingTime?
+							Utils.delay loadingTime, =>
+								@_transitionToNext(layer, options)
+							return
 
-				# transition to new View
-				if loadingTime?
-					Utils.delay loadingTime, =>
 						@_transitionToNext(layer, options)
-					return
-
-				@_transitionToNext(layer, options)
-				)
+				
+				).catch( (reason) -> throw new Error(reason) )
+			).catch( (reason) -> throw new Error(reason) )
 
 	# show previous view
 	showPrevious: (options={}) =>
@@ -384,6 +400,9 @@ class window.App extends FlowComponent
 		return if @isTransitioning
 
 		# prepare to load
+
+		try @header._expand()
+		try @footer._expand()
 
 		@focused?.blur()
 
@@ -414,26 +433,37 @@ class window.App extends FlowComponent
 		layer.preload.then(
 
 			# load up the new View with the response data
-			(response) =>
-				new Promise( (resolve) => 
-					Utils.bind( layer, -> layer.load(response) )
+			(response) => new Promise( 
+
+				(resolve) => 
+					Utils.bind( layer, -> 
+						try 
+							layer.load(response) 
+						catch error
+							throw "Error in #{layer.key ? layer.name ? ""} View.load: #{error}"
+						)
 					resolve(response)
-				)
+		
+			).then( 
+				(response) =>
+					layer.updateContent()
+					
+					Utils.delay 0, =>
+						try 
+							layer.postload(response)
+						catch error
+							throw "Error in #{layer.key ? layer.name ? ""} View.postload: #{error}"
 
-			).then( (response) =>
-				layer.updateContent()
-				
-				Utils.delay 0, =>
-					try layer.postload(response)
+						# transition to new View
+						if loadingTime?
+							Utils.delay loadingTime, =>
+								@_transitionToPrevious(previous?.transition, options.animate, current, layer)
+							return
 
-				# transition to new View
-				if loadingTime?
-					Utils.delay loadingTime, =>
 						@_transitionToPrevious(previous?.transition, options.animate, current, layer)
-					return
 
-				@_transitionToPrevious(previous?.transition, options.animate, current, layer)
-				)
+				).catch( (reason) -> throw new Error(reason) )
+			).catch( (reason) -> throw new Error(reason) )
 
 	getScreenshot: (options = {}) =>
 		return new Promise (resolve, reject) =>
