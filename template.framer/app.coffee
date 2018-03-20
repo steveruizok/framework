@@ -2,8 +2,9 @@
 require "myTheme"
 
 app = new App
-# 	chrome: "safari"	# [1] use safari theme
-# 	showKeys: false		# [2] hide the view keys in status bar
+# 	chrome: null
+	chrome: "safari"	# [1] use safari theme
+	showKeys: false		# [2] hide the view keys in status bar
 
 # ----------------
 # Data [3]
@@ -250,7 +251,7 @@ app.showNext(landingView)
 # app.showNext(listView)
 # app.showNext(new DetailView)
 
-app.screenshotViews(app.views)
+# app.screenshotViews(app.views)
 
 
 ### Notes _____________________________________________________
