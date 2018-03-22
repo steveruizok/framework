@@ -2,9 +2,8 @@
 require "myTheme"
 
 app = new App
-# 	chrome: null
-	chrome: "safari"	# [1] use safari theme
-	showKeys: false		# [2] hide the view keys in status bar
+	chrome: "safari"	# [1] 
+	showKeys: false		# [2] bar
 
 # ----------------
 # Data [3]
@@ -250,8 +249,6 @@ class DetailView extends View
 app.showNext(landingView)
 # app.showNext(listView)
 # app.showNext(new DetailView)
-
-# app.screenshotViews(app.views)
 
 
 ### Notes _____________________________________________________
