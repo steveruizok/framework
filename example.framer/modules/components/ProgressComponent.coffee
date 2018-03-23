@@ -6,14 +6,16 @@ class exports.ProgressComponent extends Layer
 		@__instancing = true
 		
 		_.defaults options,
+			borderRadius: '50%'
+			clip: true
 			backgroundColor: null
+			strokeWidth: 8
+			progressColor: blue
+			railsColor: grey40
+			strokeLinecap: 'round'
 			min: 0
 			max: 100
 			value: 42
-			strokeWidth: 8
-			progressColor: blue80
-			railsColor: grey40
-			strokeLinecap: 'round'
 			
 		super options
 		
@@ -81,7 +83,7 @@ class exports.ProgressComponent extends Layer
 		return if @__instancing
 		
 		radius = @width / 2
-		progress = @value / @max
+		progress = _.clamp(@value / @max, 0, 1)
 		circum = (radius * Math.PI * 2)
 
 		Utils.setAttributes @elements.circle,

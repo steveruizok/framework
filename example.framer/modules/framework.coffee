@@ -87,6 +87,7 @@ class window.App extends FlowComponent
 	constructor: (options = {}) ->
 
 		exports.app = @
+		window.app = @
 
 		_.defaults options,
 			backgroundColor: white

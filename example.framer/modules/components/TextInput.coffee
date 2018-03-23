@@ -194,6 +194,6 @@ class exports.TextInput extends Layer
 		set: (value) ->
 			return if @__constructor
 			
-			@_input.value = value
+			@_input.value = value ? ""
 			@textLayer.visible = @value is ""
 			@emit "change:value", value, @

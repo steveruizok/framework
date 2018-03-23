@@ -31,9 +31,14 @@ class exports.Radiobox extends Layer
 		super options
 
 		if @parent?
-			@parent.radioboxes ?= []
-			@parent.selectedIndex ?= -1
-			unless _.includes(@parent.radioboxes, @) then @parent.radioboxes.push(@)
+			if not @parent.radioboxes?
+				@parent.radioboxes = []
+
+				Utils.define @parent, "selectedIndex", -1, (num) =>
+					@parent.radioboxes[num]?.checked = true
+
+			unless _.includes(@parent.radioboxes, @)
+				@parent.radioboxes.push(@)
 
 		@props =
 			x: @x - 4
