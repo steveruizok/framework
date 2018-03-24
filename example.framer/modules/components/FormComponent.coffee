@@ -56,11 +56,6 @@ class exports.FormComponent extends Layer
 				micro = undefined
 			
 				# Label
-				
-				print (@width * (input.width / 100))
-			
-				if input.label is ""
-					print input.width
 			
 				if input.label?
 					label = new Label
