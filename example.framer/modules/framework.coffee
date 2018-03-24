@@ -2,8 +2,6 @@ require 'components/moreutils'
 theme = require 'components/Theme'
 colors = require 'components/Colors'
 typography = require 'components/Typography'
-{ loadWebFonts } = require 'components/fontloader'
-{ loadLocalFonts } = require 'components/fontloader'
 Keyboard = require 'components/Keyboard'
 
 colors.updateColors()
@@ -14,32 +12,6 @@ Framer.Extras.Hints.disable()
 # get rid of dumb thing that blocks events in the upper left-hand corner
 dumbthing = document.getElementById("FramerContextRoot-TouchEmulator")?.childNodes[0]
 dumbthing?.style.width = "0px"
-
-# require in everything else
-{ Button } = require 'components/Button'
-{ Radiobox } = require 'components/Radiobox'
-{ Checkbox } = require 'components/Checkbox'
-{ Container } = require 'components/Container'
-{ DocComponent } = require 'components/DocComponent'
-{ Footer } = require 'components/Footer'
-{ Header } = require 'components/Header'
-{ Segment } = require 'components/Segment'
-{ Toggle } = require 'components/Toggle'
-{ Tooltip } = require 'components/Tooltip'
-{ Icon } = require 'components/Icon'
-{ Link } = require 'components/Link'
-{ Separator } = require 'components/Separator'
-{ Select } = require 'components/Select'
-{ Stepper } = require 'components/Stepper'
-{ TextInput } = require 'components/TextInput'
-{ Template } = require 'components/Template'
-{ View } = require 'components/View'
-{ ProgressComponent } = require 'components/ProgressComponent'
-{ CarouselComponent } = require 'components/CarouselComponent'
-{ PageTransitionComponent } = require 'components/PageTransitionComponent'
-{ SortableComponent } = require 'components/SortableComponent'
-{ TabComponent } = require 'components/TabComponent'
-{ TransitionPage } = require 'components/PageTransitionComponent'
 
 # Exports for theme support 
 _.assign exports,
@@ -61,13 +33,12 @@ _.assign exports,
 		'TextInput',
 		'Link', 
 		'Separator', 
-		'TransitionPage', 
 		'View',
 		'Template',
+		'FormComponent'
 		"ProgressComponent"
 		'CarouselComponent', 
 		'SortableComponent'
-		'PageTransitionComponent'
 		'TabComponent'
 		]
 	theme: theme
@@ -76,11 +47,13 @@ _.assign exports,
 
 # Add components to window
 exports.components.forEach (componentName) ->
-	window[componentName] = class FrameworkComponent extends eval(componentName)
+	mod = require "components/#{componentName}"
+	component = mod[componentName]
+
+	window[componentName] = class FrameworkComponent extends component
 		constructor: (options = {}) ->
 			@app = exports.app
 			super options
-
 
 # ... and finally, the App class
 class window.App extends FlowComponent
