@@ -154,7 +154,7 @@ class exports.FormComponent extends Layer
 	_updateTarget: =>
 		@layers.forEach (layer) =>
 			_.set(
-				options.target, 
+				@target, 
 				layer._formData.referenceValue, 
 				layer[layer._formData.value]
 				)
