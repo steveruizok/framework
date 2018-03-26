@@ -6,7 +6,7 @@ class exports.FormComponent extends Layer
 			name: "Form Component"
 			color: black
 			backgroundColor: null
-			x: 16
+			x: 0
 			height: 32
 			width: 32
 			padding: {x: 16, y: 16}

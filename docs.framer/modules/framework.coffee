@@ -19,6 +19,7 @@ _.assign exports,
 	app: undefined
 	components: [
 		'Button', 
+		'Footer'
 		'Header', 
 		'Radiobox',
 		'Checkbox',
@@ -80,6 +81,8 @@ class window.App extends FlowComponent
 			_windowFrame: {}
 			views: []
 			keyboard: Keyboard
+			preload: new Promise (resolve, reject) -> _.defer resolve
+	
 
 		# Transition
 		 
@@ -174,7 +177,8 @@ class window.App extends FlowComponent
 		Utils.define @, 'focused', 		null, 		@_showFocused,	_.isObject,		"App.focused must be an html element."
 		Utils.define @, 'loading', 		false, 		@_showLoading, 	_.isBoolean,	"App.loading must be a boolean (true or false)."
 		Utils.define @, 'viewPoint',	{x:0, y:0}, undefined,		_.isObject, 	'App.viewPoint must be an point object (e.g. {x: 0, y: 0}).'
-		
+		Utils.define @, 'chromeOpacity', options.chromeOpacity, @_setChromeOpacity, _.isNumber, "App.chromeOpacity must be a number between 0 and 1."
+
 		# when transition starts, update the header
 		@onTransitionStart @_updateHeader
 
@@ -185,6 +189,12 @@ class window.App extends FlowComponent
 
 	# ---------------
 	# Private Methods
+
+	_setChromeOpacity: (num) =>
+		num = _.clamp(num, 0, 1)
+		for layer in [@header, @footer]
+			continue if not layer
+			layer.opacity = num
 
 	_showFocused: (el) =>
 		# possibly... an app state dealing with an on-screen keyboard
@@ -493,7 +503,6 @@ class window.App extends FlowComponent
 				@getScreenshot(o).then loadNext
 		
 		loadNext()
-		
 	
 	@define "windowFrame",
 		get: -> return @_windowFrame

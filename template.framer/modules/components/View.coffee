@@ -62,9 +62,9 @@ class exports.View extends ScrollComponent
 		# unless padding is specifically null, set padding defaults
 		if @padding?
 			_.defaults @padding,
-				left: 16,
-				right: 16,
-				top: 16,
+				left: 0,
+				right: 0,
+				top: 32,
 
 		# ---------------
 		# Events
