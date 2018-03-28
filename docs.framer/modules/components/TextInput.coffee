@@ -52,7 +52,7 @@ class exports.TextInput extends Layer
 			y: Align.center()
 			width: @width
 			padding: theme[MODEL].default.padding ? 12
-			backgroundColor: theme[MODEL].default.backgroundColor ? white
+			backgroundColor: 'none'
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
 			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
@@ -78,7 +78,7 @@ class exports.TextInput extends Layer
 			width: Utils.px(@width - 24)
 			height: Utils.px(@height)
 			padding: "0 #{Utils.px(theme[MODEL].default.padding ? 12)}"
-			backgroundColor: theme[MODEL].default.backgroundColor ? white
+			backgroundColor: 'rgba(0,0,0,0)'
 			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
 			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
 			fontFamily: options.fontFamily ? theme.typography.Body2.fontFamily ? "Helvetica"

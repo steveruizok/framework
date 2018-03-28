@@ -8,15 +8,17 @@ class exports.FormComponent extends Layer
 			backgroundColor: null
 			x: 0
 			height: 32
-			width: 32
+			width: Screen.width
 			padding: {x: 16, y: 16}
 			target: {}
 			data: exampleData
 			warn: false
+			indicators: true
 		
 		super options
 		
 		_.assign @,
+			indicators: options.indicators
 			padding: options.padding
 			target: options.target
 			results: {}
@@ -27,6 +29,14 @@ class exports.FormComponent extends Layer
 			y: 0
 			bottom: 0
 			top: 0
+
+		@_createLayers()
+
+		# EVENTS
+
+		@on "change:size", =>
+			return if @__building
+			@_createLayers()
 		
 		# KICKOFF
 		
@@ -35,13 +45,18 @@ class exports.FormComponent extends Layer
 		_.assign @,
 			warn: options.warn
 			data: options.data
+
+
 	
 	# ###############
 	# PRIVATE METHODS
-		
+
 	_createLayers: =>
-		layer.destroy for layer in @layers
-		
+		@__building = true
+
+		layer.destroy() for layer in @children
+		@layers = []
+
 		startY = @padding.top
 		
 		_.forIn @data, (v, k) =>
@@ -49,6 +64,18 @@ class exports.FormComponent extends Layer
 			startX = -@padding.x
 			
 			_.forIn v, (input, key) =>
+				
+				_.defaults input,
+					field: TextInput
+					password: false
+					placeholder: ""
+					y: 0
+					x: undefined
+					label: undefined
+					required: undefined
+					width: undefined
+					microText: undefined
+					errorText: undefined
 				
 				label = undefined
 				indicator = undefined
@@ -66,7 +93,7 @@ class exports.FormComponent extends Layer
 					
 					# Indicator
 					
-					if input.required
+					if input.required and @indicators
 						indicator = new FormIndicator
 							parent: label
 							x: if input.label is "" then 0
@@ -74,26 +101,28 @@ class exports.FormComponent extends Layer
 				if key is '_label'
 					layer = new Body2
 						parent: @
-						y: label?.maxY ? startY
-						x: startX + @padding.x
+						y: label?.maxY ? (startY + input.y)
+						x: input.x ? (startX + @padding.x)
 						text: input.text
 						width: if input.width then @width * (input.width / 100)
 					
 					startX = layer.maxX
 					if key is _.last(_.keys(v))
 						startY = @padding.y + (if micro? then micro else layer).maxY
+					
 					return
 					
 				# Input
 				
 				layer = new input['field']
 					parent: @
-					x: startX + @padding.x
-					y: label?.maxY ? startY
+					x: input.x ? (startX + @padding.x)
+					y: label?.maxY ? (startY + input.y)
 					placeholder: input.placeholder
 					options: input.options
 					width: if input.width then @width * (input.width / 100)
 					value: null
+					password: input.password
 					
 				if input.label is "" then label?.x = layer.x + layer.width - 16
 					
@@ -102,7 +131,7 @@ class exports.FormComponent extends Layer
 					micro = new Micro
 						parent: @
 						y: layer.maxY
-						x: startX + @padding.x
+						x: layer.x
 						text: ""
 						width: layer.width
 				
@@ -116,7 +145,6 @@ class exports.FormComponent extends Layer
 					valid: undefined
 					microText: input.microText
 					errorText: input.errorText
-					
 				
 				switch input['field']
 					when Toggle 
@@ -135,7 +163,7 @@ class exports.FormComponent extends Layer
 				# set listeners
 				
 				layer.on "change:#{layer._formData.value}", (v, layer) =>
-					Utils.delay .35, =>
+					Utils.delay .2, =>
 						if v is layer[layer._formData.value]
 							@_updateStatus()
 				
@@ -149,20 +177,23 @@ class exports.FormComponent extends Layer
 				@layers.push(layer)
 		
 		Utils.contain(@, true, 0, @padding.bottom)
+		delete @__building
+
+		@_updateLayers()
 	
-	
+
 	_updateTarget: =>
 		@layers.forEach (layer) =>
 			_.set(
 				@target, 
 				layer._formData.referenceValue, 
-				layer[layer._formData.value]
+				layer[layer._formData.value] ? null
 				)
 	
 	
 	_updateLayers: =>
 		@layers.forEach (layer) =>
-			targetValue = @target[layer._formData.referenceValue]
+			targetValue = @target[layer._formData.referenceValue] ? null
 			layer[layer._formData.value] = targetValue
 	
 	
@@ -170,7 +201,8 @@ class exports.FormComponent extends Layer
 		@layers.forEach (layer) =>
 			value = layer[layer._formData.value]
 			valid = layer._formData.validation(value)
-			empty = value is null or value is ""
+
+			empty = _.isUndefined(value) or value is ""
 			
 			layer._formData.valid = valid 
 			layer._formData.indicator?.status = if valid then 'valid' else if @warn then 'warn' 
@@ -291,9 +323,9 @@ exampleData =
 			errorText: "The email you've entered is not valid."
 	2:
 		_label:
-			label: "Electoral roll"
-			text: "Have you registered for the electoral roll?"
-			width: 50
+			label: "Background"
+			text: "Have you registered before?"
+			width: 60
 		verified:
 			label: ""
 			required: true

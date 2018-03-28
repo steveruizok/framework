@@ -110,6 +110,20 @@ class exports.View extends ScrollComponent
 	# ---------------
 	# Public Methods
 	
+	pad: (left = 16, right = 16) =>
+		width = @width - (right + left)
+
+		for layer in @content.children
+			x = layer.x ? 0
+			maxX = layer.maxX ? (x + layer.width)
+
+			layer.width = Math.min(width, layer.width)
+			
+			if maxX > (@width - right)
+				layer.x = Align.right(-right)
+
+			layer.x = Math.max(left, x)
+
 
 	refresh: (loadingTime) =>
 		loadingTime ?= _.random(.3, .5)
@@ -120,17 +134,22 @@ class exports.View extends ScrollComponent
 			@_unloadView()
 			@app.showNext(@)
 
+	
 	onPreload: (callback) =>
 		@preload = new Promise callback
 
+	
 	onLoad: (callback) =>
 		@load = callback
 
+	
 	onPostload: (callback) =>
 		@postload = callback
 
+	
 	onUnload: (callback) -> 
 		@unload = callback
 
+	
 	# ---------------
 	# Special Definitions
