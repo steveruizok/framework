@@ -1,0 +1,2536 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<script type="text/javascript">
+		// This automatically sets the right viewport scale on mobile devices
+		(function () {
+			var scale = 1 / window.devicePixelRatio
+			var viewport = "width=device-width, height=device-height, initial-scale=" + scale + ", maximum-scale=" + scale + ", user-scalable=no, viewport-fit=cover"
+			var iOS = /iPad|iPhone|iPod/.test(navigator.platform)
+			if (iOS) { viewport += ", shrink-to-fit=no" }
+			document.write("<meta name=\"viewport\" content=\"" + viewport + "\">")
+		})()
+	</script>
+
+	<link rel="apple-touch-icon" href="framer/images/icon-120.png">
+	<link rel="apple-touch-icon" href="framer/images/icon-76.png" sizes="76x76">
+	<link rel="apple-touch-icon" href="framer/images/icon-120.png" sizes="120x120">
+	<link rel="apple-touch-icon" href="framer/images/icon-152.png" sizes="152x152">
+	<link rel="apple-touch-icon" href="framer/images/icon-180.png" sizes="180x180">
+	<link rel="apple-touch-icon" href="framer/images/icon-192.png" sizes="192x192">
+
+	<link rel="stylesheet" type="text/css" href="framer/style.css?nocache=6d40bc53861208d298f85019e08849ff">
+
+	<script src="framer/coffee-script.js"></script>
+	<script src="framer/framer.js?nocache=8e1498a1c4e3829b3ecfc26f93288d1d"></script>
+	<script src="framer/framer.generated.js?nocache=74651f4f950e4daa6bf1b4be161b7f3a"></script>
+	<script src="framer/framer.modules.js?nocache=436c75e45d3946029da305f5c402c4ee"></script>
+	<script src="framer/framer.vekter.js"></script>
+	<script>Framer.Device.hideBezel = false</script><script>document.addEventListener("DOMContentLoaded", function() {window.__framerClientCodeId = 1073;window.__framerNew = function (n,loc,th,i){if (i == null) { return i };i.__framerInstanceInfo = _.defaults({name:n,location:loc,hash:th},i.__framerInstanceInfo);_.defaults(i.__framerInstanceInfo,{name:"Untitled"});return i;};(function() {
+  var Content, RowLink, addDocsLink, alignView, app, buttonsView, carouselComponentView, colorsView, copyTextView, distributeView, dumbthing, exampleView, homeView, iconsView, inputsView, isEmailView, linksView, randomTextView, ref, segmentsView, selectsView, sortableComponentView, steppersView, tabComponentView, textInputsView, theme, toMarkdownView, togglesView, tooltipsView, typographyView, utilsView,
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  require('framework');
+
+  theme = require('components/Theme').theme;
+
+  Canvas.backgroundColor = bg3;
+
+  Framer.Extras.Hints.disable();
+
+  dumbthing = (ref = document.getElementById("FramerContextRoot-TouchEmulator")) != null ? ref.childNodes[0] : void 0;
+
+  if (dumbthing != null) {
+    dumbthing.style.width = "0px";
+  }
+
+  RowLink = (function(superClass) {
+    extend(RowLink, superClass);
+
+    function RowLink(options) {
+      if (options == null) {
+        options = {};
+      }
+      _.defaults(options, {
+        text: 'Hello world',
+        width: Screen.width - 32,
+        x: 16,
+        link: null,
+        backgroundColor: null
+      });
+      RowLink.__super__.constructor.call(this, options);
+      _.assign(this, {
+        link: options.link
+      });
+      this.linkLayer = window.__framerNew(undefined, "32:19-38:1", "?",new H4Link({
+        parent: this,
+        x: 12,
+        text: options.text,
+        color: this.link ? yellow80 : void 0
+      }));
+      this.height = this.linkLayer.height;
+      if (this.link != null) {
+        this.linkLayer.onSelect((function(_this) {
+          return function(event) {
+            return app.showNext(_this.link);
+          };
+        })(this));
+      }
+    }
+
+    return RowLink;
+
+  })(Layer);
+
+  addDocsLink = function(view, url, icon) {
+    if (icon == null) {
+      icon = 'code-tags';
+    }
+    return Utils.bind(view, function() {
+      var docsIcon, docsLinkCircle;
+      docsLinkCircle = window.__framerNew("docsLinkCircle", "49:23-63:1", "#deee03da",new Layer({
+        name: '.',
+        parent: this,
+        size: 40,
+        borderRadius: 20,
+        backgroundColor: blue,
+        x: Align.right(-12),
+        y: Align.bottom(-16),
+        borderWidth: 1,
+        borderColor: blue60,
+        shadowY: 3,
+        shadowBlur: 4,
+        shadowColor: "rgba(0,0,0,.16)"
+      }));
+      docsIcon = window.__framerNew("docsIcon", "63:17-71:1", "?",new Icon({
+        name: '.',
+        parent: docsLinkCircle,
+        point: Align.center(1),
+        size: 32,
+        icon: icon,
+        color: white
+      }));
+      return (function(url) {
+        return docsLinkCircle.onTap(function() {
+          return window.open("https://github.com/ProjectRogueOne/framework/" + url);
+        });
+      })(url);
+    });
+  };
+
+  app = window.__framerNew("app", "78:6-78:12", "undefined",new App);
+
+  colorsView = window.__framerNew("colorsView", "89:17-91:0", "?",new View({
+    title: 'Colors'
+  }));
+
+  colorsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var chip, colors, i, k, label, results, v;
+      colors = require('components/Colors').colors;
+      i = 0;
+      results = [];
+      for (k in colors) {
+        v = colors[k];
+        chip = window.__framerNew("chip", "99:14-111:2", "#c29d6dc1",new Layer({
+          parent: this,
+          name: '.',
+          width: (Screen.width * .618) - 24,
+          height: 64,
+          x: 16,
+          y: 32 + (i * 72),
+          borderRadius: 2,
+          backgroundColor: v,
+          borderWidth: 1,
+          borderColor: window.__framerNew(undefined, "109:21-109:28", "@Color",new Color(v)).darken(10)
+        }));
+        label = window.__framerNew("label", "111:15-118:2", "?",new Code({
+          parent: this,
+          name: '.',
+          x: chip.maxX + 16,
+          text: "" + k,
+          color: '#000'
+        }));
+        label.midY = chip.midY;
+        results.push(i++);
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Colors');
+  });
+
+  typographyView = window.__framerNew("typographyView", "126:21-128:0", "?",new View({
+    title: 'Typography'
+  }));
+
+  typographyView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var i, k, label, last, ref1, results, textExample, v;
+      i = 0;
+      ref1 = theme.typography;
+      results = [];
+      for (k in ref1) {
+        v = ref1[k];
+        if (window[k]) {
+          textExample = window.__framerNew("textExample", "135:22-141:3", "?",new window[k]({
+            parent: this,
+            y: typeof last !== "undefined" && last !== null ? last : 32,
+            text: k,
+            x: 16
+          }));
+          label = window.__framerNew("label", "141:16-149:3", "?",new Code({
+            parent: this,
+            name: '.',
+            x: 16,
+            y: textExample.maxY + 4,
+            text: "new " + k,
+            color: black
+          }));
+          results.push(last = label.maxY + 32);
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Typography');
+  });
+
+  iconsView = window.__framerNew("iconsView", "155:16-157:0", "?",new View({
+    title: 'Icons'
+  }));
+
+  iconsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var i, ic, icon, j, label, len, ref1;
+      i = 0;
+      ref1 = _.entries(theme.icons).slice(0, 51);
+      for (j = 0, len = ref1.length; j < len; j++) {
+        ic = ref1[j];
+        icon = window.__framerNew("icon", "163:14-171:2", "?",new Icon({
+          name: '.',
+          icon: ic[0],
+          parent: this,
+          x: 48,
+          y: 16 + (i * 50)
+        }, i++));
+        label = window.__framerNew("label", "171:15-178:2", "?",new Code({
+          parent: this,
+          name: '.',
+          x: icon.maxX + 48,
+          text: "'" + ic[0] + "'",
+          color: black
+        }));
+        label.midY = icon.midY;
+      }
+      return label = window.__framerNew("label", "180:14-189:0", "?",new Body({
+        parent: this,
+        name: '.',
+        y: label.maxY + 48,
+        x: Align.center,
+        textAlign: 'center',
+        text: "For full list, see\nhttp://www.materialdesignicons.com",
+        color: black
+      }));
+    });
+    return addDocsLink(this, 'wiki/Icon');
+  });
+
+  linksView = window.__framerNew("linksView", "207:16-209:0", "?",new View({
+    title: 'Links'
+  }));
+
+  linksView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var c, div, fn, i, j, k, label, last, layer, len, ref1, ref2, ref3, ref4, ref5, results, s, string, textExample, title, v;
+      window.__framerNew(undefined, "213:6-219:1", "?",new H2Link({
+        parent: this,
+        name: 'Default Link',
+        text: 'Click here',
+        x: 16
+      }));
+      window.__framerNew(undefined, "219:6-226:1", "?",new H2Link({
+        parent: this,
+        name: 'Link with Select',
+        text: 'Click here',
+        x: 16,
+        select: (function(_this) {
+          return function() {
+            return print("Clicked!");
+          };
+        })(this)
+      }));
+      window.__framerNew(undefined, "226:6-234:1", "?",new H2Link({
+        parent: this,
+        name: 'Disabled Link',
+        text: 'Click here',
+        x: 16,
+        disabled: true,
+        select: (function(_this) {
+          return function() {
+            return print("Clicked!");
+          };
+        })(this)
+      }));
+      window.__framerNew(undefined, "234:6-242:1", "?",new H2Link({
+        parent: this,
+        name: 'Link with Custom Color',
+        text: 'Click here',
+        x: 16,
+        color: red,
+        select: (function(_this) {
+          return function() {
+            return print("Clicked!");
+          };
+        })(this)
+      }));
+      last = void 0;
+      ref1 = this.children;
+      fn = function(label, layer) {
+        return layer.on("change:value", (function(_this) {
+          return function() {
+            return label.template = layer.value;
+          };
+        })(this));
+      };
+      for (i = j = 0, len = ref1.length; j < len; i = ++j) {
+        layer = ref1[i];
+        if (!layer instanceof Link) {
+          continue;
+        }
+        title = window.__framerNew("title", "247:15-253:2", "?",new H4({
+          name: '.',
+          parent: this,
+          y: ((ref2 = last != null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "253:13-262:2", "#925c8c5a",new Layer({
+          name: '.',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        s = i === 0 ? "null" : "print 'Clicked!'";
+        c = i === 3 ? 'red' : 'black';
+        string = ["new H2Link", "text: " + layer.text, "color: " + c, "disabled: " + layer.disabled, "select: -> " + s].join('\n\t');
+        label = window.__framerNew("label", "275:15-282:2", "?",new Code({
+          name: '.',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 16,
+          text: string
+        }));
+        label.template = layer.value;
+        fn(label, layer);
+        last = label;
+      }
+      title = window.__framerNew("title", "291:14-297:1", "?",new H4({
+        name: '.',
+        parent: this,
+        y: ((ref3 = last != null ? last.maxY : void 0) != null ? ref3 : 0) + 56,
+        text: "All Links"
+      }));
+      div = window.__framerNew("div", "297:12-306:1", "#82e4e459",new Layer({
+        name: '.',
+        parent: this,
+        x: title.maxX + 16,
+        y: title.y + 10,
+        width: this.width - (title.maxX + 16) - 16,
+        backgroundColor: grey40,
+        height: 1
+      }));
+      last = void 0;
+      i = 0;
+      ref4 = theme.typography;
+      results = [];
+      for (k in ref4) {
+        v = ref4[k];
+        if (window[k + 'Link']) {
+          textExample = window.__framerNew("textExample", "311:22-317:3", "?",new window[k + 'Link']({
+            parent: this,
+            y: ((ref5 = last != null ? last.maxY : void 0) != null ? ref5 : title.maxY) + 24,
+            text: k + 'Link',
+            x: 16
+          }));
+          label = window.__framerNew("label", "317:16-325:3", "?",new Code({
+            parent: this,
+            name: '.',
+            x: 16,
+            y: textExample.maxY + 4,
+            text: "new " + k + "Link",
+            color: black
+          }));
+          results.push(last = label);
+        } else {
+          results.push(void 0);
+        }
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Link');
+  });
+
+  buttonsView = window.__framerNew("buttonsView", "333:18-335:0", "?",new View({
+    title: 'Buttons'
+  }));
+
+  buttonsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var buttons, dark, dark2, dark3;
+      buttons = _.map(_.range(24), (function(_this) {
+        return function(i) {
+          var button, label, string, strings;
+          button = window.__framerNew("button", "340:16-351:2", "?",new Button({
+            name: 'Button',
+            parent: _this,
+            secondary: i % 4 > 1,
+            disabled: i % 2 === 1,
+            dark: Math.floor(i / 4) % 2 === 1,
+            icon: i >= 8 ? 'star' : void 0,
+            y: 32 + (i * 80),
+            x: 32,
+            text: i >= 16 ? '' : 'Getting Started'
+          }));
+          strings = [];
+          if (button.iconLayer != null) {
+            strings.push('icon: star');
+          }
+          if (button.dark) {
+            strings.push('dark: true');
+          }
+          if (button.secondary) {
+            strings.push('secondary: true');
+          }
+          if (button.disabled) {
+            strings.push('disabled: true');
+          }
+          string = strings.join('\n');
+          label = window.__framerNew("label", "362:15-369:2", "?",new Code({
+            name: '.',
+            parent: _this,
+            x: button.maxX + 32,
+            text: string,
+            color: button.dark ? '#FFF' : '#000'
+          }));
+          label.midY = button.midY;
+          return button;
+        };
+      })(this));
+      dark = window.__framerNew("dark", "373:13-381:1", "#af2edb7b",new Layer({
+        name: '.',
+        parent: this,
+        width: this.width,
+        y: buttons[4].y - 16,
+        height: buttons[7].y - buttons[3].y,
+        backgroundColor: black
+      }));
+      dark2 = window.__framerNew("dark2", "381:14-389:1", "#173bf083f",new Layer({
+        name: '.',
+        parent: this,
+        width: this.width,
+        y: buttons[12].y - 16,
+        height: buttons[15].y - buttons[11].y,
+        backgroundColor: black
+      }));
+      dark3 = window.__framerNew("dark3", "389:14-397:1", "#b2c86f37",new Layer({
+        name: '.',
+        parent: this,
+        width: this.width,
+        y: buttons[20].y - 16,
+        height: buttons[23].y - buttons[19].y,
+        backgroundColor: black
+      }));
+      dark.sendToBack();
+      dark2.sendToBack();
+      return dark3.sendToBack();
+    });
+    return addDocsLink(this, 'wiki/Button');
+  });
+
+  textInputsView = window.__framerNew("textInputsView", "411:21-413:0", "?",new View({
+    title: 'TextInputs'
+  }));
+
+  textInputsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var copyIcon, div, fn, j, label, last, layer, len, ref1, ref2, results, string, title;
+      window.__framerNew(undefined, "417:6-421:1", "?",new TextInput({
+        name: 'Default TextInput',
+        parent: this
+      }));
+      window.__framerNew(undefined, "421:6-426:1", "?",new TextInput({
+        name: 'TextInput with Placeholder',
+        parent: this,
+        placeholder: 'Favorite naturalists'
+      }));
+      window.__framerNew(undefined, "426:6-431:1", "?",new TextInput({
+        name: 'TextInput with Value',
+        parent: this,
+        value: 'Alexander von Humboldt'
+      }));
+      window.__framerNew(undefined, "431:6-437:1", "?",new TextInput({
+        name: 'Disabled TextInput',
+        parent: this,
+        value: 'Dame Jane Morris Goodall',
+        disabled: true
+      }));
+      ref1 = this.children;
+      fn = function(layer, label, copyIcon) {
+        copyIcon.onTap(function() {
+          return Utils.copyTextToClipboard(label.text);
+        });
+        layer.on("change:value", function(value) {
+          return label.template = {
+            value: value
+          };
+        });
+        return label.template = {
+          value: layer.value
+        };
+      };
+      results = [];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        layer = ref1[j];
+        if (!layer instanceof TextInput) {
+          continue;
+        }
+        title = window.__framerNew("title", "440:15-446:2", "?",new H4({
+          name: '.',
+          parent: this,
+          y: ((ref2 = typeof last !== "undefined" && last !== null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "446:13-455:2", "#11e4e8634",new Layer({
+          name: '.',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        string = ["new TextInput", "placeholder: '" + layer.placeholder + "'", "value: '{value}'", "disabled: " + layer.disabled].join('\n\t');
+        label = window.__framerNew("label", "464:15-471:2", "?",new Code({
+          name: '.',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 24,
+          text: string
+        }));
+        copyIcon = window.__framerNew("copyIcon", "471:18-478:2", "?",new Icon({
+          parent: this,
+          y: label.midY - 12,
+          x: Align.right(-16),
+          icon: 'content-copy',
+          color: grey
+        }));
+        fn(layer, label, copyIcon);
+        results.push(last = label);
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/TextInput');
+  });
+
+  selectsView = window.__framerNew("selectsView", "496:18-498:0", "?",new View({
+    title: 'Selects'
+  }));
+
+  selectsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var copyIcon, div, fn, j, label, last, layer, len, ref1, ref2, results, string, title;
+      window.__framerNew(undefined, "502:6-506:1", "?",new Select({
+        name: 'Default Select',
+        parent: this
+      }));
+      window.__framerNew(undefined, "506:6-511:1", "?",new Select({
+        name: 'Select with Selected Index',
+        parent: this,
+        selectedIndex: 2
+      }));
+      window.__framerNew(undefined, "511:6-516:1", "?",new Select({
+        name: 'Select with Options',
+        parent: this,
+        options: ['Red', 'Orange', 'Yellow', 'Green', 'Blue']
+      }));
+      window.__framerNew(undefined, "516:6-521:1", "?",new Select({
+        name: 'Disabled Select',
+        parent: this,
+        disabled: true
+      }));
+      ref1 = this.children;
+      fn = function(layer, label, copyIcon) {
+        copyIcon.onTap(function() {
+          return Utils.copyTextToClipboard(label.text);
+        });
+        layer.on("change:disabled", function(bool) {
+          return label.template = {
+            disabled: bool
+          };
+        });
+        layer.on("change:selectedIndex", function(selectedIndex) {
+          return label.template = {
+            index: layer.selectedIndex,
+            value: layer.value
+          };
+        });
+        return label.template = {
+          index: layer.selectedIndex,
+          value: layer.value,
+          disabled: layer.disabled
+        };
+      };
+      results = [];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        layer = ref1[j];
+        if (!layer instanceof Select) {
+          continue;
+        }
+        title = window.__framerNew("title", "524:15-530:2", "?",new H4({
+          name: '.',
+          parent: this,
+          y: ((ref2 = typeof last !== "undefined" && last !== null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "530:13-539:2", "#10f0c7b18",new Layer({
+          name: '.',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        string = [
+          "new Select", "options: [\n\t\t" + (_.join(_.map(layer.options, function(n) {
+            return "'" + n + "'";
+          }), '\n\t\t')) + "\n\t\t]", "selectedIndex: {index}", "value: {value}", "disabled: {disabled}"
+        ].join('\n\t');
+        label = window.__framerNew("label", "549:15-556:2", "?",new Code({
+          name: '.',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 24,
+          text: string
+        }));
+        copyIcon = window.__framerNew("copyIcon", "556:18-563:2", "?",new Icon({
+          parent: this,
+          y: label.midY - 12,
+          x: Align.right(-16),
+          icon: 'content-copy',
+          color: grey
+        }));
+        fn(layer, label, copyIcon);
+        results.push(last = label);
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Select');
+  });
+
+  steppersView = window.__framerNew("steppersView", "592:19-594:0", "?",new View({
+    title: 'Steppers'
+  }));
+
+  steppersView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var copyIcon, div, fn, j, label, last, layer, len, ref1, ref2, results, stepper, string, title;
+      stepper = window.__framerNew("stepper", "598:16-602:1", "?",new Stepper({
+        name: 'Default Stepper',
+        parent: this
+      }));
+      stepper = window.__framerNew("stepper", "602:16-607:1", "?",new Stepper({
+        name: 'Stepper at Mininum Value',
+        parent: this,
+        value: 0
+      }));
+      stepper = window.__framerNew("stepper", "607:16-612:1", "?",new Stepper({
+        name: 'Stepper at Maximum Value',
+        parent: this,
+        value: 10
+      }));
+      stepper = window.__framerNew("stepper", "612:16-619:1", "?",new Stepper({
+        name: 'Stepper with Min, Max and Value',
+        parent: this,
+        min: 50,
+        max: 100,
+        value: 42
+      }));
+      stepper = window.__framerNew("stepper", "619:16-627:1", "?",new Stepper({
+        name: 'Stepper with Custom Options',
+        parent: this,
+        options: ['Less', 'More'],
+        icon: false
+      }));
+      ref1 = this.children;
+      fn = function(layer, label, copyIcon) {
+        copyIcon.onTap(function() {
+          return Utils.copyTextToClipboard(label.text);
+        });
+        return layer.on("change:value", (function(_this) {
+          return function() {
+            return label.template = layer.value;
+          };
+        })(this));
+      };
+      results = [];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        layer = ref1[j];
+        if (!layer instanceof Stepper) {
+          continue;
+        }
+        title = window.__framerNew("title", "630:15-636:2", "?",new H4({
+          name: '.',
+          parent: this,
+          y: ((ref2 = typeof last !== "undefined" && last !== null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "636:13-645:2", "#1729cf971",new Layer({
+          name: '.',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        string = [
+          "new Stepper", "options: [" + (_.join(_.map(layer.options, function(n) {
+            return "'" + n + "'";
+          }), ', ')) + "]", "icon: " + layer.icon, "min: " + layer.min, "max: " + layer.max, "value: {value}"
+        ].join('\n\t');
+        label = window.__framerNew("label", "656:15-663:2", "?",new Code({
+          name: '.',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 24,
+          text: string
+        }));
+        label.template = layer.value;
+        copyIcon = window.__framerNew("copyIcon", "665:18-672:2", "?",new Icon({
+          parent: this,
+          y: label.midY - 12,
+          x: Align.right(-16),
+          icon: 'content-copy',
+          color: grey
+        }));
+        fn(layer, label, copyIcon);
+        results.push(last = label);
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Stepper');
+  });
+
+  segmentsView = window.__framerNew("segmentsView", "687:19-691:0", "?",new View({
+    title: 'Segments',
+    contentInset: {
+      bottom: 128
+    }
+  }));
+
+  segmentsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var copyIcon, div, fn, fw, j, label, last, layer, len, ref1, ref2, ref3, results, string, title;
+      window.__framerNew(undefined, "697:6-701:1", "?",new Segment({
+        name: 'Default Segment',
+        parent: this
+      }));
+      fw = window.__framerNew("fw", "701:11-706:1", "?",new Segment({
+        name: 'Segment with Set Width',
+        parent: this,
+        width: this.width - 32
+      }));
+      fw.extra = "width: 343";
+      window.__framerNew(undefined, "708:6-713:1", "?",new Segment({
+        name: 'Segment with Active',
+        parent: this,
+        active: 1
+      }));
+      window.__framerNew(undefined, "713:6-718:1", "?",new Segment({
+        name: 'Segment with Three Options',
+        parent: this,
+        options: ['Good', 'Nuetral', 'Evil']
+      }));
+      window.__framerNew(undefined, "718:6-724:1", "?",new Segment({
+        name: 'Segment with Icons',
+        parent: this,
+        options: ['phone', 'email', 'snapchat'],
+        icon: true
+      }));
+      window.__framerNew(undefined, "724:6-732:1", "?",new Segment({
+        name: 'Segment with Custom Colors',
+        parent: this,
+        options: ['phone', 'email', 'snapchat'],
+        icon: true,
+        color: white,
+        backgroundColor: blue60
+      }));
+      window.__framerNew(undefined, "732:6-739:1", "?",new Segment({
+        name: 'Segment with Blank Options',
+        parent: this,
+        options: [' ', ' ', ' ']
+      }));
+      ref1 = this.children;
+      fn = function(layer, label, copyIcon) {
+        copyIcon.onTap(function() {
+          return Utils.copyTextToClipboard(label.text);
+        });
+        return layer.on("change:active", (function(_this) {
+          return function() {
+            return label.template = layer.active;
+          };
+        })(this));
+      };
+      results = [];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        layer = ref1[j];
+        if (!layer instanceof Segment) {
+          continue;
+        }
+        title = window.__framerNew("title", "742:15-748:2", "?",new H4({
+          name: '.',
+          parent: this,
+          y: ((ref2 = typeof last !== "undefined" && last !== null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "748:13-757:2", "#caed334f",new Layer({
+          name: '.',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        string = [
+          "new Segment", "options: [" + (_.join(_.map(layer.options, function(n) {
+            return "'" + n + "'";
+          }), ', ')) + "]", "icon: " + layer.icon, "active: {active}", (ref3 = layer.extra) != null ? ref3 : ""
+        ].join('\n\t');
+        label = window.__framerNew("label", "767:15-774:2", "?",new Code({
+          name: '.',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 24,
+          text: string
+        }));
+        label.template = layer.active;
+        copyIcon = window.__framerNew("copyIcon", "776:18-783:2", "?",new Icon({
+          parent: this,
+          y: label.midY - 12,
+          x: Align.right(-16),
+          icon: 'content-copy',
+          color: grey
+        }));
+        fn(layer, label, copyIcon);
+        results.push(last = label);
+      }
+      return results;
+    });
+    return addDocsLink(segmentsView, 'wiki/Segment');
+  });
+
+  togglesView = window.__framerNew("togglesView", "798:18-802:0", "?",new View({
+    title: 'Toggles',
+    contentInset: {
+      bottom: 128
+    }
+  }));
+
+  togglesView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var copyIcon, div, fn, j, label, last, layer, len, ref1, ref2, results, string, title;
+      window.__framerNew(undefined, "808:6-812:1", "?",new Toggle({
+        name: 'Toggle',
+        parent: this
+      }));
+      window.__framerNew(undefined, "812:6-817:1", "?",new Toggle({
+        name: 'Toggled Toggle',
+        parent: this,
+        toggled: true
+      }));
+      window.__framerNew(undefined, "817:6-822:1", "?",new Toggle({
+        name: 'Toggle with Options',
+        parent: this,
+        options: ['Good', 'Evil']
+      }));
+      window.__framerNew(undefined, "822:6-828:1", "?",new Toggle({
+        name: 'Toggle with Icons',
+        parent: this,
+        options: ['pizza', 'apple'],
+        icon: true
+      }));
+      window.__framerNew(undefined, "828:6-836:1", "?",new Toggle({
+        name: 'Toggle with Custom Colors',
+        parent: this,
+        options: ['phone', 'email'],
+        icon: true,
+        color: white,
+        backgroundColor: blue60
+      }));
+      window.__framerNew(undefined, "836:6-843:1", "?",new Toggle({
+        name: 'Blank Toggle',
+        parent: this,
+        options: [' ', ' ']
+      }));
+      ref1 = this.children;
+      fn = function(layer, label, copyIcon) {
+        copyIcon.onTap(function() {
+          return Utils.copyTextToClipboard(label.text);
+        });
+        return layer.on("change:active", (function(_this) {
+          return function() {
+            return label.template = layer.toggled;
+          };
+        })(this));
+      };
+      results = [];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        layer = ref1[j];
+        if (!layer instanceof Toggle) {
+          continue;
+        }
+        title = window.__framerNew("title", "846:15-852:2", "?",new H4({
+          name: 'Title',
+          parent: this,
+          y: ((ref2 = typeof last !== "undefined" && last !== null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "852:13-861:2", "#e4340635",new Layer({
+          name: 'Code',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        string = [
+          "new Toggle", "options: [" + (_.join(_.map(layer.options, function(n) {
+            return "'" + n + "'";
+          }), ', ')) + "]", "icon: " + layer.icon, "toggled: {toggled}"
+        ].join('\n\t');
+        label = window.__framerNew("label", "870:15-877:2", "?",new Code({
+          name: 'Label',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 24,
+          text: string
+        }));
+        label.template = layer.toggled;
+        copyIcon = window.__framerNew("copyIcon", "879:18-886:2", "?",new Icon({
+          parent: this,
+          y: label.midY - 12,
+          x: Align.right(-16),
+          icon: 'content-copy',
+          color: grey
+        }));
+        fn(layer, label, copyIcon);
+        results.push(last = label);
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Toggle');
+  });
+
+  inputsView = window.__framerNew("inputsView", "903:17-905:0", "?",new View({
+    title: 'Inputs'
+  }));
+
+  inputsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var checkSubmit, checkbox, city, error, i, input, j, label, lastY, len, radioBoxlabel, radioboxes, ref1, submit;
+      label = window.__framerNew("label", "911:14-915:1", "?",new Label({
+        parent: this,
+        text: 'First Name'
+      }));
+      input = window.__framerNew("input", "915:14-920:1", "?",new TextInput({
+        parent: this,
+        y: label.maxY,
+        placeholder: 'Your first name'
+      }));
+      error = window.__framerNew("error", "920:14-925:1", "?",new Micro({
+        parent: this,
+        y: input.maxY,
+        text: 'This website only accepts users named Sean.'
+      }));
+      input.on("change:value", function(value) {
+        error.color = value.toLowerCase() === 'sean' ? green : value === "" ? gray : red;
+        checkbox.disabled = value.toLowerCase() !== 'sean';
+        return checkSubmit();
+      });
+      radioBoxlabel = window.__framerNew("radioBoxlabel", "939:22-945:1", "?",new Label({
+        parent: this,
+        x: 16,
+        y: error.maxY + 16,
+        text: 'Select your city'
+      }));
+      radioboxes = [];
+      lastY = radioBoxlabel.maxY;
+      ref1 = ['London', 'Chicago', 'DeKalb'];
+      for (i = j = 0, len = ref1.length; j < len; i = ++j) {
+        city = ref1[i];
+        radioboxes[i] = window.__framerNew("i", "950:23-956:2", "?",new Radiobox({
+          parent: this,
+          group: radioboxes,
+          x: 16,
+          y: lastY
+        }));
+        label = window.__framerNew("label", "956:15-962:2", "?",new Body2({
+          parent: this,
+          x: radioboxes[i].maxX + 8,
+          y: lastY,
+          text: city
+        }));
+        radioboxes[i].labelLayer = label;
+        lastY = radioboxes[i].maxY + 3;
+      }
+      label = window.__framerNew("label", "968:14-973:1", "?",new Label({
+        parent: this,
+        text: 'Agree to Conditions',
+        y: _.last(radioboxes).maxY + 16
+      }));
+      checkbox = window.__framerNew("checkbox", "973:17-979:1", "?",new Checkbox({
+        parent: this,
+        y: label.y + 7,
+        x: label.maxX + 8,
+        disabled: true
+      }));
+      checkbox.on("change:checked", function(bool) {
+        return checkSubmit();
+      });
+      submit = window.__framerNew("submit", "984:15-991:1", "?",new Button({
+        parent: this,
+        x: 16,
+        y: checkbox.maxY + 32,
+        text: 'Submit',
+        disabled: true
+      }));
+      return checkSubmit = function() {
+        return submit.disabled = !(input.value.toLowerCase() === 'sean' && checkbox.checked && _.some(radioboxes, {
+          'checked': true
+        }));
+      };
+    });
+    return addDocsLink(this, 'wiki/Inputs');
+  });
+
+  sortableComponentView = window.__framerNew("sortableComponentView", "1003:28-1005:0", "?",new View({
+    title: 'SortableComponent'
+  }));
+
+  sortableComponentView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var div, i, j, last, len, len1, len2, len3, m, o, p, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, sortable, title;
+      title = window.__framerNew("title", "1009:14-1015:1", "?",new H4({
+        name: '.',
+        parent: this,
+        y: ((ref1 = typeof sortable !== "undefined" && sortable !== null ? sortable.maxY : void 0) != null ? ref1 : 0) + 32,
+        text: 'Default SortableComponent'
+      }));
+      div = window.__framerNew("div", "1015:12-1024:1", "#10821693c",new Layer({
+        name: '.',
+        parent: this,
+        x: title.maxX + 16,
+        y: title.y + 10,
+        width: this.width - (title.maxX + 16) - 16,
+        backgroundColor: grey40,
+        height: 1
+      }));
+      sortable = window.__framerNew("sortable", "1024:17-1030:1", "?",new SortableComponent({
+        parent: this,
+        x: Align.center(),
+        y: title.maxY + 24,
+        width: this.width * .618
+      }));
+      ref2 = _.range(3);
+      for (j = 0, len = ref2.length; j < len; j++) {
+        i = ref2[j];
+        last = window.__framerNew("last", "1032:14-1039:1", "#f922efa3",new Layer({
+          parent: sortable,
+          x: 0,
+          y: ((ref3 = last != null ? last.maxY : void 0) != null ? ref3 : -16) + 16,
+          width: sortable.width,
+          height: 48
+        }));
+      }
+      last = void 0;
+      title = window.__framerNew("title", "1043:14-1049:1", "?",new H4({
+        name: '.',
+        parent: this,
+        y: ((ref4 = sortable != null ? sortable.maxY : void 0) != null ? ref4 : 0) + 32,
+        text: 'SortableComponent using Handles'
+      }));
+      div = window.__framerNew("div", "1049:12-1058:1", "#1647369bb",new Layer({
+        name: '.',
+        parent: this,
+        x: title.maxX + 16,
+        y: title.y + 10,
+        width: this.width - (title.maxX + 16) - 16,
+        backgroundColor: grey40,
+        height: 1
+      }));
+      sortable = window.__framerNew("sortable", "1058:17-1065:1", "?",new SortableComponent({
+        parent: this,
+        x: Align.center(),
+        y: title.maxY + 24,
+        width: this.width * .618,
+        backgroundColor: null
+      }));
+      ref5 = _.range(4);
+      for (m = 0, len1 = ref5.length; m < len1; m++) {
+        i = ref5[m];
+        last = window.__framerNew("last", "1067:14-1079:2", "#bd561d01",new Layer({
+          parent: sortable,
+          y: ((ref6 = last != null ? last.maxY : void 0) != null ? ref6 : 1) - 1,
+          width: sortable.width,
+          height: 48,
+          backgroundColor: grey30,
+          borderColor: grey,
+          borderWidth: 1,
+          animationOptions: {
+            time: .2,
+            curve: 'linear'
+          }
+        }));
+        last.handle = window.__framerNew(undefined, "1079:21-1086:2", "#122e777dc",new Layer({
+          parent: last,
+          x: Align.right(),
+          height: last.height,
+          width: 40,
+          backgroundColor: null
+        }));
+        window.__framerNew(undefined, "1086:7-1092:1", "?",new Icon({
+          parent: last.handle,
+          x: Align.right(-8),
+          y: Align.center(),
+          icon: 'drag'
+        }));
+      }
+      last = void 0;
+      title = window.__framerNew("title", "1096:14-1102:1", "?",new H4({
+        name: '.',
+        parent: this,
+        y: ((ref7 = sortable != null ? sortable.maxY : void 0) != null ? ref7 : 0) + 32,
+        text: 'SortableComponent with Custom States'
+      }));
+      div = window.__framerNew("div", "1102:12-1111:1", "#13082e4bd",new Layer({
+        name: '.',
+        parent: this,
+        x: title.maxX + 16,
+        y: title.y + 10,
+        width: this.width - (title.maxX + 16) - 16,
+        backgroundColor: grey40,
+        height: 1
+      }));
+      sortable = window.__framerNew("sortable", "1111:17-1126:1", "?",new SortableComponent({
+        parent: this,
+        x: Align.center(),
+        y: title.maxY + 24,
+        width: this.width * .618,
+        backgroundColor: null,
+        draggingState: {
+          scale: 1.2,
+          backgroundColor: blue30,
+          opacity: .8
+        },
+        defaultState: {
+          scale: 1,
+          backgroundColor: green30,
+          opacity: 1
+        }
+      }));
+      ref8 = _.range(4);
+      for (o = 0, len2 = ref8.length; o < len2; o++) {
+        i = ref8[o];
+        last = window.__framerNew("last", "1128:14-1137:1", "#c86efefb",new Layer({
+          parent: sortable,
+          y: ((ref9 = last != null ? last.maxY : void 0) != null ? ref9 : 1) - 1,
+          width: sortable.width,
+          height: 48,
+          backgroundColor: green30,
+          borderColor: green,
+          borderWidth: 1
+        }));
+      }
+      last = void 0;
+      title = window.__framerNew("title", "1143:14-1149:1", "?",new H4({
+        name: '.',
+        parent: this,
+        y: ((ref10 = sortable != null ? sortable.maxY : void 0) != null ? ref10 : 0) + 32,
+        text: 'SortableComponent with Other Content'
+      }));
+      div = window.__framerNew("div", "1149:12-1158:1", "#158bcdada",new Layer({
+        name: '.',
+        parent: this,
+        x: title.maxX + 16,
+        y: title.y + 10,
+        width: this.width - (title.maxX + 16) - 16,
+        backgroundColor: grey40,
+        height: 1
+      }));
+      sortable = window.__framerNew("sortable", "1158:17-1165:1", "?",new SortableComponent({
+        parent: this,
+        x: Align.center(),
+        y: title.maxY + 24,
+        width: this.width * .618,
+        backgroundColor: null
+      }));
+      ref11 = _.range(3);
+      for (p = 0, len3 = ref11.length; p < len3; p++) {
+        i = ref11[p];
+        last = window.__framerNew("last", "1167:14-1173:1", "?",new Button({
+          parent: sortable,
+          y: ((ref12 = last != null ? last.maxY : void 0) != null ? ref12 : -16) + 16,
+          width: sortable.width,
+          text: 'Sortable ' + i
+        }));
+      }
+      return last = void 0;
+    });
+    return addDocsLink(this, 'wiki/SortableComponent');
+  });
+
+  carouselComponentView = window.__framerNew("carouselComponentView", "1181:28-1183:0", "?",new View({
+    title: 'Carousels'
+  }));
+
+  carouselComponentView.onLoad(function() {
+    Utils.bind(this.content, function() {});
+    return addDocsLink(carouselComponentView, 'wiki/CarouselComponent');
+  });
+
+  tabComponentView = window.__framerNew("tabComponentView", "1192:23-1195:0", "?",new View({
+    title: 'TabComponent',
+    padding: null
+  }));
+
+  tabComponentView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var body, s, t1, t2, t3, title;
+      title = window.__framerNew("title", "1200:14-1209:1", "?",new H4({
+        name: 'Title',
+        x: 16,
+        y: 32,
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Tab Component**"
+      }));
+      Utils.toMarkdown(title);
+      body = window.__framerNew("body", "1211:13-1217:1", "?",new Body2({
+        parent: this,
+        x: 16,
+        width: this.width - 32,
+        text: "A TabComponent manages several layers, called `tabs`. The `active` or `current` tab is placed in front of the other tabs. The user can select a new `active` tab by tapping on the tab's button."
+      }));
+      Utils.toMarkdown(body);
+      s = window.__framerNew("s", "1219:10-1223:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        width: 100
+      }));
+      s.width = this.width;
+      t1 = window.__framerNew("t1", "1229:11-1233:1", "?",new TabComponent({
+        parent: this,
+        width: this.width
+      }));
+      window.__framerNew(undefined, "1233:6-2622:20", "?",new DocComponent({
+        parent: this,
+        tabbed: false,
+        text: ["new TabComponent", "\ttabs: ['Tab 1', 'Tab 2']", "\tactive: {active}", "", "print t1.current", "", "# » {current}"],
+        template: {
+          active: [t1, 'active'],
+          current: [
+            t1, 'current', function(v) {
+              return "<Layer id:" + v.id + " name:" + v.name + " (0, 0)>";
+            }
+          ]
+        }
+      }));
+      t2 = window.__framerNew("t2", "1253:11-1258:1", "?",new TabComponent({
+        parent: this,
+        width: this.width,
+        active: 1
+      }));
+      window.__framerNew(undefined, "1258:6-2622:20", "?",new DocComponent({
+        parent: this,
+        tabbed: false,
+        text: ["t2 = new TabComponent", "\ttabs: ['Tab 1', 'Tab 2']", "\tactive: {active}", "", "print t2.current", "", "# » {current}"],
+        template: {
+          active: [t2, 'active'],
+          current: [
+            t2, 'current', function(v) {
+              return "<Layer id:" + v.id + " name:" + v.name + " (0, 0)>";
+            }
+          ]
+        }
+      }));
+      t3 = window.__framerNew("t3", "1278:11-1285:1", "?",new TabComponent({
+        parent: this,
+        width: this.width,
+        tabs: ["Fruit", "Veggies", "Liquor"],
+        height: 220,
+        showSublayers: true
+      }));
+      window.__framerNew(undefined, "1285:6-2622:20", "?",new DocComponent({
+        parent: this,
+        tabbed: false,
+        text: ["t3 = new TabComponent", "\ttabs: ['Fruit', 'Vegetables', 'Liquor']", "\tactive: {active}", "", "print t3.current", "", "# » {current}"],
+        template: {
+          active: [t3, 'active'],
+          current: [
+            t3, 'current', function(v) {
+              return "<Layer id:" + v.id + " name:" + v.name + " (0, 0)>";
+            }
+          ]
+        }
+      }));
+      Utils.bind(t3.tabs[0], function() {
+        return window.__framerNew(undefined, "1304:7-1311:1", "?",new Body2({
+          parent: this,
+          x: 16,
+          y: 16,
+          width: this.width - 32,
+          text: "In botany, a fruit is the seed-bearing structure in flowering plants (also known as angiosperms) formed from the ovary after flowering. In common language usage, 'fruit' normally means the fleshy seed-associated structures of a plant that are sweet or sour, and edible in the raw state, such as apples."
+        }));
+      });
+      Utils.bind(t3.tabs[1], function() {
+        return window.__framerNew(undefined, "1312:7-1319:1", "?",new Body2({
+          parent: this,
+          x: 16,
+          y: 16,
+          width: this.width - 32,
+          text: "In everyday usage, vegetables are certain parts of plants that are consumed by humans as food as part of a savory meal. Modern-day culinary usage of the term vegetable can be largely defined through culinary and cultural tradition."
+        }));
+      });
+      Utils.bind(t3.tabs[2], function() {
+        return window.__framerNew(undefined, "1320:7-1328:1", "?",new Body2({
+          parent: this,
+          x: 16,
+          y: 16,
+          width: this.width - 32,
+          text: "A distilled beverage, spirit, liquor, hard liquor or hard alcohol is an alcoholic beverage produced by distillation of grains, fruit, or vegetables that have already gone through alcoholic fermentation. As distilled beverages contain significantly more alcohol, they are considered 'harder'."
+        }));
+      });
+      return Utils.offsetY(this.children, 32);
+    });
+    this.updateContent();
+    return addDocsLink(tabComponentView, 'wiki/TabComponent');
+  });
+
+  tooltipsView = window.__framerNew("tooltipsView", "1339:19-1341:0", "?",new View({
+    title: 'Tooltips'
+  }));
+
+  tooltipsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var copyIcon, div, fn, j, label, last, layer, len, ref1, ref2, results, string, title;
+      window.__framerNew(undefined, "1345:6-1349:1", "?",new Tooltip({
+        name: 'Default Tooltip',
+        parent: this
+      }));
+      window.__framerNew(undefined, "1349:6-1354:1", "?",new Tooltip({
+        name: 'Tooltip Text',
+        parent: this,
+        text: 'Context for the hovered element'
+      }));
+      window.__framerNew(undefined, "1354:6-1360:1", "?",new Tooltip({
+        name: 'Tooltip Above',
+        parent: this,
+        text: 'Tooltip above an element',
+        position: 'above'
+      }));
+      window.__framerNew(undefined, "1360:6-1366:1", "?",new Tooltip({
+        name: 'Tooltip Right',
+        parent: this,
+        text: 'Tooltip right of an element',
+        position: 'right'
+      }));
+      window.__framerNew(undefined, "1366:6-1372:1", "?",new Tooltip({
+        name: 'Tooltip Below',
+        parent: this,
+        text: 'Tooltip below an element',
+        position: 'below'
+      }));
+      window.__framerNew(undefined, "1372:6-1378:1", "?",new Tooltip({
+        name: 'Tooltip Left',
+        parent: this,
+        text: 'Tooltip left of an element',
+        position: 'left'
+      }));
+      ref1 = this.children;
+      fn = function(layer, label, copyIcon) {
+        return copyIcon.onTap(function() {
+          return Utils.copyTextToClipboard(label.text);
+        });
+      };
+      results = [];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        layer = ref1[j];
+        if (!layer instanceof Tooltip) {
+          continue;
+        }
+        title = window.__framerNew("title", "1381:15-1387:2", "?",new H4({
+          name: '.',
+          parent: this,
+          y: ((ref2 = typeof last !== "undefined" && last !== null ? last.maxY : void 0) != null ? ref2 : 0) + 32,
+          text: layer.name
+        }));
+        div = window.__framerNew("div", "1387:13-1396:2", "#c2ad36df",new Layer({
+          name: '.',
+          parent: this,
+          x: title.maxX + 16,
+          y: title.y + 10,
+          width: this.width - (title.maxX + 16) - 16,
+          backgroundColor: grey40,
+          height: 1
+        }));
+        layer.y = title.maxY + 24;
+        string = ["new Tooltip", "position: '" + layer.position + "'", "text: '" + layer.text + "'"].join('\n\t');
+        label = window.__framerNew("label", "1404:15-1411:2", "?",new Code({
+          name: '.',
+          parent: this,
+          x: layer.x,
+          y: layer.maxY + 24,
+          text: string
+        }));
+        copyIcon = window.__framerNew("copyIcon", "1411:18-1418:2", "?",new Icon({
+          parent: this,
+          y: label.midY - 12,
+          x: Align.right(-16),
+          icon: 'content-copy',
+          color: grey
+        }));
+        fn(layer, label, copyIcon);
+        results.push(last = label);
+      }
+      return results;
+    });
+    return addDocsLink(this, 'wiki/Tooltip');
+  });
+
+  exampleView = window.__framerNew("exampleView", "1430:18-1432:0", "?",new View({
+    title: 'Example'
+  }));
+
+  exampleView.onLoad(function() {
+    var child, delay, i, j, len, ref1, results, y;
+    this.header = window.__framerNew(undefined, "1435:15-1442:0", "?",new H2({
+      name: 'Header H2',
+      parent: this.content,
+      x: Align.center,
+      y: 80,
+      text: 'Framework'
+    }));
+    this.lead = window.__framerNew(undefined, "1442:13-1449:0", "?",new Body({
+      name: 'Lead Body',
+      parent: this.content,
+      x: Align.center,
+      y: this.header.maxY + 12,
+      text: 'A Component Kit for Framer'
+    }));
+    this.email = window.__framerNew(undefined, "1449:14-1457:0", "?",new TextInput({
+      name: 'Email Input',
+      parent: this.content,
+      y: this.lead.maxY + 160,
+      width: 228,
+      x: Align.center(),
+      placeholder: 'Enter your e-mail'
+    }));
+    this.signup = window.__framerNew(undefined, "1457:15-1466:0", "?",new Button({
+      name: 'Sign Up Button',
+      parent: this.content,
+      x: Align.center(),
+      y: this.email.maxY + 16,
+      text: 'Sign Up',
+      width: 228,
+      disabled: true
+    }));
+    this.login = window.__framerNew(undefined, "1466:14-1475:0", "?",new Button({
+      name: 'Login Button',
+      parent: this.content,
+      x: Align.center(),
+      y: this.signup.maxY + 16,
+      secondary: true,
+      text: 'Log In',
+      width: 228
+    }));
+    this.email.on("change:value", (function(_this) {
+      return function(value) {
+        return _this.signup.disabled = value.slice(-4) !== '.com';
+      };
+    })(this));
+    this.iconLayer = window.__framerNew(undefined, "1478:18-1491:0", "?",new Icon({
+      name: 'Logomark Icon',
+      parent: this.content,
+      icon: 'drawing-box',
+      x: Align.center,
+      y: 208,
+      height: 72,
+      width: 72,
+      color: red,
+      opacity: 0
+    }));
+    ref1 = this.content.children;
+    results = [];
+    for (i = j = 0, len = ref1.length; j < len; i = ++j) {
+      child = ref1[i];
+      y = child.y;
+      _.assign(child, {
+        opacity: 0,
+        y: y - 16,
+        ignoreEvents: true
+      });
+      delay = .5 + (.2 * i);
+      if (i > 1) {
+        delay += .75;
+      }
+      child.animate({
+        opacity: 1,
+        y: y,
+        options: {
+          time: .8,
+          delay: delay
+        }
+      });
+      results.push((function(_this) {
+        return function(child) {
+          return Utils.delay(2, function() {
+            return child.ignoreEvents = false;
+          });
+        };
+      })(this)(child));
+    }
+    return results;
+  });
+
+  Content = function(parent) {
+    var s;
+    s = window.__framerNew("s", "1518:9-1522:0", "?",new Separator({
+      parent: parent,
+      x: 0,
+      width: 100
+    }));
+    s.width = parent.width;
+    return window.__framerNew(undefined, "1524:12-1531:0", "#f9f3e0f9",new Layer({
+      parent: parent,
+      width: 312,
+      x: 16,
+      backgroundColor: null
+    }));
+  };
+
+  utilsView = window.__framerNew("utilsView", "1532:16-1536:3", "?",new View({
+    title: 'Utils',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  utilsView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      var body, s, title;
+      title = window.__framerNew("title", "1540:14-1545:1", "?",new H3({
+        parent: this,
+        x: 16,
+        text: "Utils"
+      }));
+      body = window.__framerNew("body", "1545:13-1552:1", "?",new Body({
+        parent: this,
+        x: 16,
+        y: title.maxY + 16,
+        width: this.width - 32,
+        text: "Framework comes packaged with several new utilities. See below for documentation, or check the `moreutils.coffee` file included with Framework."
+      }));
+      Utils.toMarkdown(body);
+      s = window.__framerNew("s", "1555:10-1560:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        y: body.maxY + 32,
+        width: 100
+      }));
+      s.width = this.width;
+      window.__framerNew(undefined, "1562:6-1566:1", "?",new Label({
+        parent: this,
+        text: "Text"
+      }));
+      window.__framerNew(undefined, "1566:6-1573:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.toMarkdown",
+        color: yellow80,
+        select: function() {
+          return app.showNext(toMarkdownView);
+        }
+      }));
+      window.__framerNew(undefined, "1573:6-1580:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.randomText",
+        color: yellow80,
+        select: function() {
+          return app.showNext(randomTextView);
+        }
+      }));
+      window.__framerNew(undefined, "1580:6-1587:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.isEmail",
+        color: yellow80,
+        select: function() {
+          return app.showNext(isEmailView);
+        }
+      }));
+      window.__framerNew(undefined, "1587:6-1594:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.copyTextToClipboard",
+        color: yellow80,
+        select: function() {
+          return app.showNext(copyTextView);
+        }
+      }));
+      window.__framerNew(undefined, "1594:6-1601:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.getOrdinal",
+        color: black
+      }));
+      s = window.__framerNew("s", "1601:10-1605:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        width: 100
+      }));
+      s.width = this.width;
+      window.__framerNew(undefined, "1607:6-1612:1", "?",new Label({
+        parent: this,
+        text: "Relationships",
+        padding: {
+          top: 16
+        }
+      }));
+      window.__framerNew(undefined, "1612:6-1618:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.constrain",
+        color: black
+      }));
+      window.__framerNew(undefined, "1618:6-1624:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.pin",
+        color: black
+      }));
+      window.__framerNew(undefined, "1624:6-1630:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.unpin",
+        color: black
+      }));
+      window.__framerNew(undefined, "1630:6-1636:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.pinOriginX",
+        color: black
+      }));
+      window.__framerNew(undefined, "1636:6-1643:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.pinOriginY",
+        color: black
+      }));
+      s = window.__framerNew("s", "1643:10-1647:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        width: 100
+      }));
+      s.width = this.width;
+      window.__framerNew(undefined, "1649:6-1654:1", "?",new Label({
+        parent: this,
+        text: "Positioning",
+        padding: {
+          top: 16
+        }
+      }));
+      window.__framerNew(undefined, "1654:6-1661:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.distribute",
+        color: yellow80,
+        select: function() {
+          return app.showNext(distributeView);
+        }
+      }));
+      window.__framerNew(undefined, "1661:6-1668:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.align",
+        color: yellow80,
+        select: function() {
+          return app.showNext(alignView);
+        }
+      }));
+      window.__framerNew(undefined, "1668:6-1674:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.hug",
+        color: black
+      }));
+      window.__framerNew(undefined, "1674:6-1680:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.contain",
+        color: black
+      }));
+      window.__framerNew(undefined, "1680:6-1686:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.offsetX",
+        color: black
+      }));
+      window.__framerNew(undefined, "1686:6-1692:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.offsetY",
+        color: black
+      }));
+      window.__framerNew(undefined, "1692:6-1698:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.grid",
+        color: black
+      }));
+      window.__framerNew(undefined, "1698:6-1705:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.makeGrid",
+        color: black
+      }));
+      s = window.__framerNew("s", "1705:10-1709:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        width: 100
+      }));
+      s.width = this.width;
+      window.__framerNew(undefined, "1711:6-1716:1", "?",new Label({
+        parent: this,
+        text: "Layers",
+        padding: {
+          top: 16
+        }
+      }));
+      window.__framerNew(undefined, "1716:6-1722:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.pointInLayer",
+        color: black
+      }));
+      window.__framerNew(undefined, "1722:6-1728:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.getLayerAtPoint",
+        color: black
+      }));
+      window.__framerNew(undefined, "1728:6-1734:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.getLayersAtPoint",
+        color: black
+      }));
+      window.__framerNew(undefined, "1734:6-1740:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.getLayerFromElement",
+        color: black
+      }));
+      window.__framerNew(undefined, "1740:6-1746:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.pointInLayer",
+        color: black
+      }));
+      window.__framerNew(undefined, "1746:6-1753:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.chainAnimations",
+        color: black
+      }));
+      s = window.__framerNew("s", "1753:10-1757:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        width: 100
+      }));
+      s.width = this.width;
+      window.__framerNew(undefined, "1759:6-1764:1", "?",new Label({
+        parent: this,
+        text: "Properties",
+        padding: {
+          top: 16
+        }
+      }));
+      window.__framerNew(undefined, "1764:6-1770:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.define",
+        color: black
+      }));
+      window.__framerNew(undefined, "1770:6-1776:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.linkProperties",
+        color: black
+      }));
+      window.__framerNew(undefined, "1776:6-1782:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.setAttributes",
+        color: black
+      }));
+      window.__framerNew(undefined, "1782:6-1789:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.px",
+        color: black
+      }));
+      s = window.__framerNew("s", "1789:10-1793:1", "?",new Separator({
+        parent: this,
+        x: 0,
+        width: 100
+      }));
+      s.width = this.width;
+      window.__framerNew(undefined, "1795:6-1800:1", "?",new Label({
+        parent: this,
+        text: "Data",
+        padding: {
+          top: 16
+        }
+      }));
+      window.__framerNew(undefined, "1800:6-1806:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.CORSproxy",
+        color: black
+      }));
+      window.__framerNew(undefined, "1806:6-1812:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.fetch",
+        color: black
+      }));
+      window.__framerNew(undefined, "1812:6-1818:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.fetchJSON",
+        color: black
+      }));
+      window.__framerNew(undefined, "1818:6-1824:1", "?",new H4Link({
+        parent: this,
+        x: 16,
+        text: "Utils.timer",
+        color: black
+      }));
+      return Utils.offsetY(this.children.slice(2));
+    });
+    this.updateContent();
+    return addDocsLink(this, 'wiki/Utils');
+  });
+
+  toMarkdownView = window.__framerNew("toMarkdownView", "1839:21-1843:0", "?",new View({
+    title: 'Utils.toMarkdown',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  toMarkdownView.onLoad(function() {
+    this.padding = {
+      left: 16,
+      top: 16,
+      right: 16
+    };
+    Utils.bind(this.content, function() {
+      var body, body1, content, title;
+      title = window.__framerNew("title", "1852:14-1859:1", "?",new H4({
+        name: 'Title',
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Utils.toMarkdown**(textLayer)"
+      }));
+      Utils.toMarkdown(title);
+      body = window.__framerNew("body", "1861:13-1867:1", "?",new Body2({
+        parent: this,
+        width: this.width - 32,
+        text: "Utils.toMarkdown will convert some basic markdown syntax into inline styles. It works with bold, italic, strike-thru, and code tags.\n\nIf it's not working, try `Utils.delay 0, -> Utils.toMarkdown(textLayer)`.",
+        padding: {
+          bottom: 16
+        }
+      }));
+      Utils.toMarkdown(body);
+      this.parent.padding = null;
+      content = window.__framerNew("content", "1873:16-1873:25", "*",new Content(this));
+      window.__framerNew(undefined, "1875:6-1879:1", "?",new Label({
+        parent: content,
+        text: "Example_0"
+      }));
+      body = window.__framerNew("body", "1879:13-1884:1", "?",new Body({
+        parent: content,
+        x: 16,
+        text: "This is a **bold** and ***italic*** sentence."
+      }));
+      window.__framerNew(undefined, "1884:6-1888:1", "?",new Label({
+        parent: content,
+        text: "Example_1"
+      }));
+      body1 = window.__framerNew("body1", "1888:14-1893:1", "?",new Body({
+        parent: content,
+        x: 16,
+        text: "This is a **bold** and ***italic*** sentence."
+      }));
+      Utils.offsetY(content.children);
+      Utils.contain(content);
+      Utils.toMarkdown(body1);
+      window.__framerNew(undefined, "1898:6-1905:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.toMarkdown(Example_1)"]
+      }));
+      return Utils.offsetY(this.children, 16);
+    });
+    return this.updateContent();
+  });
+
+  distributeView = window.__framerNew("distributeView", "1910:21-1914:0", "?",new View({
+    title: 'Utils.distribute',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  distributeView.onLoad(function() {
+    this.padding = {
+      left: 16,
+      top: 16,
+      right: 16
+    };
+    Utils.bind(this.content, function() {
+      var body, content, dtitle, layers;
+      dtitle = window.__framerNew("dtitle", "1924:15-1931:1", "?",new H4({
+        name: 'Title',
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Utils.distribute**(layers, direction, [start], [end], [animate], [animationOptions])"
+      }));
+      Utils.delay(0, function() {
+        return Utils.toMarkdown(dtitle);
+      });
+      body = window.__framerNew("body", "1933:13-1939:1", "?",new Body2({
+        parent: this,
+        width: this.width - 32,
+        text: "Utils.distrubute works the same way as the Distribute tools in Sketch or Framer's Design Mode. Give it an array of layers and a property (like 'x'), and it will try to evenly distribute the layers between the minimum and maximum values among the layers. You can also include values for where to start and where to end, and optionally animate the transition. The method includes alias names for 'midX' ('horizontal') and 'midY' ('vertical').",
+        padding: {
+          bottom: 16
+        }
+      }));
+      this.parent.padding = null;
+      content = window.__framerNew("content", "1943:16-1943:25", "*",new Content(this));
+      layers = _.range(10).map(function() {
+        return window.__framerNew(undefined, "1946:7-1951:1", "#930112b5",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16
+        }));
+      });
+      Utils.distribute(layers, 'horizontal', 16, 312);
+      Utils.contain(content);
+      window.__framerNew(undefined, "1955:6-1968:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.distribute(", "layers,", "'horizontal',", "16,", "312", ")"]
+      }));
+      content = window.__framerNew("content", "1968:16-1968:25", "*",new Content(this));
+      layers = _.range(10).map(function(l, i) {
+        return window.__framerNew(undefined, "1971:7-1978:1", "#c225710d",new Layer({
+          parent: content,
+          size: 32,
+          x: i * 32,
+          backgroundColor: blue,
+          borderRadius: 16
+        }));
+      });
+      Utils.distribute(layers, 'hueRotate', 0, 180);
+      Utils.contain(content);
+      window.__framerNew(undefined, "1982:6-1995:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.distribute(", "layers,", "'hueRotate',", "0,", "180", ")"]
+      }));
+      content = window.__framerNew("content", "1995:16-1995:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "1998:7-2004:1", "#104336992",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296)
+        }));
+      });
+      Utils.distribute(layers, 'horizontal', 16, 312, true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2008:6-2022:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.distribute(", "layers,", "'horizontal',", "16,", "312", "true", "{time: 1, looping: true}", ")"]
+      }));
+      return Utils.offsetY(this.children, 16);
+    });
+    return this.updateContent();
+  });
+
+  alignView = window.__framerNew("alignView", "2027:16-2031:0", "?",new View({
+    title: 'Utils.align',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  alignView.onLoad(function() {
+    this.padding = {
+      left: 16,
+      top: 16,
+      right: 16
+    };
+    Utils.bind(this.content, function() {
+      var body, content, layers, title;
+      title = window.__framerNew("title", "2041:14-2048:1", "?",new H4({
+        name: 'Title',
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Utils.align**(layers, direction, [animate, [animationOptions]])"
+      }));
+      Utils.delay(0, function() {
+        return Utils.toMarkdown(title);
+      });
+      body = window.__framerNew("body", "2050:13-2056:1", "?",new Body2({
+        parent: this,
+        width: this.width - 32,
+        text: "Utils.Align works the same way the Align tools work in Sketch or Design Mode. Give it an array of layers and a direction ('top', 'bottom', 'middle', 'left', 'right', or 'center'), and it will set the layers to the correct minimum or maximum among those layers.",
+        padding: {
+          bottom: 16
+        }
+      }));
+      this.parent.padding = null;
+      content = window.__framerNew("content", "2060:16-2060:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "2063:7-2070:1", "#81f244c6",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296)
+        }));
+      });
+      Utils.align(layers, 'left', true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2074:6-2086:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.align(", "layers, 'left'", "true, {time: 1, looping: true}", ")"]
+      }));
+      content = window.__framerNew("content", "2086:16-2086:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "2089:7-2095:1", "#8f1a020a",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296)
+        }));
+      });
+      Utils.align(layers, 'right', true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2099:6-2110:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.align(", "layers, 'right'", "true, {time: 1, looping: true}", ")"]
+      }));
+      content = window.__framerNew("content", "2110:16-2110:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "2113:7-2120:1", "#10ed0d36c",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296),
+          y: _.random(24, 128)
+        }));
+      });
+      Utils.align(layers, 'middle', true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2124:6-2135:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.align(", "layers, 'middle'", "true, {time: 1, looping: true}", ")"]
+      }));
+      content = window.__framerNew("content", "2135:16-2135:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "2138:7-2145:1", "#e712556f",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296),
+          y: _.random(24, 128)
+        }));
+      });
+      Utils.align(layers, 'top', true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2149:6-2160:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.align(", "layers, 'top'", "true, {time: 1, looping: true}", ")"]
+      }));
+      content = window.__framerNew("content", "2160:16-2160:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "2163:7-2170:1", "#11636b3c7",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296),
+          y: _.random(24, 128)
+        }));
+      });
+      Utils.align(layers, 'bottom', true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2174:6-2185:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.align(", "layers, 'bottom'", "true, {time: 1, looping: true}", ")"]
+      }));
+      content = window.__framerNew("content", "2185:16-2185:25", "*",new Content(this));
+      layers = _.range(6).map(function() {
+        return window.__framerNew(undefined, "2188:7-2195:1", "#ee7835ca",new Layer({
+          parent: content,
+          size: 32,
+          borderRadius: 16,
+          x: _.random(24, 296),
+          y: _.random(24, 128)
+        }));
+      });
+      Utils.align(layers, 'center', true, {
+        time: 1,
+        looping: true
+      });
+      Utils.contain(content);
+      window.__framerNew(undefined, "2199:6-2209:1", "?",new DocComponent({
+        parent: this,
+        text: ["Utils.align(", "layers, 'center'", "true, {time: 1, looping: true}", ")"]
+      }));
+      return Utils.offsetY(this.children, 16);
+    });
+    return this.updateContent();
+  });
+
+  randomTextView = window.__framerNew("randomTextView", "2214:21-2218:0", "?",new View({
+    title: 'Utils.randomText',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  randomTextView.onLoad(function() {
+    this.padding = {
+      left: 16,
+      top: 16,
+      right: 16
+    };
+    Utils.bind(this.content, function() {
+      var body, content, textLayer, title;
+      title = window.__framerNew("title", "2225:14-2232:1", "?",new H4({
+        name: 'Title',
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Utils.randomText**(words, [sentences = false, [paragraphs = false]])"
+      }));
+      Utils.toMarkdown(title);
+      body = window.__framerNew("body", "2234:13-2240:1", "?",new Body2({
+        parent: this,
+        width: this.width - 32,
+        text: "Utils.randomText will generate *n* words of lorem ipsum text. By default, the string will be lower case words separated by a space, but you can return sentences or paragraphs as well.",
+        padding: {
+          bottom: 16
+        }
+      }));
+      Utils.toMarkdown(body);
+      this.parent.padding = null;
+      content = window.__framerNew("content", "2246:16-2246:25", "*",new Content(this));
+      textLayer = window.__framerNew("textLayer", "2248:18-2252:1", "?",new Body1({
+        parent: content,
+        text: Utils.randomText(16)
+      }));
+      Utils.contain(content);
+      window.__framerNew(undefined, "2254:6-2263:1", "?",new DocComponent({
+        parent: this,
+        text: ["textLayer = new Body2", "text: Utils.randomText(16)"]
+      }));
+      content = window.__framerNew("content", "2263:16-2263:25", "*",new Content(this));
+      textLayer = window.__framerNew("textLayer", "2265:18-2269:1", "?",new Body1({
+        parent: content,
+        text: Utils.randomText(16, true)
+      }));
+      Utils.contain(content);
+      window.__framerNew(undefined, "2271:6-2280:1", "?",new DocComponent({
+        parent: this,
+        text: ["textLayer = new Body2", "text: Utils.randomText(16, true)"]
+      }));
+      content = window.__framerNew("content", "2280:16-2280:25", "*",new Content(this));
+      textLayer = window.__framerNew("textLayer", "2282:18-2286:1", "?",new Body1({
+        parent: content,
+        text: Utils.randomText(48, true, true)
+      }));
+      Utils.contain(content);
+      window.__framerNew(undefined, "2288:6-2296:1", "?",new DocComponent({
+        parent: this,
+        text: ["textLayer = new Body2", "text: Utils.randomText(16, true, true)"]
+      }));
+      return Utils.offsetY(this.children, 16);
+    });
+    return this.updateContent();
+  });
+
+  isEmailView = window.__framerNew("isEmailView", "2301:18-2305:0", "?",new View({
+    title: 'Utils.isEmail',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  isEmailView.onLoad(function() {
+    this.padding = {
+      left: 16,
+      top: 16,
+      right: 16
+    };
+    Utils.bind(this.content, function() {
+      var body, button, button1, code, content, input, input1, title;
+      title = window.__framerNew("title", "2312:14-2318:1", "?",new H4({
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Utils.isEmail**(string)"
+      }));
+      Utils.toMarkdown(title);
+      body = window.__framerNew("body", "2320:13-2325:1", "?",new Body2({
+        parent: this,
+        width: this.width - 32,
+        text: "Utils.isEmail will return `true` if the string is a valid email address, or `false` if it isn't. This works well with an TextInput's 'change:value' event:"
+      }));
+      code = window.__framerNew("code", "2325:13-2330:1", "?",new Code({
+        parent: this,
+        text: "input.onChange 'value', (value) ->\n\tbutton.disabled = !Utils.isEmail(value)",
+        padding: {
+          bottom: 16
+        }
+      }));
+      Utils.toMarkdown(body);
+      this.parent.padding = null;
+      content = window.__framerNew("content", "2336:16-2336:25", "*",new Content(this));
+      input = window.__framerNew("input", "2338:14-2342:1", "?",new TextInput({
+        parent: content,
+        value: 'stevecase@aol.com'
+      }));
+      button = window.__framerNew("button", "2342:15-2347:1", "?",new Button({
+        parent: content,
+        text: 'Submit',
+        disabled: !Utils.isEmail(input.value)
+      }));
+      input.onChange("value", function(value) {
+        return button.disabled = !Utils.isEmail(value);
+      });
+      Utils.offsetY(content.children, 8);
+      Utils.contain(content);
+      window.__framerNew(undefined, "2353:6-2363:1", "?",new DocComponent({
+        parent: this,
+        text: ["new Button", "text: 'submit'", "disabled: !Utils.isEmail(input.value)"]
+      }));
+      content = window.__framerNew("content", "2363:16-2363:25", "*",new Content(this));
+      input1 = window.__framerNew("input1", "2365:15-2369:1", "?",new TextInput({
+        parent: content,
+        value: 'stevecase@aol.c0m'
+      }));
+      button1 = window.__framerNew("button1", "2369:16-2374:1", "?",new Button({
+        parent: content,
+        text: 'Submit',
+        disabled: !Utils.isEmail(input1.value)
+      }));
+      input1.onChange("value", function(value) {
+        return button1.disabled = !Utils.isEmail(value);
+      });
+      Utils.offsetY(content.children, 8);
+      Utils.contain(content);
+      window.__framerNew(undefined, "2380:6-2389:1", "?",new DocComponent({
+        parent: this,
+        text: ["new Button", "text: 'submit'", "disabled: !Utils.isEmail(input.value)"]
+      }));
+      return Utils.offsetY(this.children, 16);
+    });
+    return this.updateContent();
+  });
+
+  copyTextView = window.__framerNew("copyTextView", "2395:19-2399:0", "?",new View({
+    title: 'Utils.copyTextToClipboard',
+    contentInset: {
+      bottom: 200
+    }
+  }));
+
+  copyTextView.onLoad(function() {
+    this.padding = {
+      left: 16,
+      top: 16,
+      right: 16
+    };
+    Utils.bind(this.content, function() {
+      var body, button1, content, input, title;
+      title = window.__framerNew("title", "2406:14-2412:1", "?",new H4({
+        parent: this,
+        fontWeight: 400,
+        width: this.width - 32,
+        text: "**Utils.copyTextToClipboard**(string)"
+      }));
+      Utils.toMarkdown(title);
+      body = window.__framerNew("body", "2414:13-2420:1", "?",new Body2({
+        parent: this,
+        width: this.width - 32,
+        text: "Utils.copyTextToClipboard will copy a given string to the user's clipboard, as if the user had selected the text and pressed Command + C.",
+        padding: {
+          bottom: 16
+        }
+      }));
+      Utils.toMarkdown(body);
+      this.parent.padding = null;
+      content = window.__framerNew("content", "2426:16-2426:25", "*",new Content(this));
+      input = window.__framerNew("input", "2428:14-2432:1", "?",new TextInput({
+        parent: content,
+        value: 'This text will get copied to the clipboard.'
+      }));
+      button1 = window.__framerNew("button1", "2432:16-2437:1", "?",new Button({
+        parent: content,
+        text: 'Copy to Clipboard',
+        select: function() {
+          return Utils.copyTextToClipboard(input.value);
+        }
+      }));
+      Utils.offsetY(content.children, 8);
+      Utils.contain(content);
+      window.__framerNew(undefined, "2441:6-2450:1", "?",new DocComponent({
+        parent: this,
+        text: ["new Button", "text: 'Copy to Clipboard'", "select: ->\n\t\ttext = input.value \n\t\tUtils.copyTextToClipboard(text)"]
+      }));
+      return Utils.offsetY(this.children, 16);
+    });
+    return this.updateContent();
+  });
+
+  homeView = window.__framerNew("homeView", "2457:15-2459:0", "?",new View({
+    title: 'Framework'
+  }));
+
+  homeView.onLoad(function() {
+    Utils.bind(this.content, function() {
+      window.__framerNew(undefined, "2463:6-2469:1", "?",new H3({
+        parent: this,
+        text: 'Foundations',
+        y: 32,
+        padding: {
+          top: 24,
+          bottom: 16
+        }
+      }));
+      window.__framerNew(undefined, "2469:6-2473:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Theme'
+      }));
+      window.__framerNew(undefined, "2473:6-2478:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Color',
+        link: colorsView
+      }));
+      window.__framerNew(undefined, "2478:6-2483:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Typography',
+        link: typographyView
+      }));
+      window.__framerNew(undefined, "2483:6-2490:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Icon',
+        link: iconsView
+      }));
+      window.__framerNew(undefined, "2490:6-2495:1", "?",new H3({
+        parent: this,
+        text: 'Structure',
+        padding: {
+          top: 16,
+          bottom: 16
+        }
+      }));
+      window.__framerNew(undefined, "2495:6-2499:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'App'
+      }));
+      window.__framerNew(undefined, "2499:6-2503:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'View'
+      }));
+      window.__framerNew(undefined, "2503:6-2508:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Header'
+      }));
+      window.__framerNew(undefined, "2508:6-2513:1", "?",new H3({
+        parent: this,
+        text: 'Buttons',
+        padding: {
+          top: 16,
+          bottom: 16
+        }
+      }));
+      window.__framerNew(undefined, "2513:6-2518:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Link',
+        link: linksView
+      }));
+      window.__framerNew(undefined, "2518:6-2524:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Button',
+        link: buttonsView
+      }));
+      window.__framerNew(undefined, "2524:6-2529:1", "?",new H3({
+        parent: this,
+        text: 'Inputs',
+        padding: {
+          top: 16,
+          bottom: 16
+        }
+      }));
+      window.__framerNew(undefined, "2529:6-2534:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'TextInput',
+        link: textInputsView
+      }));
+      window.__framerNew(undefined, "2534:6-2539:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Select',
+        link: selectsView
+      }));
+      window.__framerNew(undefined, "2539:6-2544:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Checkbox',
+        link: inputsView
+      }));
+      window.__framerNew(undefined, "2544:6-2549:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Radiobox',
+        link: inputsView
+      }));
+      window.__framerNew(undefined, "2549:6-2554:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Stepper',
+        link: steppersView
+      }));
+      window.__framerNew(undefined, "2554:6-2559:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Segment',
+        link: segmentsView
+      }));
+      window.__framerNew(undefined, "2559:6-2566:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Toggle',
+        link: togglesView
+      }));
+      window.__framerNew(undefined, "2566:6-2571:1", "?",new H3({
+        parent: this,
+        text: 'Components',
+        padding: {
+          top: 16,
+          bottom: 16
+        }
+      }));
+      window.__framerNew(undefined, "2571:6-2576:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'TabComponent',
+        link: tabComponentView
+      }));
+      window.__framerNew(undefined, "2576:6-2581:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'SortableComponent',
+        link: sortableComponentView
+      }));
+      window.__framerNew(undefined, "2581:6-2585:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'DocComponent'
+      }));
+      window.__framerNew(undefined, "2585:6-2590:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'CarouselComponent'
+      }));
+      window.__framerNew(undefined, "2590:6-2595:1", "?",new H3({
+        parent: this,
+        text: 'Miscellaneous',
+        padding: {
+          top: 16,
+          bottom: 16
+        }
+      }));
+      window.__framerNew(undefined, "2595:6-2600:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Tooltip',
+        link: tooltipsView
+      }));
+      window.__framerNew(undefined, "2600:6-2607:1", "#d283b149",new RowLink({
+        parent: this,
+        text: 'Utils',
+        link: utilsView
+      }));
+      return Utils.offsetY(this.children, 0);
+    });
+    this.updateContent();
+    return addDocsLink(this, '', 'github-circle');
+  });
+
+  app.showNext(homeView);
+
+}).call(this);
+})</script>
+
+</head>
+
+<body>
+</body>
+
+</html>
