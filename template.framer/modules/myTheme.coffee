@@ -17,35 +17,37 @@ theme = framework.theme.theme
 
 moduleFolder = "myTheme-components"
 
-# -----------------
-# Global Modules
-
-# Import general objects into the global namespace (window), so
-# that they may be used anywhere, including in your other modules,
-# without the need for a separate "require".
-#
-# A global "Circle" will be processed, and be equal to adding
-# { "Circle"} = require "myTheme-components/Circle"
-# at the top of app.coffee and each of your modules.
-
-globals = []
-
 
 # -----------------
 # Components
 
-# To bring in your own components, require each of them
-# and place the component's name (as a string) into
-# the componentNames array.
-#
-# A component "Circle" will be processed, and be equal to adding
-# { "Circle"} = require "myTheme-components/Circle"
-# at the top of app.coffee and each of your modules.
-
+# To bring in your own components, create modules in your moduleFolder.
+# The modules should have the same name as the object they export; for
+# example, Circle.coffee should have an exports.Circle. Add the
+# file/component name to the array below to include it in your project.
+# Framework will add your module to the global namespace, so that
+# you can reference your component in your Framer project as well as inside
+# of other modules.
 
 componentNames = [
 	"Circle"
 	]
+
+
+# -----------------
+# Globals
+
+# To bring in general objects, create modules in your moduleFolder.
+# The modules should have the same name as the object they export; for
+# example, Circle.coffee should have an exports.Circle. Add the
+# file/export name to the array below to include it in your project.
+# Framework will add your module to the global namespace, so that
+# you can reference your global in your Framer project as well as inside
+# of other modules.
+
+globals = [
+	"User"
+]
 
 
 # -----------------
