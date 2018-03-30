@@ -1,8 +1,6 @@
 framework = require "framework"
 theme = framework.theme.theme
 
-
-
 # -----------------
 # myTheme - Example Custom Theme for Framework
 
@@ -11,24 +9,45 @@ theme = framework.theme.theme
 # modifying the base files, so that you can update Framework layer
 # without losing your changes.
 
+# -----------------
+# Theme Folder
+#
+# Where should we look for your modules?
+
+
+moduleFolder = "myTheme-components"
 
 
 # -----------------
 # Components
 
-# To bring in your own components, require each of them
-# and place the component's name (as a string) into
-# the componentNames array.
-
-
-{ Circle } = require 'myTheme-components/Circle'
-# { Square } = require 'myTheme-components/Square'
+# To bring in your own components, create modules in your moduleFolder.
+# The modules should have the same name as the object they export; for
+# example, Circle.coffee should have an exports.Circle. Add the
+# file/component name to the array below to include it in your project.
+# Framework will add your module to the global namespace, so that
+# you can reference your component in your Framer project as well as inside
+# of other modules.
 
 componentNames = [
-	'Circle'
-#	'Square'
+	"Circle"
 	]
 
+
+# -----------------
+# Globals
+
+# To bring in general objects, create modules in your moduleFolder.
+# The modules should have the same name as the object they export; for
+# example, Circle.coffee should have an exports.Circle. Add the
+# file/export name to the array below to include it in your project.
+# Framework will add your module to the global namespace, so that
+# you can reference your global in your Framer project as well as inside
+# of other modules.
+
+globals = [
+	"User"
+]
 
 
 # -----------------
@@ -39,6 +58,7 @@ componentNames = [
 # (e.g. myTheme-components/fonts in the example below), then define the
 # font according to the following pattern. These fonts will be available 
 # everywhere: in Framer Cloud, offline, and on mobile devices.
+
 
 localFonts = [
 	{
@@ -70,7 +90,6 @@ webFonts = [
 		fontWeight: 700
 	}
 ]
-
 
 
 # -----------------
@@ -250,8 +269,346 @@ themeStyles =
 		# 	letterSpacing: 0
 		# 	padding: {top: 4}
 		# 	color: grey
-
-
+	# # --------------------------
+	# # Link
+	# link:
+	# 	default:
+	# 		color: black
+	# 	hovered:
+	# 		color: grey80
+	# 	touched:
+	# 		color: grey60
+	# 	disabled:
+	# 		color: grey30
+	# # --------------------------
+	# # Text Input
+	# textInput:
+	# 	default:
+	# 		color: black
+	# 		borderColor: grey40
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 		shadowColor: 'rgba(0,0,0,.16)'
+	# 		borderWidth: 1
+	# 		borderRadius: 2
+	# 	hovered:
+	# 		color: black30
+	# 		borderColor: grey
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 		shadowColor: 'rgba(0,0,0,.16)'
+	# 	focused:
+	# 		color: black
+	# 		borderColor: black20
+	# 		backgroundColor: white
+	# 		shadowBlur: 6
+	# 		shadowColor: 'rgba(0,0,0,.16)'
+	# 	disabled:
+	# 		color: grey20
+	# 		borderColor: grey30
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 		shadowColor: 'rgba(0,0,0,0)'
+	# 		borderWidth: 1
+	# 		borderRadius: 2
+	# # --------------------------
+	# # Select
+	# select:
+	# 	default:
+	# 		color: black
+	# 		borderColor: grey40
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 		shadowColor: 'rgba(0,0,0,.16)'
+	# 		borderWidth: 1
+	# 		borderRadius: 2
+	# 	hovered:
+	# 		color: black30
+	# 		borderColor: grey
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 		shadowColor: 'rgba(0,0,0,.16)'
+	# 	focused:
+	# 		color: black
+	# 		borderColor: black20
+	# 		backgroundColor: white
+	# 		shadowBlur: 6
+	# 		shadowColor: 'rgba(0,0,0,.16)'
+	# 	disabled:
+	# 		color: grey30
+	# 		borderColor: grey30
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 		shadowColor: 'rgba(0,0,0,0)'
+	# 		borderWidth: 1
+	# 		borderRadius: 2
+	# # --------------------------
+	# # Option
+	# option:
+	# 	default:
+	# 		color: grey40
+	# 		borderColor: grey40
+	# 		backgroundColor: white
+	# 		shadowBlur: 0
+	# 	hovered:
+	# 		color: grey
+	# 		borderColor: grey
+	# 		backgroundColor: grey30
+	# # --------------------------
+	# # Stepper
+	# stepper:
+	# 	height: 48
+	# 	borderRadius: 4
+	# 	shadowY: 2
+	# 	shadowBlur: 6
+	# 	fontSize: 14
+	# 	shadowColor: 'rgba(0,0,0,.16)'
+	# 	backgroundColor: white
+	# # --------------------------
+	# # Tooltip
+	# tooltip:
+	# 	default:
+	# 		backgroundColor: black
+	# 		borderRadius: 3
+	# # --------------------------
+	# # Radiobox
+	# radiobox:
+	# 	default:
+	# 		color: black
+	# 		opacity: 1
+	# 	disabled:
+	# 		color: black
+	# 		opacity: .1
+	# 	hovered:
+	# 		color: grey
+	# 		opacity: 1
+	# 	error:
+	# 		color: red
+	# 		opacity: 1
+	# # --------------------------
+	# # Checkbox
+	# checkbox:
+	# 	default:
+	# 		color: black
+	# 		opacity: 1
+	# 	disabled:
+	# 		color: black
+	# 		opacity: .1
+	# 	hovered:
+	# 		color: grey
+	# 		opacity: 1
+	# 	error:
+	# 		color: red
+	# 		opacity: 1
+	# # --------------------------
+	# # Tab
+	# tab:			
+	# 	active:
+	# 		default:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: white
+	# 			borderWidth: 1
+	# 			borderRadius: 4
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 			shadowY: 0
+	# 			shadowBlur: 0
+	# 		disabled:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: white
+	# 		touched:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: white
+	# 		hovered:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: white
+	# 	default:
+	# 		default:
+	# 			color: black30
+	# 			borderColor: grey40
+	# 			backgroundColor: yellow30.lighten(7)
+	# 			borderWidth: 1
+	# 			borderRadius: 4
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 			shadowY: 0
+	# 			shadowBlur: 0
+	# 		disabled:
+	# 			color: black30
+	# 			borderColor: grey40
+	# 			backgroundColor: yellow30.lighten(7)
+	# 		touched:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: yellow30.lighten(7)
+	# 		hovered:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: yellow30.lighten(4)
+	# # --------------------------
+	# # Segment
+	# segment:
+	# 	active:
+	# 		default:
+	# 			color: black
+	# 			borderColor: yellow60
+	# 			backgroundColor: yellow50
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 			borderWidth: 1
+	# 			shadowY: 2
+	# 			shadowBlur: 6
+	# 		disabled:
+	# 			color: grey
+	# 			borderColor: grey40
+	# 			backgroundColor: grey30
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		touched:
+	# 			color: black
+	# 			borderColor: yellow70
+	# 			backgroundColor: yellow70
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		hovered:
+	# 			color: black
+	# 			borderColor: yellow70
+	# 			backgroundColor: yellow60
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 	default:
+	# 		default:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: white
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 			borderWidth: 1
+	# 			shadowY: 2
+	# 			shadowBlur: 6
+	# 		disabled:
+	# 			color: grey
+	# 			borderColor: grey40
+	# 			backgroundColor: grey30
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		touched:
+	# 			color: black
+	# 			borderColor: grey40
+	# 			backgroundColor: white
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		hovered:
+	# 			color: black30
+	# 			borderColor: grey40
+	# 			backgroundColor: grey30
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# # --------------------------
+	# # Button
+	# button:
+	# 	light_primary:
+	# 		default:
+	# 			color: black
+	# 			borderColor: yellow60
+	# 			backgroundColor: yellow50
+	# 			shadowColor: 'rgba(0,0,0,.16)'
+	# 			borderRadius: 4
+	# 			borderWidth: 1
+	# 			shadowY: 2
+	# 			shadowBlur: 6
+	# 		disabled:
+	# 			color: new Color(black).alpha(.15)
+	# 			borderColor: new Color(black).alpha(.15)
+	# 			backgroundColor: new Color(yellow50).alpha(0)
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		touched:
+	# 			color: black
+	# 			borderColor: yellow70
+	# 			backgroundColor: yellow70
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		hovered:
+	# 			color: black
+	# 			borderColor: yellow70
+	# 			backgroundColor: yellow60
+	# 			shadowColor: 'rgba(0,0,0,.16)'
+	# 	light_secondary:
+	# 		default:
+	# 			color: black
+	# 			borderColor: beige60
+	# 			backgroundColor: beige50
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 			borderRadius: 4
+	# 			borderWidth: 1
+	# 			shadowY: 2
+	# 			shadowBlur: 6
+	# 		disabled:
+	# 			color: new Color(black).alpha(.15)
+	# 			borderColor: new Color(black).alpha(.15)
+	# 			backgroundColor: new Color(beige50).alpha(0)
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		touched:
+	# 			color: black
+	# 			borderColor: beige70
+	# 			backgroundColor: beige70
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		hovered:
+	# 			color: black
+	# 			borderColor: beige70
+	# 			backgroundColor: beige60
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 	dark_primary:
+	# 		default:
+	# 			color: black
+	# 			borderColor: null
+	# 			backgroundColor: white
+	# 			opacity: 1
+	# 			shadowColor: 'rgba(0,0,0,.16)'
+	# 			borderRadius: 4
+	# 			borderWidth: 1
+	# 			shadowY: 2
+	# 			shadowBlur: 6
+	# 		disabled:
+	# 			color: grey40
+	# 			borderColor: null
+	# 			backgroundColor: grey30
+	# 			opacity: .5
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		touched:
+	# 			color: black40
+	# 			borderColor: null
+	# 			backgroundColor: grey30
+	# 			opacity: 1
+	# 			shadowColor: 'rgba(0,0,0,.16)'
+	# 		hovered:
+	# 			color: black40
+	# 			borderColor: null
+	# 			backgroundColor: grey30
+	# 			opacity: 1
+	# 			shadowColor: 'rgba(0,0,0,.16)'
+	# 	dark_secondary:
+	# 		default:
+	# 			color: white
+	# 			borderColor: white
+	# 			backgroundColor: null
+	# 			opacity: 1
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 			borderRadius: 4
+	# 			borderWidth: 1
+	# 			shadowY: 2
+	# 			shadowBlur: 6
+	# 		disabled:
+	# 			color: grey
+	# 			borderColor: grey
+	# 			backgroundColor: null
+	# 			opacity: .5
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		touched:
+	# 			color: grey40
+	# 			borderColor: grey40
+	# 			backgroundColor: null
+	# 			opacity: 1
+	# 			shadowColor: 'rgba(0,0,0,0)'
+	# 		hovered:
+	# 			color: grey40
+	# 			borderColor: grey40
+	# 			backgroundColor: null
+	# 			opacity: 1
+	# 			shadowColor: 'rgba(0,0,0,0)'
 
 
 
@@ -269,8 +626,7 @@ themeStyles =
 
 framework.theme.updateTheme(themeStyles)
 
-{ loadLocalFonts } = require 'components/fontloader'
-{ loadWebFonts } = require 'components/fontloader'
+fontloader = require 'components/fontloader'
 
 # Update Styles
 
@@ -279,18 +635,31 @@ framework.theme.updateTheme(themeStyles)
 # Add Fonts
 
 if localFonts.length > 0
-	loadLocalFonts(localFonts)
+	fontloader.loadLocalFonts(localFonts)
 
 if webFonts.length > 0
-	loadWebFonts(webFonts)
+	fontloader.loadWebFonts(webFonts)
 
 # Update Typography
 
 framework.typography.updateTypography()
 
+# Add Globals
+
+globals.forEach (variable) ->
+	mod = require "#{moduleFolder}/#{variable}"
+	window[variable] = mod[variable]
+
+# { User } = require 'thornbury-components/User'
+# window["User"] = User
+
 # Add Components
 
-componentNames.forEach (componentName) =>
-	window[componentName] = class FrameworkComponent extends eval(componentName)
+componentNames.forEach (componentName) ->
+	mod = require "#{moduleFolder}/#{componentName}"
+	component = mod[componentName]
+
+	window[componentName] = class FrameworkComponent extends component
 		constructor: (options = {}) ->
+			@app = framework.app
 			super options
