@@ -1097,6 +1097,8 @@ Utils.isEmail = (string) ->
 # @param [String] [start] The time to start, in timestamp milliseconds. Defaults to _.now().
 
 Utils.getRelativeDate = (units = 0, unit = 'days', start) ->
+	if start instanceof Date
+		start = start.getTime()
 
 	start ?= _.now()
 

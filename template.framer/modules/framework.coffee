@@ -18,6 +18,8 @@ _.assign exports,
 	defaultTitle: "www.framework.com"
 	app: undefined
 	components: [
+		'Switch'
+		'Alert'
 		'Button', 
 		'Footer'
 		'Header', 
@@ -130,13 +132,13 @@ class window.App extends FlowComponent
 					color: white
 					icon: "loading"
 
-				anim = new Animation @iconLayer,
-					rotation: 360
-					options:
-						curve: "linear"
-						looping: true
+				# anim = new Animation @iconLayer,
+				# 	rotation: 360
+				# 	options:
+				# 		curve: "linear"
+				# 		looping: true
 
-				anim.start()
+				# anim.start()
 
 
 		# header

@@ -48,6 +48,8 @@ class exports.SortableComponent extends Layer
 		# ---------------
 		# Definitions
 
+		Utils.define @, "isSorting", false
+
 		delete @__constructor
 		delete @__instancing
 
@@ -112,7 +114,7 @@ class exports.SortableComponent extends Layer
 			enabled: true
 			momentum: false
 			horizontal: false
-			propagateEvents: false
+			propagateEvents: true
 		
 		# give layer a "take position" property
 		layer._takePosition = ( position, animate = true ) ->	
@@ -145,8 +147,12 @@ class exports.SortableComponent extends Layer
 
 	# when the user starts dragging...
 	_startSearch: (event) ->
+		if Utils.isMobile()
+			event = Events.touchEvent(event)
+			
 		return if @handle? and not Utils.pointInLayer(event.point, @handle)
 
+		@parent.isSorting = true
 		@_isSorting = true
 		@bringToFront()
 		@animate "dragging"
@@ -180,6 +186,7 @@ class exports.SortableComponent extends Layer
 		delete @_isSorting
 
 		_.defer =>
+			@parent.isSorting = false
 			@_takePosition(@position)
 			@animate 'default'
 			@parent.emit "change:current", @parent.current, @parent

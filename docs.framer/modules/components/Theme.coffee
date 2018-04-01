@@ -378,6 +378,27 @@ updateTheme = (values = {}) ->
 					backgroundColor: grey30
 					shadowColor: 'rgba(0,0,0,0)'
 		# --------------------------
+		# Switch
+		switch:
+			default:
+				borderColor: grey40
+				backgroundColor: white
+				knob:
+					x: 1
+					color: grey80
+					backgroundColor: white
+					shadowY: 2
+					shadowBlur: 4
+					shadowColor: black.alpha(.16)
+					shadowSpread: 1
+			active:
+				borderColor: yellow
+				backgroundColor: yellow
+				knob:
+					x: Align.right
+					color: black
+					backgroundColor: white
+		# --------------------------
 		# Button
 		button:
 			light_primary:
