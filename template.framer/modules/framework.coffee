@@ -23,6 +23,7 @@ _.assign exports,
 		'Button', 
 		'Footer'
 		'Header', 
+		'SafariHeader',
 		'Radiobox',
 		'Checkbox',
 		'Container',
@@ -101,14 +102,14 @@ class window.App extends FlowComponent
 		@loadingLayer = new Layer 
 			name: '.'
 			size: Screen.size
-			backgroundColor: if @chrome is "safari" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
+			backgroundColor: if @chrome is "safari" or @chrome is "browser" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
 			visible: false
 
 		@loadingLayer._element.style["pointer-events"] = "all"
 		@loadingLayer.sendToBack()
 
 		# By this point, these should be different classes...
-		unless @chrome is "safari"
+		unless @chrome is "safari" or @chrome is "browser"
 			Utils.bind @loadingLayer, ->
 				
 				@loadingContainer = new Layer
@@ -149,26 +150,30 @@ class window.App extends FlowComponent
 			if @chrome is 'safari' and Utils.isSafari()
 				@chrome = null
 
-			@header = new Header
-				app: @
-				safari: @chrome is 'safari'
-				title: options.title
-		
-			if @chrome is 'safari'
-				@footer = new Footer 
+			if @chrome is "browser"
+				@header = new SafariHeader
+
+			else 
+				@header = new Header
 					app: @
+					safari: @chrome is 'safari'
+					title: options.title
+			
+				if @chrome is 'safari'
+					@footer = new Footer 
+						app: @
 
-				@onSwipeUpEnd =>
-					return unless @current.isMoving 
+					@onSwipeUpEnd =>
+						return unless @current.isMoving 
 
-					@header._collapse()
-					@footer._collapse()
+						@header._collapse()
+						@footer._collapse()
 
-				@onSwipeDownEnd =>
-					return unless @current.isMoving
+					@onSwipeDownEnd =>
+						return unless @current.isMoving
 
-					@header._expand()
-					@footer._expand()
+						@header._expand()
+						@footer._expand()
 
 		@header?.on "change:height", @_setWindowFrame
 		@footer?.on "change:height", @_setWindowFrame
@@ -264,10 +269,10 @@ class window.App extends FlowComponent
 			return
 
 		# ios changes
-		@header.backIcon.visible = hasPrevious
-		@header.backText.visible = hasPrevious
+		@header.backIcon?.visible = hasPrevious
+		@header.backText?.visible = hasPrevious
 		
-		if next.title 
+		if next.title
 			@header.updateTitle(next.title)
 
 	_showLoading: (bool) =>
@@ -277,10 +282,10 @@ class window.App extends FlowComponent
 			@loadingLayer.bringToFront()
 
 			# show safari loading
-			if @chrome is "safari"
-				@footer._expand()
-				@header._expand()
+			if @chrome is "safari" or "browser"
 				@header._showLoading(true)
+				try @footer?._expand()
+				try @header._expand()
 				return
 
 			# show ios loading
@@ -290,9 +295,9 @@ class window.App extends FlowComponent
 		@loadingLayer.sendToBack()
 
 		# show safari loading ended
-		if @chrome is "safari"
-			@footer._expand()
-			@header._expand()
+		if @chrome is "safari" or "browser"
+			try @footer?._expand()
+			try @header._expand()
 			@header._showLoading(false)
 			return
 	

@@ -34,6 +34,8 @@ list_items = [0...6].map (i) ->
 
 ###
 
+# Header
+
 # ----------------
 # Views [4]
 
@@ -201,6 +203,9 @@ listView.onLoad () ->
 	Utils.offsetY(@content.children, 16)
 	@updateContent()
 
+listView.onPostload (preloadData) ->
+	null 
+
 # 2.0.x Detail View
 
 class DetailView extends View
@@ -242,6 +247,10 @@ class DetailView extends View
 				
 			Utils.offsetY(@content.children, 16)
 			@updateContent()
+		
+				
+		@onPostload (preloadData) ->
+			null
 
 # ----------------
 # Kickoff / Testing [3]
