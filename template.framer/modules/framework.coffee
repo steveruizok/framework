@@ -86,6 +86,30 @@ class window.App extends FlowComponent
 			keyboard: Keyboard
 			preload: new Promise (resolve, reject) -> _.defer resolve
 	
+		if options.chrome is "browser" and Screen.width isnt 1440
+			_.defer ->
+				Framer.Device.customize
+					deviceType: Framer.Device.Type.Desktop
+					devicePixelRatio: 1
+					screenWidth: 1440
+					screenHeight: 900
+					deviceImageWidth: 900
+					deviceImageHeight: 1440
+
+				_.assign Framer.Device.screenBackground,
+					backgroundColor: null
+
+				_.assign Framer.Device.content, 
+					borderWidth: 1
+					borderRadius: 4
+					backgroundColor: null
+					clip: true
+
+				Canvas.backgroundColor = "#1E1E1E"
+				
+				_.defer ->
+					Utils.reset()
+					CoffeeScript.load("app.coffee")
 
 		# Transition
 		 
@@ -282,7 +306,7 @@ class window.App extends FlowComponent
 			@loadingLayer.bringToFront()
 
 			# show safari loading
-			if @chrome is "safari" or "browser"
+			if @chrome is "safari" or @chrome is "browser"
 				@header._showLoading(true)
 				try @footer?._expand()
 				try @header._expand()
@@ -295,8 +319,8 @@ class window.App extends FlowComponent
 		@loadingLayer.sendToBack()
 
 		# show safari loading ended
-		if @chrome is "safari" or "browser"
-			try @footer?._expand()
+		if @chrome is "safari" or @chrome is "browser"
+			try @footer._expand()
 			try @header._expand()
 			@header._showLoading(false)
 			return
