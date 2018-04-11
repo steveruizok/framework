@@ -17,11 +17,15 @@ class exports.Icon extends Layer
 			backgroundColor: null
 			clip: true
 			lineHeight: 0
+			padding: 0
 			animationOptions:
 				time: .25
 				colorModel: 'husl'
 
 		super options
+
+		_.assign @,
+			padding: options.padding
 
 		# ---------------
 		# Layers
@@ -32,6 +36,7 @@ class exports.Icon extends Layer
 		
 		@ctx.appendChild(@svgIcon)
 		@_element.appendChild(@ctx)
+		@_element.style.padding = Utils.px(@padding)
 
 		# ---------------
 		# Events
@@ -62,8 +67,8 @@ class exports.Icon extends Layer
 
 	_setSize: =>
 		Utils.setAttributes @ctx,
-			width: '100%'
-			height: '100%'
+			width: "100%"
+			height: "100%"
 			viewBox: "0 0 512 512"
 
 	_refresh: ->

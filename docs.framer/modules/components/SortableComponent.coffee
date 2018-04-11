@@ -18,7 +18,7 @@ class exports.SortableComponent extends Layer
 				shadowBlur: 0
 			draggingState: 
 				scale: 1.07
-				shadowY: 2
+				shadowY: 6
 				shadowBlur: 16
 			animationOptions:
 				time: .31

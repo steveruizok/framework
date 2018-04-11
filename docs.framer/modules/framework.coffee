@@ -23,7 +23,6 @@ _.assign exports,
 		'Button', 
 		'Footer'
 		'Header', 
-		'SafariHeader',
 		'Radiobox',
 		'Checkbox',
 		'Container',
@@ -86,30 +85,6 @@ class window.App extends FlowComponent
 			keyboard: Keyboard
 			preload: new Promise (resolve, reject) -> _.defer resolve
 	
-		if options.chrome is "browser" and Screen.width isnt 1440
-			_.defer ->
-				Framer.Device.customize
-					deviceType: Framer.Device.Type.Desktop
-					devicePixelRatio: 1
-					screenWidth: 1440
-					screenHeight: 900
-					deviceImageWidth: 900
-					deviceImageHeight: 1440
-
-				_.assign Framer.Device.screenBackground,
-					backgroundColor: null
-
-				_.assign Framer.Device.content, 
-					borderWidth: 1
-					borderRadius: 4
-					backgroundColor: null
-					clip: true
-
-				Canvas.backgroundColor = "#1E1E1E"
-				
-				_.defer ->
-					Utils.reset()
-					CoffeeScript.load("app.coffee")
 
 		# Transition
 		 
@@ -126,14 +101,14 @@ class window.App extends FlowComponent
 		@loadingLayer = new Layer 
 			name: '.'
 			size: Screen.size
-			backgroundColor: if @chrome is "safari" or @chrome is "browser" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
+			backgroundColor: if @chrome is "safari" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
 			visible: false
 
 		@loadingLayer._element.style["pointer-events"] = "all"
 		@loadingLayer.sendToBack()
 
 		# By this point, these should be different classes...
-		unless @chrome is "safari" or @chrome is "browser"
+		unless @chrome is "safari"
 			Utils.bind @loadingLayer, ->
 				
 				@loadingContainer = new Layer
@@ -157,13 +132,11 @@ class window.App extends FlowComponent
 					color: white
 					icon: "loading"
 
-				# anim = new Animation @iconLayer,
-				# 	rotation: 360
-				# 	options:
-				# 		curve: "linear"
-				# 		looping: true
-
-				# anim.start()
+			@loadingAnim = new Animation @loadingLayer.iconLayer,
+				rotation: 360
+				options:
+					curve: "linear"
+					looping: true
 
 
 		# header
@@ -174,30 +147,26 @@ class window.App extends FlowComponent
 			if @chrome is 'safari' and Utils.isSafari()
 				@chrome = null
 
-			if @chrome is "browser"
-				@header = new SafariHeader
-
-			else 
-				@header = new Header
+			@header = new Header
+				app: @
+				safari: @chrome is 'safari'
+				title: options.title
+		
+			if @chrome is 'safari'
+				@footer = new Footer 
 					app: @
-					safari: @chrome is 'safari'
-					title: options.title
-			
-				if @chrome is 'safari'
-					@footer = new Footer 
-						app: @
 
-					@onSwipeUpEnd =>
-						return unless @current.isMoving 
+				@onSwipeUpEnd =>
+					return unless @current.isMoving 
 
-						@header._collapse()
-						@footer._collapse()
+					@header._collapse()
+					@footer._collapse()
 
-					@onSwipeDownEnd =>
-						return unless @current.isMoving
+				@onSwipeDownEnd =>
+					return unless @current.isMoving
 
-						@header._expand()
-						@footer._expand()
+					@header._expand()
+					@footer._expand()
 
 		@header?.on "change:height", @_setWindowFrame
 		@footer?.on "change:height", @_setWindowFrame
@@ -293,10 +262,10 @@ class window.App extends FlowComponent
 			return
 
 		# ios changes
-		@header.backIcon?.visible = hasPrevious
-		@header.backText?.visible = hasPrevious
+		@header.backIcon.visible = hasPrevious
+		@header.backText.visible = hasPrevious
 		
-		if next.title
+		if next.title 
 			@header.updateTitle(next.title)
 
 	_showLoading: (bool) =>
@@ -304,12 +273,13 @@ class window.App extends FlowComponent
 			@focused?.blur()
 			@loadingLayer.visible = true
 			@loadingLayer.bringToFront()
+			@loadingAnim?.restart()
 
 			# show safari loading
-			if @chrome is "safari" or @chrome is "browser"
+			if @chrome is "safari"
+				@footer._expand()
+				@header._expand()
 				@header._showLoading(true)
-				try @footer?._expand()
-				try @header._expand()
 				return
 
 			# show ios loading
@@ -317,14 +287,16 @@ class window.App extends FlowComponent
 
 		@loadingLayer.visible = false
 		@loadingLayer.sendToBack()
+		@loadingAnim?.stop()
 
 		# show safari loading ended
-		if @chrome is "safari" or @chrome is "browser"
-			try @footer._expand()
-			try @header._expand()
+		if @chrome is "safari"
+			@footer._expand()
+			@header._expand()
 			@header._showLoading(false)
 			return
-	
+
+
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next, direction) =>
 		@isTransitioning = false
@@ -374,10 +346,9 @@ class window.App extends FlowComponent
 		Utils.delay .25, => @loading = @isTransitioning
 
 		# preload the new View
-		layer.preload.then(
-
-			# load up the new View with the response data
-			(response) => new Promise( 
+		new Promise(_.bind(layer.preload, layer))
+		.then((response) => 
+			new Promise( 
 
 				(resolve) => 
 					Utils.bind( layer, -> 
@@ -444,20 +415,21 @@ class window.App extends FlowComponent
 			@loading = true
 			loadingTime = _.random(.3, .75)
 
+		if layer.preserveContent
+			@_transitionToPrevious(previous?.transition, options.animate, current, layer)
+			return
+
 		# preload the new View
-		layer.preload.then(
-
-			# load up the new View with the response data
-			(response) => new Promise( 
-
-				(resolve) => 
-					Utils.bind( layer, -> 
-						try 
-							layer.load(response) 
-						catch error
-							console.error(error)
-						)
-					resolve(response)
+		new Promise(_.bind(layer.preload, layer))
+		.then( (response) => 
+			new Promise( (resolve) => 
+				Utils.bind( layer, -> 
+					try 
+						layer.load(response) 
+					catch error
+						console.error(error)
+					)
+				resolve(response)
 		
 			).then( 
 				(response) =>

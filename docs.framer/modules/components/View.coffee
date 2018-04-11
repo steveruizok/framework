@@ -43,7 +43,7 @@ class exports.View extends ScrollComponent
 		
 		delete @__constructor
 
-		preload = new Promise( (resolve) -> resolve() )
+		preload = (resolve) -> resolve()
 		
 		isPromise = (value) -> _.isObject(value) and _.isFunction(value.then)
 		
@@ -53,7 +53,7 @@ class exports.View extends ScrollComponent
 		Utils.define @, 'oneoff', 			options.oneoff, 		undefined, 	_.isBoolean, 	'View.oneoff must be a boolean (true or false).'
 		Utils.define @, 'preserveContent', options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
 		Utils.define @, 'load', 			undefined, 				undefined,	_.isFunction, 	'View.load must be a Function.'
-		Utils.define @, 'preload', 			preload, 				undefined, 	isPromise, 		'View.preload must be a Promise.'
+		Utils.define @, 'preload', 			preload, 				undefined, 	_.isFunction, 	'View.preload must be a Function.'
 		Utils.define @, 'unload', 			undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
 		Utils.define @, 'postload', 		undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
 		
@@ -136,7 +136,7 @@ class exports.View extends ScrollComponent
 
 	
 	onPreload: (callback) =>
-		@preload = new Promise callback
+		@preload = callback
 
 	
 	onLoad: (callback) =>
