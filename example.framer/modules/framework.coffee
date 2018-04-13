@@ -15,7 +15,7 @@ dumbthing?.style.width = "0px"
 
 # Exports for theme support 
 _.assign exports,
-	defaultTitle: "www.framework.com"
+	defaultTitle: ""
 	app: undefined
 	components: [
 		'Switch'
@@ -168,6 +168,24 @@ class window.App extends FlowComponent
 					@header._expand()
 					@footer._expand()
 
+				@header.statusBar.onTap =>
+					@header._expand()
+
+			if @chrome is 'ios'
+
+				@onSwipeUpEnd =>
+					return unless @current.isMoving 
+
+					@header._collapse()
+
+				@onSwipeDownEnd =>
+					return unless @current.isMoving
+
+					@header._expand()
+
+				@header.statusBar.onTap =>
+					@header._expand()
+
 		@header?.on "change:height", @_setWindowFrame
 		@footer?.on "change:height", @_setWindowFrame
 
@@ -253,20 +271,23 @@ class window.App extends FlowComponent
 		# update the header's 'viewKey' using the next View's 'key'
 		if @showKeys then @header.viewKey = next?.key
 
-		# is there a previous layer? (and is the next layer the initial layer?)
-		hasPrevious = prev? and next isnt @_initial
 
-		# safari changes
-		if @header.safari
-			@footer.hasPrevious = hasPrevious
-			return
+		Utils.delay .25, =>
 
-		# ios changes
-		@header.backIcon.visible = hasPrevious
-		@header.backText.visible = hasPrevious
-		
-		if next.title 
-			@header.updateTitle(next.title)
+			# is there a previous layer? (and is the next layer the initial layer?)
+			hasPrevious = @_stack.length > 1
+
+			# safari changes
+			if @header.safari
+				@footer.hasPrevious = hasPrevious
+				return
+
+			# ios changes
+			@header.backIcon.visible = hasPrevious
+			@header.backText.visible = hasPrevious
+			
+			if next.title 
+				@header.updateTitle(next.title)
 
 	_showLoading: (bool) =>
 		if bool

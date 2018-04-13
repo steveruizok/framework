@@ -20,7 +20,7 @@ class exports.Alert extends Layer
 		_.defaults options,
 			name: 'Alert'
 			size: Screen.size
-			backgroundColor: "rgba(4, 4, 16, 0.4)"
+			backgroundColor: "rgba(4, 4, 16, 0.7)"
 			clip: true
 			opacity: 0
 			animationOptions:
@@ -145,7 +145,7 @@ class exports.Alert extends Layer
 					text: @options[0].text
 
 				buttonHitArea.onTap =>
-					@options[0].select()
+					try @options[0].select()
 					@close()
 			else
 				buttons = @options.map (option, i) =>
@@ -173,7 +173,7 @@ class exports.Alert extends Layer
 						text: option.text
 
 					buttonHitArea.onTap =>
-						option.select()
+						try option.select()
 						@close()
 
 					return buttonHitArea

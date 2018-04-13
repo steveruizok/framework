@@ -42,7 +42,8 @@ class exports.Select extends Layer
 
 		# SelectedContent
 
-		@textLayer = new Body1
+		layer = eval(theme[MODEL]['default']['textLayer'])
+		@textLayer = new layer
 			name: '.'
 			parent: @
 			width: @width# - ((theme[MODEL].default.padding ? 12) * 2)
@@ -346,8 +347,8 @@ class Option extends Layer
 		
 		# ---------------
 		# Layers
-
-		@textLayer = new Body1
+		layer = eval(theme[MODEL]['default']['textLayer'])
+		@textLayer = new layer
 			x: 0
 			y: 0
 			text: _.startCase(@value)

@@ -10,15 +10,20 @@ class exports.Header extends Layer
 		# ---------------
 		# Options
 
+		color = options.color ? "#000"
+
 		_.defaults options,
 			title: ' '
 			viewKey: ' '
+			tint: "#333"
+			clip: true
 		
 		_.assign options,
 			width: Screen.width
 			height: 72
 			shadowY: 1
 			shadowBlur: 6
+			color: black80
 			shadowColor: 'rgba(0,0,0,.16)'
 			backgroundColor: "rgba(255, 255, 255, 1)"
 
@@ -27,8 +32,11 @@ class exports.Header extends Layer
 		_.assign @,
 			safari: options.safari
 			app: options.app
+			tint: options.tint
 		
 		super options
+
+		svgs = getSVGs(@color)
 
 		# ---------------
 		# Layers
@@ -55,7 +63,7 @@ class exports.Header extends Layer
 				y: Align.center(3)
 				width: 57
 				height: 15
-				html: leftContent
+				html: svgs.left
 				backgroundColor: null
 				style:
 					lineHeight: '0px'
@@ -68,7 +76,7 @@ class exports.Header extends Layer
 				y: Align.center(3)
 				width: 72
 				height: 15
-				html: rightContent
+				html: svgs.right
 				backgroundColor: null
 				style:
 					lineHeight: '0px'
@@ -84,7 +92,7 @@ class exports.Header extends Layer
 				fontWeight: 500
 				letterSpacing: 0.3
 				textAlign: "center"
-				color: '#000'
+				color: color
 				text: new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})
 				
 
@@ -96,7 +104,7 @@ class exports.Header extends Layer
 				fontSize: 12
 				fontWeight: 500
 				letterSpacing: 0.3
-				color: '#000'
+				color: color
 				text: "{viewKey}"
 				
 
@@ -164,30 +172,35 @@ class exports.Header extends Layer
 				y: Align.center(10)
 				fontSize: 16
 				fontFamily: "Helvetica"
-				color: "#000"
+				color: @color
 				width: Screen.width
 				textAlign: 'center'
 				text: ' '
-			
-			@backIcon = new Icon
-				name: unless options.showLayers then '.' else 'Back Icon'
-				parent: @
-				y: Align.center(12)
-				x: 8
-				icon: 'ios-back'
-				visible: false
+
+			Utils.linkProperties @, @titleLayer, "color"
+
 
 			@backText = new TextLayer
 				name: unless options.showLayers then '.' else 'Back Text'
 				parent: @
 				y: Align.center(10)
-				x: @backIcon.maxX
+				x: 8
+				width: 100
 				fontSize: 16
 				fontFamily: "Helvetica"
-				color: "#000"
+				color: @color
 				visible: false
 				text: 'Back'
-				
+
+			@backText.textIndent = 24
+			
+			@backIcon = new Icon
+				name: unless options.showLayers then '.' else 'Back Icon'
+				parent: @backText
+				y: Align.center()
+				icon: 'ios-back'
+				visible: false
+
 			# @menuIcon = new Icon
 			# 	name: unless options.showLayers then '.' else 'Menu Icon'
 			# 	parent: @
@@ -224,20 +237,34 @@ class exports.Header extends Layer
 			
 		Utils.define @, 'title', options.title, @_setTitle, _.isString, 'View.title must be a string.'
 		Utils.define @, 'viewKey', options.viewKey, @_setViewKey
+		Utils.define @, 'tint', options.tint
 
 		delete @__instancing
 		
 		# ---------------
 		# Events
 
-		@on "change:color", => 
-			Utils.align @children,
-				color: @color
+		@statusBar.on "change:color", (color) -> 
+			@viewKeyLayer.color = color
+			@timeLayer.color = color
+
+			for el in ["Wifi", "Mobile-Signal", "Battery-Fill", "Nub", "Battery-Percentage"]
+				document.getElementById(el).setAttribute "fill", color
+
+			for el in ["Border", "Battery-Stroke"]
+				document.getElementById(el).setAttribute "stroke", color
+
+		@on "change:tint", =>
+			@backIcon.color = @tint
+			@backText.color = @tint
+			
 
 		# ---------------
 		# Cleanup
 
 		if not options.showSublayers then child.name = '.' for child in @children
+
+		@color = color
 
 	# ---------------
 	# Private Methods
@@ -288,59 +315,92 @@ class exports.Header extends Layer
 
 
 	_collapse: =>
-		if @app.chrome isnt "safari"
+		if @app.chrome is "safari"
+
+			options = {time: .25}
+
+			@animate
+				height: 40
+				options: options
+
+			@addressContainer.animate
+				y: 15
+				backgroundColor: 'rgba(0,0,0,0)'
+				options: options
+
+			@refreshIcon.animate
+				opacity: 0
+				options: options
+
+			@urlLayer.animate
+				scale: .75
+				options: options
+
 			return
 
-		options = {time: .25}
+		if @app.chrome is "ios"
 
-		@animate
-			height: 40
-			options: options
+			options = {time: .25}
 
-		@addressContainer.animate
-			y: 15
-			backgroundColor: 'rgba(0,0,0,0)'
-			options: options
+			@animate
+				height: 24
+				options: options
 
-		@refreshIcon.animate
-			opacity: 0
-			options: options
+			for child in _.without(@children, @statusBar)
+				child.animate
+					midY: 72 - 32
+					opacity: 0
+					scale: .9
+					options: options
 
-		@urlLayer.animate
-			scale: .75
-			options: options
+
 
 
 	_expand: =>
-		if @app.chrome isnt "safari"
+		if @app.chrome is "safari"
+
+			options = {time: .25}
+
+			@animate
+				height: @_expandProps.height
+				options: options
+
+			@addressContainer.animate
+				y: @_expandProps.addressContainer.y
+				backgroundColor: @_expandProps.addressContainer.backgroundColor
+				options: options
+
+			@refreshIcon.animate
+				opacity: 1
+				options: options
+
+			@urlLayer.animate
+				scale: 1
+				options: options
+
 			return
 
-		options = {time: .25}
+		if @app.chrome is 'ios'
 
-		@animate
-			height: @_expandProps.height
-			options: options
+			options = {time: .25}
 
-		@addressContainer.animate
-			y: @_expandProps.addressContainer.y
-			backgroundColor: @_expandProps.addressContainer.backgroundColor
-			options: options
+			for child in _.without(@children, @statusBar)
+				child.animate
+					midY: 72 - 24
+					opacity: 1
+					scale: 1
+					options: options
 
-		@refreshIcon.animate
-			opacity: 1
-			options: options
-
-		@urlLayer.animate
-			scale: 1
-			options: options
+			@animate
+				height: 72
+				options: options
 
 	# ---------------
 	# Public Methods
 
 
 	updateTitle: (title) =>
-		if @app.chrome is "safari"
-			return
+		return if @app.chrome is "safari"
 
 		@titleLayer.animateStop()
 		
@@ -362,34 +422,37 @@ class exports.Header extends Layer
 	# ---------------
 	# Special Definitions
 
+getSVGs = (color) =>
 
-leftContent = """<svg width="57px" height="11px" viewBox="0 0 57 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-6.000000, -5.000000)">
-		<g transform="translate(6.000000, 3.000000)">
-			<path d="M1,7.5 L2,7.5 C2.55228475,7.5 3,7.94771525 3,8.5 L3,11 C3,11.5522847 2.55228475,12 2,12 L1,12 C0.44771525,12 6.76353751e-17,11.5522847 0,11 L0,8.5 C-6.76353751e-17,7.94771525 0.44771525,7.5 1,7.5 Z M5.5,6 L6.5,6 C7.05228475,6 7.5,6.44771525 7.5,7 L7.5,11 C7.5,11.5522847 7.05228475,12 6.5,12 L5.5,12 C4.94771525,12 4.5,11.5522847 4.5,11 L4.5,7 C4.5,6.44771525 4.94771525,6 5.5,6 Z M10,4 L11,4 C11.5522847,4 12,4.44771525 12,5 L12,11 C12,11.5522847 11.5522847,12 11,12 L10,12 C9.44771525,12 9,11.5522847 9,11 L9,5 C9,4.44771525 9.44771525,4 10,4 Z M14.5,2 L15.5,2 C16.0522847,2 16.5,2.44771525 16.5,3 L16.5,11 C16.5,11.5522847 16.0522847,12 15.5,12 L14.5,12 C13.9477153,12 13.5,11.5522847 13.5,11 L13.5,3 C13.5,2.44771525 13.9477153,2 14.5,2 Z" id="Mobile-Signal" fill="#000000"></path>
-		</g>
-		<g transform="translate(-15, 3)">
-			<path d="M42,4.82956276 C43.8767533,3.07441257 46.398124,2 49.1704372,2 C51.9427505,2 54.4641212,3.07441257 56.3408745,4.82956276 L54.9256756,6.24476162 C53.4116936,4.85107918 51.3904555,4 49.1704372,4 C46.9504189,4 44.9291808,4.85107918 43.4151989,6.24476162 L42,4.82956276 Z M44.4769681,7.30653087 C45.7185598,6.18377399 47.3646465,5.5 49.1704372,5.5 C50.976228,5.5 52.6223147,6.18377399 53.8639064,7.30653087 L52.4471757,8.72326155 C51.5696364,7.96124278 50.4239013,7.5 49.1704372,7.5 C47.9169731,7.5 46.7712381,7.96124278 45.8936988,8.72326155 L44.4769681,7.30653087 Z M46.9581461,9.78770884 C47.5610912,9.29532392 48.3312759,9 49.1704372,9 C50.0095985,9 50.7797832,9.29532392 51.3827284,9.78770884 L49.1704372,12 L46.9581461,9.78770884 Z" id="Wifi" fill="#000000"></path>
-		</g>
-	</g>
-</svg>"""
-
-rightContent = """
-<svg width="72px" height="12px" viewBox="0 0 72 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-298.000000, -4.000000)">
-		<g transform="translate(298.000000, 3.000000)">
-			<g transform="translate(9.000000, 0.000000)">
-				<g transform="translate(36.000000, 1.500000)">
-					<path d="M3.2048565,0.5 C2.26431807,0.5 1.89540921,0.571239588 1.5147423,0.774822479 C1.19446913,0.946106445 0.946106445,1.19446913 0.774822479,1.5147423 C0.571239588,1.89540921 0.5,2.26431807 0.5,3.2048565 L0.5,8.2951435 C0.5,9.23568193 0.571239588,9.60459079 0.774822479,9.9852577 C0.946106445,10.3055309 1.19446913,10.5538936 1.5147423,10.7251775 C1.89540921,10.9287604 2.26431807,11 3.2048565,11 L22.0738202,11 C22.8614775,11 23.5,10.3614775 23.5,9.57382015 L23.5,3.2048565 C23.5,2.26431807 23.4287604,1.89540921 23.2251775,1.5147423 C23.0538936,1.19446913 22.8055309,0.946106445 22.4852577,0.774822479 C22.1045908,0.571239588 21.7356819,0.5 20.7951435,0.5 L3.2048565,0.5 Z" id="Border" stroke="#000000" opacity="0.400000006"></path>
-					<path d="M25,4 C25.8626136,4.2220214 26.5,5.00507154 26.5,5.93699126 C26.5,6.86891097 25.8626136,7.65196112 25,7.87398251 L25,4 Z" id="Nub" fill="#000000" opacity="0.400000006"></path>
-					<rect fill="#000000" x="2" y="2" width="20" height="7.5" rx="0.5"></rect>
-				</g>
-				<text font-family="Arial" font-size="12" font-weight="normal" fill="#030303">
-					<tspan x="2.85351562" y="11.5">100%</tspan>
-				</text>
+	leftContent = """<svg width="57px" height="11px" viewBox="0 0 57 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-6.000000, -5.000000)">
+			<g transform="translate(6.000000, 3.000000)">
+				<path d="M1,7.5 L2,7.5 C2.55228475,7.5 3,7.94771525 3,8.5 L3,11 C3,11.5522847 2.55228475,12 2,12 L1,12 C0.44771525,12 6.76353751e-17,11.5522847 0,11 L0,8.5 C-6.76353751e-17,7.94771525 0.44771525,7.5 1,7.5 Z M5.5,6 L6.5,6 C7.05228475,6 7.5,6.44771525 7.5,7 L7.5,11 C7.5,11.5522847 7.05228475,12 6.5,12 L5.5,12 C4.94771525,12 4.5,11.5522847 4.5,11 L4.5,7 C4.5,6.44771525 4.94771525,6 5.5,6 Z M10,4 L11,4 C11.5522847,4 12,4.44771525 12,5 L12,11 C12,11.5522847 11.5522847,12 11,12 L10,12 C9.44771525,12 9,11.5522847 9,11 L9,5 C9,4.44771525 9.44771525,4 10,4 Z M14.5,2 L15.5,2 C16.0522847,2 16.5,2.44771525 16.5,3 L16.5,11 C16.5,11.5522847 16.0522847,12 15.5,12 L14.5,12 C13.9477153,12 13.5,11.5522847 13.5,11 L13.5,3 C13.5,2.44771525 13.9477153,2 14.5,2 Z" id="Mobile-Signal" fill="#{color}"></path>
 			</g>
-			<polyline stroke="#000000" points="0.5 4 6.5 9.5 3.5 12 3.5 2 6.5 4.5 0.5 10"></polyline>
+			<g transform="translate(-15, 3)">
+				<path d="M42,4.82956276 C43.8767533,3.07441257 46.398124,2 49.1704372,2 C51.9427505,2 54.4641212,3.07441257 56.3408745,4.82956276 L54.9256756,6.24476162 C53.4116936,4.85107918 51.3904555,4 49.1704372,4 C46.9504189,4 44.9291808,4.85107918 43.4151989,6.24476162 L42,4.82956276 Z M44.4769681,7.30653087 C45.7185598,6.18377399 47.3646465,5.5 49.1704372,5.5 C50.976228,5.5 52.6223147,6.18377399 53.8639064,7.30653087 L52.4471757,8.72326155 C51.5696364,7.96124278 50.4239013,7.5 49.1704372,7.5 C47.9169731,7.5 46.7712381,7.96124278 45.8936988,8.72326155 L44.4769681,7.30653087 Z M46.9581461,9.78770884 C47.5610912,9.29532392 48.3312759,9 49.1704372,9 C50.0095985,9 50.7797832,9.29532392 51.3827284,9.78770884 L49.1704372,12 L46.9581461,9.78770884 Z" id="Wifi" fill="#{color}"></path>
+			</g>
 		</g>
-	</g>
-</svg>
-"""
+	</svg>"""
+
+	rightContent = """
+	<svg width="72px" height="12px" viewBox="0 0 72 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-298.000000, -4.000000)">
+			<g transform="translate(298.000000, 3.000000)">
+				<g transform="translate(9.000000, 0.000000)">
+					<g transform="translate(36.000000, 1.500000)">
+						<path d="M3.2048565,0.5 C2.26431807,0.5 1.89540921,0.571239588 1.5147423,0.774822479 C1.19446913,0.946106445 0.946106445,1.19446913 0.774822479,1.5147423 C0.571239588,1.89540921 0.5,2.26431807 0.5,3.2048565 L0.5,8.2951435 C0.5,9.23568193 0.571239588,9.60459079 0.774822479,9.9852577 C0.946106445,10.3055309 1.19446913,10.5538936 1.5147423,10.7251775 C1.89540921,10.9287604 2.26431807,11 3.2048565,11 L22.0738202,11 C22.8614775,11 23.5,10.3614775 23.5,9.57382015 L23.5,3.2048565 C23.5,2.26431807 23.4287604,1.89540921 23.2251775,1.5147423 C23.0538936,1.19446913 22.8055309,0.946106445 22.4852577,0.774822479 C22.1045908,0.571239588 21.7356819,0.5 20.7951435,0.5 L3.2048565,0.5 Z" id="Border" stroke="#{color}" opacity="0.400000006"></path>
+						<path d="M25,4 C25.8626136,4.2220214 26.5,5.00507154 26.5,5.93699126 C26.5,6.86891097 25.8626136,7.65196112 25,7.87398251 L25,4 Z" id="Nub" fill="#{color}" opacity="0.400000006"></path>
+						<rect id = "Battery-Fill" fill="#{color}" x="2" y="2" width="20" height="7.5" rx="0.5"></rect>
+					</g>
+					<text font-family="Arial" font-size="12" font-weight="normal" id="Battery-Percentage" fill="#{color}">
+						<tspan x="2.85351562" y="11.5">100%</tspan>
+					</text>
+				</g>
+				<polyline id="Battery-Stroke" stroke="#{color}" points="0.5 4 6.5 9.5 3.5 12 3.5 2 6.5 4.5 0.5 10"></polyline>
+			</g>
+		</g>
+	</svg>
+	"""
+
+	return {left: leftContent, right: rightContent}

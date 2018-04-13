@@ -194,6 +194,7 @@ updateTheme = (values = {}) ->
 		# Select
 		select:
 			default:
+				textLayer: "Body1"
 				color: black
 				borderColor: grey40
 				backgroundColor: white
