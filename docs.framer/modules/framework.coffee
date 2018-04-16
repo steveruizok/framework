@@ -222,39 +222,40 @@ class window.App extends FlowComponent
 		options = {time: 0.01}
 		transition =
 			layerA:
-				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.y}
-				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.y}
+				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.expandY}
+				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.expandY}
 			layerB:
-				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.y}
-				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.y}
+				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.expandY}
+				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.expandY}
 
 	_iosTransition: (nav, layerA, layerB, overlay) =>
 		options = {curve: "spring(300, 35, 0)"}
 		transition =
 			layerA:
-				show: {options: options, x: Align.center(), y: @windowFrame.y}
-				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.y}
+				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.expandY}
 			layerB:
-				show: {options: options, x: Align.center(), y: @windowFrame.y}
-				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.y}
+				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
+				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.expandY}
 
 	_defaultTransition: (nav, layerA, layerB, overlay) =>
 		options = {curve: "spring(300, 35, 0)"}
 		transition =
 			layerA:
-				show: {options: options, x: Align.center(), y: @windowFrame.y}
-				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.y}
+				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.expandY}
 			layerB:
-				show: {options: options, x: Align.center(), y: @windowFrame.y}
-				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.y}
+				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
+				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.expandY}
 
 	_setWindowFrame: =>
 		@_windowFrame = {
+			expandY: (@header?._expandProps?.height)
 			y: (@header?.height ? 0)
 			x: @x
 			maxX: @maxX
 			maxY: @height - (@footer?.height ? 0)
-			height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
+			height: @height - (@footer?.height ? 0) - (@header?._expandProps?.height)
 			width: @width
 			size: {
 				height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
@@ -387,6 +388,7 @@ class window.App extends FlowComponent
 					layer.updateContent()
 					
 					Utils.delay 0, =>
+						layer.emit "loaded"
 						try 
 							layer.postload(response)
 						catch error
@@ -459,6 +461,7 @@ class window.App extends FlowComponent
 					layer.updateContent()
 					
 					Utils.delay 0, =>
+						layer.emit "loaded"
 						try 
 							layer.postload(response)
 						catch error

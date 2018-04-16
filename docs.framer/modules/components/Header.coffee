@@ -165,6 +165,9 @@ class exports.Header extends Layer
 					backgroundColor: @addressContainer.backgroundColor
 
 		else
+
+			@_expandProps =
+				height: @height
 		
 			@titleLayer = new TextLayer
 				name: unless options.showLayers then '.' else 'Title'
