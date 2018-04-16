@@ -29,7 +29,9 @@ class exports.View extends ScrollComponent
 
 		super options
 
-		@key = options.key
+		_.assign @,
+			key: options.key
+			postload: -> null
 
 		# ---------------
 		# Layers
