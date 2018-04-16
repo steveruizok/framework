@@ -352,6 +352,8 @@ class window.App extends FlowComponent
 
 		try @header._expand()
 		try @footer._expand()
+		
+		app.header.menuChevron.visible = false
 
 		@_initial ?= true	
 

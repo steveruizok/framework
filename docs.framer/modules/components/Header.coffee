@@ -173,11 +173,26 @@ class exports.Header extends Layer
 				fontSize: 16
 				fontFamily: "Helvetica"
 				color: @color
-				width: Screen.width
 				textAlign: 'center'
+				padding: {left: 32, right: 32, top: 8, bottom: 8}
 				text: ' '
 
 			Utils.linkProperties @, @titleLayer, "color"
+
+
+			@menuChevron = new Icon
+				name: unless options.showLayers then '.' else 'Chevron'
+				parent: @
+				x: @titleLayer.maxX - 28
+				icon: "chevron-down"
+				y: Align.center(10)
+				visible: false
+
+			Utils.linkProperties @titleLayer, @menuChevron, "opacity"
+
+			@titleLayer.on "change:text", => 
+				@titleLayer.x = Align.center()
+				@menuChevron.x = @titleLayer.maxX - 28
 
 
 			@backText = new TextLayer
@@ -257,6 +272,7 @@ class exports.Header extends Layer
 		@on "change:tint", =>
 			@backIcon.color = @tint
 			@backText.color = @tint
+			@menuChevron.color = @tint
 			
 
 		# ---------------
