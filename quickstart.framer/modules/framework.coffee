@@ -329,9 +329,11 @@ class window.App extends FlowComponent
 
 
 	_transitionToNext: (layer, options) =>
+		transition = options.transition ? @_platformTransition
+
 		@loading = false
 		@isTransitioning = false
-		@transition(layer, @_platformTransition, options)
+		@transition(layer, transition, options)
 
 
 	_transitionToPrevious: (transition, animate, current, previous) =>
