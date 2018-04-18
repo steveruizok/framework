@@ -45,16 +45,23 @@ _.assign exports,
 		'TabComponent'
 		'StickyComponent'
 		]
-	globals: [
+	imports: [
 		'Transitions'
 	]
+	globals: []
 	theme: theme
 	typography: typography
 	colors: colors
 
+# import as: { module } = require 'module'
 exports.globals.forEach (variable) ->
 	mod = require "components/#{variable}"
 	window[variable] = mod[variable]
+
+# import as: module = require 'module'
+exports.imports.forEach (variable) ->
+	mod = require "components/#{variable}"
+	window[variable] = mod
 
 # Add components to window
 exports.components.forEach (componentName) ->
