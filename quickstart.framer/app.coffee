@@ -3,6 +3,9 @@ require "myTheme"
 app = new App
 
 # ----------------
+# Helpers
+
+# ----------------
 # Data
 
 # Items
@@ -43,27 +46,23 @@ landingView = new View
 	title: 'Landing'
 	key: "0.0.0"
 	contentInset:
+		top: 0
 		bottom: 0
 
 
 landingView.onPreload (resolve, reject) ->
-	preloadData = 
-		title: "Best App"
+	preloadData = {}
 	
 	resolve(preloadData)
 
 
 landingView.onLoad (preloadData) ->
 	new Layer
-		parent: @
-		x: Align.center()
-		y: 232
-	 
-	# Events
+		parent: @content
 
 
 landingView.onPostload (preloadData) ->
-	Utils.stack(@content.children, 16)
+# 	Utils.stack(@content.children, 16)
 
 
 # ----------------

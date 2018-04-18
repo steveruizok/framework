@@ -43,6 +43,7 @@ _.assign exports,
 		'CarouselComponent', 
 		'SortableComponent'
 		'TabComponent'
+		'StickyComponent'
 		]
 	theme: theme
 	typography: typography
