@@ -159,6 +159,15 @@ class exports.FormComponent extends Layer
 						_.assign layer._formData,
 							value: 'value'
 							validation: input.validation ? (v) -> v? and v isnt ""
+					when Checkbox	 
+						_.assign layer._formData,
+							value: 'checked'
+							validation: input.validation ? (v) -> true
+					else
+						_.assign layer._formData,
+							value: 'value'
+							validation: input.validation ? (v) -> true
+
 				
 				# set listeners
 				

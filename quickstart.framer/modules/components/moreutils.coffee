@@ -745,6 +745,21 @@ Utils.chainAnimations = (animations...) ->
 	Utils.delay 0, -> animations[0].restart()
 
 
+# Remove an event from a layer.
+#
+# @example
+#	layer.onAnimationEnd -> print 'hello world!'	
+#
+#	Utils.removeListener(layer, Events.AnimationEnd)
+#
+# @param [layer] layer		The layer to remove the event from.
+# @param [string] event		The event to remove.
+
+Utils.removeListener = (layer, event) ->
+	return unless event
+	layer.off(event, layer._events[event].fn)
+	
+
 # Check whether a point exists within a polygon, defined by an array of points
 # Note: this replaces Framer's existing (but broken) Utils.pointInPolygon method.
 # @example	Utils.pointInPolgygon({x: 2, y: 12}, [])

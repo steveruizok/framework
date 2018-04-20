@@ -16,6 +16,18 @@ updateTheme = (values = {}) ->
 				borderColor: black
 				backgroundColor: grey30
 		# --------------------------
+		# View
+		view:
+			backgroundColor: '#FFF'
+			contentInset:
+				bottom: 64
+			padding: {}
+			title: ''
+			key: null
+			clip: false
+			preserveContent: false
+			oneoff: false
+		# --------------------------
 		# Icons
 		icons: icons
 		# --------------------------

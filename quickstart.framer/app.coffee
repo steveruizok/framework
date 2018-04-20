@@ -57,12 +57,62 @@ landingView.onPreload (resolve, reject) ->
 
 
 landingView.onLoad (preloadData) ->
-	new Layer
+	
+	btn = new Button
 		parent: @content
-
-
+		x: Align.center()
+		y: 200
+	
+	btn.onTap => app.showNext(secondView, true)
+	
 landingView.onPostload (preloadData) ->
-# 	Utils.stack(@content.children, 16)
+	Utils.stack(@content.children, 16)
+
+# 1.0.0 Second View
+
+secondView = new View
+	title: 'Landing'
+	key: "0.0.0"
+	contentInset:
+		top: 0
+		bottom: 0
+
+
+secondView.onPreload (resolve, reject) ->
+	preloadData = {}
+	
+	resolve(preloadData)
+
+
+secondView.onLoad (preloadData) ->
+	
+	_.range(100).forEach (layer) =>
+	
+		layer = new Layer
+			parent: @content
+			width: @width - 32
+			x: 16
+		
+		title = new H4
+			parent: layer
+			point: 16
+		
+		sub = new H6
+			parent: layer
+			x: 16
+			padding: {bottom: 16}
+		
+		body = new Body2
+			parent: layer
+			x: 16
+			text: Utils.randomText 32, true
+			width: layer.width - 32
+		
+		Utils.stack layer.children
+		Utils.contain layer, true, 0, 16
+	
+secondView.onPostload (preloadData) ->
+	Utils.stack(@content.children, 16)
 
 
 # ----------------

@@ -18,32 +18,32 @@ _.assign exports,
 	defaultTitle: ""
 	app: undefined
 	components: [
-		'Switch'
+		'Icon'
 		'Alert'
-		'Button', 
+		'Button'
+		'Checkbox'
+		'Container'
 		'Footer'
-		'Header', 
-		'Radiobox',
-		'Checkbox',
-		'Container',
-		'DocComponent',
-		'Toggle',
-		'Tooltip',
-		'Select',
-		'Icon', 
-		'Stepper', 
-		'Segment',
-		'TextInput',
-		'Link', 
-		'Separator', 
-		'View',
-		'Template',
-		'FormComponent'
-		"ProgressComponent"
-		'CarouselComponent', 
+		'Header'
+		'Link'
+		'Radiobox'
+		'Segment'
+		'Select'
+		'Separator'
+		'Stepper'
+		'Switch'
+		'Template'
+		'TextInput'
+		'Toggle'
+		'Tooltip'
+		'View'
+		'DocComponent'
+		'CarouselComponent'
+		'ProgressComponent'
 		'SortableComponent'
-		'TabComponent'
 		'StickyComponent'
+		'TabComponent'
+		'FormComponent'
 		]
 	imports: [
 		'Transitions'
@@ -105,11 +105,11 @@ class window.App extends FlowComponent
 		 
 		@_platformTransition = switch @chrome
 			when "safari"
-				@_safariTransition
+				Transitions.safari(@)
 			when "ios"
-				@_iosTransition
+				Transitions.ios(@)
 			else
-				@_safariTransition
+				Transitions.safari(@)
 
 		# layers
 
@@ -172,8 +172,9 @@ class window.App extends FlowComponent
 					app: @
 
 				@onSwipeUpEnd =>
-					return unless @current.isMoving 
-
+					return unless @current.isMoving
+					return if @current.content.draggable.isBeyondConstraints
+					
 					@header._collapse()
 					@footer._collapse()
 
@@ -190,6 +191,7 @@ class window.App extends FlowComponent
 
 				@onSwipeUpEnd =>
 					return unless @current.isMoving 
+					return if @current.content.draggable.isBeyondConstraints
 
 					@header._collapse()
 
@@ -280,6 +282,7 @@ class window.App extends FlowComponent
 
 		@emit "change:windowFrame", @_windowFrame, @
 
+
 	_updateHeader: (prev, next, direction) =>
 		# header changes
 		return if not @header
@@ -304,6 +307,7 @@ class window.App extends FlowComponent
 			
 			if next.title 
 				@header.updateTitle(next.title)
+
 
 	_showLoading: (bool) =>
 		if bool
@@ -356,87 +360,99 @@ class window.App extends FlowComponent
 		@isTransitioning = false
 		@_runTransition(transition, "back", animate, current, previous)
 
+
+	# lifecycle handlers
+	
+
+	_prepareToLoad: =>
+		try @header._expand()
+		try @footer._expand()
+		@header.menuChevron.visible = false
+		@focused?.blur()
+		@isTransitioning = true
+		Utils.delay .25, => @loading = @isTransitioning
+
+
+	_sendError: (layer, area, error) =>
+		# make this work with Framer's regular error handling
+		print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
+
+
+
+	_preload: (layer) =>
+		new Promise(_.bind(layer.preload, layer))
+
 		
+	_load: (layer, response) =>
+		new Promise (resolve, reject) => 
+			Utils.bind layer, -> 
+				try layer.load(response) 
+				catch error
+					reject(error)
+
+				resolve(response)
+
+
+	_postload: (layer, response) =>
+		new Promise (resolve, reject) =>
+			_.defer =>
+				layer.emit "loaded"
+				layer.updateContent()		
+				try 
+					layer.postload(response)
+				catch error
+					reject(error)
+
+				resolve()
+
 
 	# ---------------
 	# Public Methods
 	
-	# show next view
+
 	showNext: (layer, loadingTime, options={}) ->
 		return if @isTransitioning
 		return if layer is @current
 
-		# prepare to load
-
-		try @header._expand()
-		try @footer._expand()
-		
-		app.header.menuChevron.visible = false
-
-		@_initial ?= true	
+		@_initial ?= true
 
 		if @chrome is "safari" and not @_initial 
 			loadingTime ?= _.random(.5, .75)
 
-		# prepare to load
-
-		@focused?.blur()
-
-		@isTransitioning = true
-
-		Utils.delay .25, => @loading = @isTransitioning
-
-		# preload the new View
-		new Promise(_.bind(layer.preload, layer))
-		.then((response) => 
-			new Promise( 
-
-				(resolve) => 
-					Utils.bind( layer, -> 
-						try 
-							layer.load(response) 
-						catch error
-							console.error(error)
-						)
-					resolve(response)
-		
-			).then( 
-				(response) =>
-					layer.updateContent()
-					
-					Utils.delay 0, =>
-						layer.emit "loaded"
-						try 
-							layer.postload(response)
-						catch error
-							console.error(error)
-
-						# transition to new View
-						if loadingTime?
-							Utils.delay loadingTime, =>
-								@_transitionToNext(layer, options)
-							return
-
+		cycle = =>
+			@_preload(layer)
+			.then (response) => 
+				@_load(layer, response)
+				.then (response) => 
+					@_postload(layer, response)
+					.then =>
+						layer.updateContent()
 						@_transitionToNext(layer, options)
-				
-			).catch( (reason) -> throw new Error(reason) )
-		).catch( (reason) -> throw new Error(reason) )
+					.catch (e) => @_sendError(layer, "postload", e)
+				.catch (e) => @_sendError(layer, "load", e)
+			.catch (e) => @_sendError(layer, "preload", e)
 
-	# show previous view
-	showPrevious: (options={}) =>
+		if loadingTime
+			loadingTime ?= .5
+			@loading = true
+			@_prepareToLoad()
+			Utils.delay loadingTime, cycle
+			return
+
+		cycle()
+
+
+	showPrevious: (loadingTime, options={}) =>
 		return unless @previous
 		return if @isTransitioning
 
-		# prepare to load
+		@_prepareToLoad()
 
-		try @header._expand()
-		try @footer._expand()
+		# force loading time on safari
 
-		@focused?.blur()
-
-		@isTransitioning = true
-
-		Utils.delay .25, => @loading = @isTransitioning
+		if @chrome is "safari"
+			@loading = true
+			loadingTime = _.random(.3, .75)
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
@@ -449,51 +465,36 @@ class window.App extends FlowComponent
 		previous = @_stack.pop()
 		current = @current
 		layer = current
-		
-
-		# force loading time on safari
-
-		if @chrome is "safari"
-			@loading = true
-			loadingTime = _.random(.3, .75)
-
 		if layer.preserveContent
 			@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 			return
 
 		# preload the new View
-		new Promise(_.bind(layer.preload, layer))
-		.then( (response) => 
-			new Promise( (resolve) => 
-				Utils.bind( layer, -> 
-					try 
-						layer.load(response) 
-					catch error
-						console.error(error)
-					)
-				resolve(response)
-		
-			).then( 
-				(response) =>
-					layer.updateContent()
-					
-					Utils.delay 0, =>
-						layer.emit "loaded"
-						try 
-							layer.postload(response)
-						catch error
-							console.error(error)
-							
-						# transition to new View
-						if loadingTime?
-							Utils.delay loadingTime, =>
-								@_transitionToPrevious(previous?.transition, options.animate, current, layer)
-							return
+		cycle = => 
+			@_preload(layer)
+				.then (response) => 
+					@_load(layer, response)
+					.then (response) => 
+						@_postload(layer, response)
+						.then =>
+							# do transition, for previous
+							layer.updateContent()
+							@_transitionToPrevious(previous?.transition, options.animate, current, layer)
+						.catch (e) => @_sendError(layer, "postload", e)
+					.catch (e) => @_sendError(layer, "load", e)
+				.catch (e) => @_sendError(layer, "preload", e)
 
-						@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 
-			).catch( (reason) -> throw new Error(reason) )
-		).catch( (reason) -> throw new Error(reason) )
+
+		if loadingTime
+			loadingTime ?= .5
+			@loading = true
+			@_prepareToLoad()
+			Utils.delay loadingTime, cycle
+			return
+
+		cycle()
+
 
 	getScreenshot: (options = {}) =>
 		return new Promise (resolve, reject) =>
@@ -532,6 +533,7 @@ class window.App extends FlowComponent
 					console.log(error)
 			)
 
+
 	screenshotViews: (views, options = {}) =>
 		i = 0
 			
@@ -550,6 +552,7 @@ class window.App extends FlowComponent
 		
 		loadNext()
 	
+
 	@define "windowFrame",
 		get: -> return @_windowFrame
 

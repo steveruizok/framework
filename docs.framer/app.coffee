@@ -188,6 +188,13 @@ class ComponentExample extends Layer
 			parent: @
 			x: 54
 		
+		# fix for sortables
+		if options.content instanceof SortableComponent
+			scroll = @parent?.parent
+			if scroll instanceof ScrollComponent
+				options.content.on "change:isSorting", (bool) =>
+					scroll.scrollVertical = !bool
+		
 		if options.text?
 			doc = new DocComponent
 				name: '.'
@@ -1491,7 +1498,6 @@ sortableComponentView.onLoad ->
 	# sortable
 	
 	sortable = new SortableComponent
-		parent: @
 		x: Align.center()
 		width: @width * .618
 	
@@ -1533,7 +1539,6 @@ sortableComponentView.onLoad ->
 	# Sortable with handle
 	
 	sortable = new SortableComponent
-		parent: @
 		x: Align.center()
 		width: @width * .618
 		backgroundColor: null
@@ -2991,29 +2996,16 @@ homeView = new View
 
 homeView.onLoad ->
 	
-	@content.props = 
-		clip: false
-	
-	new HomeViewContainer
-		parent: @content
-		title: "Foundations"
-		links:
+	structure =
+		"Foundations":
 			Theme: undefined
 			Color: colorsView 
 			Typography: typographyView
 			Icon: iconsView
-	
-	new HomeViewContainer
-		parent: @content
-		title: "Buttons"
-		links:
+		"Buttons":
 			Button: buttonsView
 			Link: linksView
-	
-	new HomeViewContainer
-		parent: @content
-		title: "Inputs"
-		links:
+		"Inputs":
 			TextInput: textInputsView
 			Select: selectsView
 			Checkbox: checkboxView
@@ -3021,36 +3013,32 @@ homeView.onLoad ->
 			Stepper: steppersView
 			Segment: segmentsView
 			Toggle: togglesView
-	
-	new HomeViewContainer
-		parent: @content
-		title: "Components"
-		links:
-			TabComponent: tabComponentView
-			SortableComponent: sortableComponentView
+		"Components":
 			DocComponent: undefined
 			CarouselComponent: undefined
-	
-	new HomeViewContainer
-		parent: @content
-		title: "Structure"
-		links:
+			SortableComponent: sortableComponentView
+			StickyComponent: undefined
+			TabComponent: tabComponentView
+		"Structure":
 			App: undefined
 			View: undefined 
 			Header: undefined
-			
-	new HomeViewContainer
-		parent: @content
-		title: "Misc"
-		links:
+		"Misc":
 			Tooltip: tooltipsView
 			Utils: utilsView
+			Alert: undefined
 	
+	links = _.map structure, (value, key) =>
 		
-	Utils.offsetY(@content.children, 32)
-	
+		new HomeViewContainer
+			parent: @content
+			title: key
+			links: value
+			
+	Utils.stack(@content.children, 32)
+
+homeView.onPostload ->
 	@updateContent()
-	
 	addDocsLink(@, '', 'github-circle')
 
 

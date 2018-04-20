@@ -43,7 +43,10 @@ class exports.SortableComponent extends Layer
 			
 		@on "change:children", @_updateChildren
 		@_context.on "layer:destroy", @_checkForLostChildren
-
+		@on "change:isSorting", (bool) =>
+			scroll = @parent?.parent
+			if scroll instanceof ScrollComponent
+				scroll.scrollVertical = !bool
 
 		# ---------------
 		# Definitions

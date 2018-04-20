@@ -1,6 +1,40 @@
 # Transitions
 # Thanks to @myvo
 
+exports.safari = (app) ->
+	return (nav, layerA, layerB, overlay) =>
+		options = {time: 0.01}
+		transition =
+			layerA:
+				show: {options: options, x: Align.center(), brightness: 100, y: app.windowFrame.expandY}
+				hide: {options: options, x: Align.center(), brightness: 101, y: app.windowFrame.expandY}
+			layerB:
+				show: {options: options, x: Align.center(), brightness: 100, y: app.windowFrame.expandY}
+				hide: {options: options, x: Align.center(), brightness: 101, y: app.windowFrame.expandY}
+
+exports.ios = (app) ->
+	return (nav, layerA, layerB, overlay) =>
+		options = {curve: "spring(300, 35, 0)"}
+		transition =
+			layerA:
+				show: {options: options, x: Align.center(), y: app.windowFrame.expandY}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: app.windowFrame.expandY}
+			layerB:
+				show: {options: options, x: Align.center(), y: app.windowFrame.expandY}
+				hide: {options: options, x: app.width + layerB.width / 2, y: app.windowFrame.expandY}
+
+exports.default = (app) ->
+	return (nav, layerA, layerB, overlay) =>
+		options = {curve: "spring(300, 35, 0)"}
+		transition =
+			layerA:
+				show: {options: options, x: Align.center(), y: app.windowFrame.expandY}
+				hide: {options: options, x: 0 - layerA?.width / 2, y: app.windowFrame.expandY}
+			layerB:
+				show: {options: options, x: Align.center(), y: app.windowFrame.expandY}
+				hide: {options: options, x: app.width + layerB.width / 2, y: app.windowFrame.expandY}
+
+
 exports.switchInstant = (nav, layerA, layerB, overlay) ->
 	transition =
 		layerA:

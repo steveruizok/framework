@@ -1,5 +1,6 @@
 Theme = require "components/Theme"
 theme = undefined
+MODEL = "view"
 
 class exports.View extends ScrollComponent
 	constructor: (options = {}) ->
@@ -10,17 +11,7 @@ class exports.View extends ScrollComponent
 		# ---------------
 		# Options
 
-		_.defaults options,
-			backgroundColor: '#FFF'
-			contentInset:
-				bottom: 64
-				
-			padding: {}
-			title: ''
-			key: null
-			clip: false
-			preserveContent: false
-			oneoff: false
+		_.defaults options, theme[MODEL]
 
 		_.assign options,
 			width: @app.contentWidth
@@ -46,6 +37,10 @@ class exports.View extends ScrollComponent
 		delete @__constructor
 
 		preload = (resolve) -> resolve()
+
+		postload = -> null
+
+		unload = -> null
 		
 		isPromise = (value) -> _.isObject(value) and _.isFunction(value.then)
 		
@@ -56,8 +51,8 @@ class exports.View extends ScrollComponent
 		Utils.define @, 'preserveContent', options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
 		Utils.define @, 'load', 			undefined, 				undefined,	_.isFunction, 	'View.load must be a Function.'
 		Utils.define @, 'preload', 			preload, 				undefined, 	_.isFunction, 	'View.preload must be a Function.'
-		Utils.define @, 'unload', 			undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
-		Utils.define @, 'postload', 		undefined, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
+		Utils.define @, 'postload', 		postload, 				undefined, 	_.isFunction, 	'View.postload must be a Function.'
+		Utils.define @, 'unload', 			unload, 				undefined, 	_.isFunction, 	'View.unload must be a Function.'
 		
 		delete @__instancing
 
