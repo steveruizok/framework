@@ -87,6 +87,8 @@ secondView.onPostload ->
     Utils.stack(@content.children, 16)
 ```
 
+[Live example](https://framer.cloud/jgVDG).
+
 # Author's Note
 
 I've been lucky enough to spend the last year designing and prototyping in Framer. Along the way, I built and maintained several component libraries, each acting as a recycling system for the solutions to the problems I'd face in each new project and challenge. Framework is the most mature of these systems.
