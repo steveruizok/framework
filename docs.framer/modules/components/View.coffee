@@ -14,9 +14,11 @@ class exports.View extends ScrollComponent
 		_.defaults options, theme[MODEL]
 
 		_.assign options,
+			name: "View"
 			width: @app.contentWidth
 			height: @app.windowFrame.height
 			scrollHorizontal: false
+			key: undefined
 
 		super options
 

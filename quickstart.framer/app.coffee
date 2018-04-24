@@ -1,6 +1,7 @@
 require "framework"
 
 app = new App
+	printErrors: true
 
 # --------------------
 # Data

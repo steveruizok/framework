@@ -33,15 +33,13 @@ class exports.Switch extends Layer
 		# ---------------
 		# Layers
 
-		# _.assign @,
-
 		@knob = new Layer
 			parent: @
 			borderRadius: "50%"
 			size: 27
 			y: Align.center(1)
 			animationOptions: @animationOptions
-
+		
 		@knobIcon = new Icon 
 			parent: @knob
 			point: Align.center
@@ -79,7 +77,7 @@ class exports.Switch extends Layer
 	# ---------------
 	# Private Methods
 
-	_setIcon: (string = "") =>
+	_setIcon: (string = "none") =>
 		@knobIcon.icon = string
 
 	_setValue: (bool) =>

@@ -238,7 +238,9 @@ class exports.Header extends Layer
 
 			# events
 			
-			@hitArea.onTouchEnd @_showPrevious
+			@hitArea.onTouchEnd =>
+				return if not @backIcon.visible
+				@app.showPrevious()
 
 		# update time
 		@_setTime()
@@ -317,24 +319,19 @@ class exports.Header extends Layer
 		@statusBar.timeLayer.text = d.toLocaleTimeString(['en-US'], {hour: 'numeric', minute: '2-digit'})
 
 
-	_showPrevious: =>
-		return if not @backIcon.visible
-		@app.showPrevious()
-
-
 	_setTitle: (value) =>
-
-		if @app.chrome is "safari"
+		if @urlLayer?
 			value = _.truncate(value, {length: 28})
 			@urlLayer.text = value
 			return
 
-		value = _.truncate(value, {length: 22})
-		@titleLayer.text = value
+		if @titleLayer?
+			value = _.truncate(value, {length: 22})
+			@titleLayer.text = value
 
 
 	_collapse: =>
-		if @app.chrome is "safari"
+		if @urlLayer?
 
 			options = {time: .25}
 
@@ -357,8 +354,7 @@ class exports.Header extends Layer
 
 			return
 
-		if @app.chrome is "ios"
-
+		if @statusBar?
 			options = {time: .25}
 
 			@animate
@@ -376,7 +372,7 @@ class exports.Header extends Layer
 
 
 	_expand: =>
-		if @app.chrome is "safari"
+		if @urlLayer?
 
 			options = {time: .25}
 
@@ -399,8 +395,7 @@ class exports.Header extends Layer
 
 			return
 
-		if @app.chrome is 'ios'
-
+		if @statusBar?
 			options = {time: .25}
 
 			for child in _.without(@children, @statusBar)
@@ -419,7 +414,7 @@ class exports.Header extends Layer
 
 
 	updateTitle: (title) =>
-		return if @app.chrome is "safari"
+		return unless @titleLayer
 
 		@titleLayer.animateStop()
 		

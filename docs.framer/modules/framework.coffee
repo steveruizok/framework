@@ -88,6 +88,7 @@ class window.App extends FlowComponent
 			showKeys: true
 			perspective: 1000
 			screenshot: true
+			printErrors: false
 
 		super options
 
@@ -95,6 +96,7 @@ class window.App extends FlowComponent
 			chrome: options.chrome
 			showKeys: options.showKeys
 			contentWidth: options.contentWidth
+			printErrors: options.printErrors
 			_windowFrame: {}
 			views: []
 			keyboard: Keyboard
@@ -187,7 +189,7 @@ class window.App extends FlowComponent
 				@header.statusBar.onTap =>
 					@header._expand()
 
-			if @chrome is 'ios'
+			unless @chrome is "browser"
 
 				@onSwipeUpEnd =>
 					return unless @current.isMoving 
@@ -318,8 +320,6 @@ class window.App extends FlowComponent
 
 			# show safari loading
 			if @chrome is "safari"
-				@footer._expand()
-				@header._expand()
 				@header._showLoading(true)
 				return
 
@@ -332,11 +332,8 @@ class window.App extends FlowComponent
 
 		# show safari loading ended
 		if @chrome is "safari"
-			@footer._expand()
-			@header._expand()
 			@header._showLoading(false)
-			return
-
+		
 
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next, direction) =>
@@ -375,9 +372,11 @@ class window.App extends FlowComponent
 
 	_sendError: (layer, area, error) =>
 		# make this work with Framer's regular error handling
-		print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
-
-
+		if @printErrors
+			print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
+		else
+			console.warn "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
+			console.error error
 
 	_preload: (layer) =>
 		new Promise(_.bind(layer.preload, layer))
@@ -419,6 +418,7 @@ class window.App extends FlowComponent
 		if @chrome is "safari" and not @_initial 
 			loadingTime ?= _.random(.5, .75)
 
+
 		cycle = =>
 			@_preload(layer)
 			.then (response) => 
@@ -439,6 +439,7 @@ class window.App extends FlowComponent
 			Utils.delay loadingTime, cycle
 			return
 
+		@_prepareToLoad()
 		cycle()
 
 
@@ -483,8 +484,6 @@ class window.App extends FlowComponent
 						.catch (e) => @_sendError(layer, "postload", e)
 					.catch (e) => @_sendError(layer, "load", e)
 				.catch (e) => @_sendError(layer, "preload", e)
-
-
 
 		if loadingTime
 			loadingTime ?= .5
