@@ -54,10 +54,14 @@ class exports.StickyComponent extends Layer
 					
 					if currentY < prev.height and layer.y > top
 						prev.maxY = layer.y
+						layer.bringToFront()
+					# else
+					# 	prev.y = @_stickyHeaders[i-1]?.layer
 
 					prev._stickyAction = false
 					
 				if currentY <= 0
 					layer.y = top
+					layer.bringToFront()	
 			
 				layer._stickyAction = false
