@@ -436,6 +436,7 @@ class window.App extends FlowComponent
 		
 		load = (layer, response) =>
 			p = new Promise (resolve, reject) => 
+				Utils.bind layer, -> 
 					try layer.load(response) 
 					catch error
 						reject(error)
