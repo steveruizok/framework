@@ -9,7 +9,7 @@ class exports.FormComponent extends Layer
 			x: 0
 			height: 32
 			width: Screen.width
-			padding: {x: 16, y: 16}
+			padding: {x: 16, y: 16, top: 0, bottom: 0}
 			target: {}
 			data: exampleData
 			warn: false
@@ -26,7 +26,7 @@ class exports.FormComponent extends Layer
 			
 		_.defaults @padding,
 			x: 0
-			y: 0
+			y: 16
 			bottom: 0
 			top: 0
 
@@ -94,9 +94,9 @@ class exports.FormComponent extends Layer
 					# Indicator
 					
 					if input.required and @indicators
+						label.padding = {left: 24}
 						indicator = new FormIndicator
 							parent: label
-							x: if input.label is "" then 0
 											
 				if key is '_label'
 					layer = new Body2
@@ -239,6 +239,11 @@ class exports.FormComponent extends Layer
 	post: =>
 		@_updateTarget()
 		return @target
+
+	reset: =>
+		@layers.forEach (layer) =>
+			layer[layer._formData.value] = null
+
 	
 	# ###############
 	# DEFINITIONS
@@ -277,8 +282,7 @@ class FormIndicator extends Icon
 
 		_.defaults options,
 			name: "Indicator"
-			x: Align.right(24)
-			y: 8
+			y: Align.center(1)
 			height: 16
 			width: 16
 			icon: 'checkbox-blank-circle-outline'
@@ -332,10 +336,10 @@ exampleData =
 			errorText: "The email you've entered is not valid."
 	2:
 		_label:
-			label: "Background"
-			text: "Have you registered before?"
-			width: 60
-		verified:
+			label: "Contact preferences"
+			text: "May we contact you about a car accident that wasn't your fault?"
+			width: 56
+		gdpr:
 			label: ""
 			required: true
 			field: Toggle

@@ -2,6 +2,7 @@ require "framework"
 
 app = new App
 	printErrors: true
+	chrome: "browser"
 
 # --------------------
 # Data

@@ -18,32 +18,33 @@ _.assign exports,
 	defaultTitle: ""
 	app: undefined
 	components: [
-		'Icon'
-		'Alert'
-		'Button'
-		'Checkbox'
-		'Container'
-		'Footer'
-		'Header'
-		'Link'
-		'Radiobox'
-		'Segment'
-		'Select'
-		'Separator'
-		'Stepper'
 		'Switch'
-		'Template'
-		'TextInput'
-		'Toggle'
-		'Tooltip'
-		'View'
-		'DocComponent'
-		'CarouselComponent'
-		'ProgressComponent'
-		'SortableComponent'
-		'StickyComponent'
-		'TabComponent'
+		'Alert'
+		'Button', 
+		'Footer'
+		'Header', 
+		'Radiobox',
+		'Checkbox',
+		'Container',
+		'DocComponent',
+		'Toggle',
+		'Tooltip',
+		'Select',
+		'Icon', 
+		'Stepper', 
+		'Segment',
+		'TextInput',
+		'Link', 
+		'Separator', 
+		'View',
+		'Template',
 		'FormComponent'
+		"ProgressComponent"
+		'CarouselComponent', 
+		'SafariHeader'
+		'SortableComponent'
+		'TabComponent'
+		'StickyComponent'
 		]
 	imports: [
 		'Transitions'
@@ -96,36 +97,64 @@ class window.App extends FlowComponent
 			chrome: options.chrome
 			showKeys: options.showKeys
 			contentWidth: options.contentWidth
-			printErrors: options.printErrors
 			_windowFrame: {}
 			views: []
 			keyboard: Keyboard
+			printErrors: options.printErrors
 			preload: new Promise (resolve, reject) -> _.defer resolve
 	
+
+		if options.chrome is "browser" and Screen.width isnt 1440
+			_.defer ->
+				Framer.Device.customize
+					deviceType: Framer.Device.Type.Desktop
+					devicePixelRatio: 1
+					screenWidth: 1440
+					screenHeight: 900
+					deviceImageWidth: 900
+					deviceImageHeight: 1440
+
+				_.assign Framer.Device.screenBackground,
+					backgroundColor: null
+
+				_.assign Framer.Device.content, 
+					borderWidth: 1
+					borderRadius: 4
+					backgroundColor: null
+					clip: true
+
+				Canvas.backgroundColor = "#1E1E1E"
+				
+				_.defer ->
+					Utils.reset()
+					CoffeeScript.load("app.coffee")
 
 		# Transition
 		 
 		@_platformTransition = switch @chrome
 			when "safari"
-				Transitions.safari(@)
+				@_safariTransition
+			when "browser"
+				@_safariTransition
 			when "ios"
-				Transitions.ios(@)
+				@_iosTransition
 			else
-				Transitions.safari(@)
+				@_defaultTransition
 
 		# layers
 
 		@loadingLayer = new Layer 
 			name: '.'
 			size: Screen.size
-			backgroundColor: if @chrome is "safari" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
+			backgroundColor: if @chrome is "safari" or @chrome is "browser" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
 			visible: false
 
 		@loadingLayer._element.style["pointer-events"] = "all"
 		@loadingLayer.sendToBack()
 
+
 		# By this point, these should be different classes...
-		unless @chrome is "safari"
+		unless @chrome is "safari" or @chrome is "browser"
 			Utils.bind @loadingLayer, ->
 				
 				@loadingContainer = new Layer
@@ -163,12 +192,16 @@ class window.App extends FlowComponent
 			# ... but this might require a lot of app.header?.etc
 			if @chrome is 'safari' and Utils.isSafari()
 				@chrome = null
-
-			@header = new Header
-				app: @
-				safari: @chrome is 'safari'
-				title: options.title
-		
+			
+			if @chrome is "browser"
+				@header = new SafariHeader
+					title: options.title
+			else 
+				@header = new Header
+					app: @
+					safari: @chrome is 'safari'
+					title: options.title
+			
 			if @chrome is 'safari'
 				@footer = new Footer 
 					app: @
@@ -189,7 +222,7 @@ class window.App extends FlowComponent
 				@header.statusBar.onTap =>
 					@header._expand()
 
-			unless @chrome is "browser"
+			if @chrome is 'ios'
 
 				@onSwipeUpEnd =>
 					return unless @current.isMoving 
@@ -269,12 +302,12 @@ class window.App extends FlowComponent
 
 	_setWindowFrame: =>
 		@_windowFrame = {
-			expandY: (@header?._expandProps?.height)
+			expandY: (@header?._expandProps?.height ? @header?.height ? 0)
 			y: (@header?.height ? 0)
 			x: @x
 			maxX: @maxX
 			maxY: @height - (@footer?.height ? 0)
-			height: @height - (@footer?.height ? 0) - (@header?._expandProps?.height)
+			height: @height - (@footer?.height ? 0) - (@header?._expandProps?.height ? @header?.height ? 0)
 			width: @width
 			size: {
 				height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
@@ -283,7 +316,6 @@ class window.App extends FlowComponent
 		}
 
 		@emit "change:windowFrame", @_windowFrame, @
-
 
 	_updateHeader: (prev, next, direction) =>
 		# header changes
@@ -299,17 +331,16 @@ class window.App extends FlowComponent
 			hasPrevious = @_stack.length > 1
 
 			# safari changes
-			if @header.safari
+			if @chrome is "safari"
 				@footer.hasPrevious = hasPrevious
 				return
 
 			# ios changes
-			@header.backIcon.visible = hasPrevious
-			@header.backText.visible = hasPrevious
+			@header.backIcon?.visible = hasPrevious
+			@header.backText?.visible = hasPrevious
 			
 			if next.title 
 				@header.updateTitle(next.title)
-
 
 	_showLoading: (bool) =>
 		if bool
@@ -319,8 +350,10 @@ class window.App extends FlowComponent
 			@loadingAnim?.restart()
 
 			# show safari loading
-			if @chrome is "safari"
-				@header._showLoading(true)
+			if @chrome is "safari" or @chrome is "browser"
+				try @footer?._expand()
+				try @header?._expand()
+				@header?._showLoading(true)
 				return
 
 			# show ios loading
@@ -331,9 +364,12 @@ class window.App extends FlowComponent
 		@loadingAnim?.stop()
 
 		# show safari loading ended
-		if @chrome is "safari"
-			@header._showLoading(false)
-		
+		if @chrome is "safari" or @chrome is "browser"
+			try @footer?._expand()
+			try @header?._expand()
+			@header?._showLoading(false)
+			return
+
 
 	# Reset the previous View after transitioning
 	_updatePrevious: (prev, next, direction) =>
@@ -357,103 +393,108 @@ class window.App extends FlowComponent
 		@isTransitioning = false
 		@_runTransition(transition, "back", animate, current, previous)
 
-
-	# lifecycle handlers
-	
-
-	_prepareToLoad: =>
-		try @header._expand()
-		try @footer._expand()
-		@header.menuChevron.visible = false
-		@focused?.blur()
-		@isTransitioning = true
-		Utils.delay .25, => @loading = @isTransitioning
-
-
-	_sendError: (layer, area, error) =>
-		# make this work with Framer's regular error handling
-		if @printErrors
-			print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
-		else
-			console.warn "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
-			console.error error
-
-	_preload: (layer) =>
-		new Promise(_.bind(layer.preload, layer))
-
 		
-	_load: (layer, response) =>
-		new Promise (resolve, reject) => 
-			Utils.bind layer, -> 
-				try layer.load(response) 
-				catch error
-					reject(error)
-
-				resolve(response)
-
-
-	_postload: (layer, response) =>
-		new Promise (resolve, reject) =>
-			_.defer =>
-				layer.emit "loaded"
-				layer.updateContent()		
-				try 
-					layer.postload(response)
-				catch error
-					reject(error)
-
-				resolve()
-
 
 	# ---------------
 	# Public Methods
 	
-
+	# show next view
 	showNext: (layer, loadingTime, options={}) ->
 		return if @isTransitioning
-		return if layer is @current
+		return if layer is @current and !options.reloading
 
-		@_initial ?= true
+		# prepare to load
+
+		try @header._expand()
+		try @footer._expand()
+		
+		app.header?.menuChevron?.visible = false
+
+		@_initial ?= true	
 
 		if @chrome is "safari" and not @_initial 
 			loadingTime ?= _.random(.5, .75)
 
+		# prepare to load
 
-		cycle = =>
-			@_preload(layer)
+		@focused?.blur()
+
+		@isTransitioning = true
+
+		Utils.delay .25, => @loading = @isTransitioning
+
+
+		sendError = (area, error) =>
+			print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
+
+
+		preload = (layer) => 
+			p = new Promise(_.bind(layer.preload, layer))
+			
+			return p
+
+		
+		load = (layer, response) =>
+			p = new Promise (resolve, reject) => 
+					try layer.load(response) 
+					catch error
+						reject(error)
+
+					resolve(response)
+
+			return p
+
+
+		postload = (layer, response) =>
+			p = new Promise (resolve, reject) =>
+
+				layer.updateContent()
+				
+				_.defer =>
+					layer.emit "loaded"
+					try layer.postload(response)
+					catch error
+						reject(error)
+
+					resolve()
+
+			return p
+
+
+		doTransition = =>
+			# transition to new View
+			if loadingTime?
+				Utils.delay loadingTime, =>
+					@_transitionToNext(layer, options)
+				return
+
+			@_transitionToNext(layer, options)
+
+		preload(layer)
+		.then (response) => 
+			load(layer, response)
 			.then (response) => 
-				@_load(layer, response)
-				.then (response) => 
-					@_postload(layer, response)
-					.then =>
-						layer.updateContent()
-						@_transitionToNext(layer, options)
-					.catch (e) => @_sendError(layer, "postload", e)
-				.catch (e) => @_sendError(layer, "load", e)
-			.catch (e) => @_sendError(layer, "preload", e)
+				postload(layer, response)
+				.then(doTransition)
+				.catch (e) -> sendError("postload", e)
+			.catch (e) -> sendError("load", e)
+		.catch (e) -> sendError("preload", e)
 
-		if loadingTime
-			loadingTime ?= .5
-			@loading = true
-			@_prepareToLoad()
-			Utils.delay loadingTime, cycle
-			return
-
-		@_prepareToLoad()
-		cycle()
-
-
-	showPrevious: (loadingTime, options={}) =>
+	# show previous view
+	showPrevious: (options={}) =>
 		return unless @previous
 		return if @isTransitioning
 
-		@_prepareToLoad()
+		# prepare to load
 
-		# force loading time on safari
+		try @header._expand()
+		try @footer._expand()
 
-		if @chrome is "safari"
-			@loading = true
-			loadingTime = _.random(.3, .75)
+		@focused?.blur()
+
+		@isTransitioning = true
+
+		Utils.delay .25, => @loading = @isTransitioning
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
@@ -466,33 +507,51 @@ class window.App extends FlowComponent
 		previous = @_stack.pop()
 		current = @current
 		layer = current
+		
+
+		# force loading time on safari
+
+		if @chrome is "safari"
+			@loading = true
+			loadingTime = _.random(.3, .75)
+
 		if layer.preserveContent
 			@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 			return
 
 		# preload the new View
-		cycle = => 
-			@_preload(layer)
-				.then (response) => 
-					@_load(layer, response)
-					.then (response) => 
-						@_postload(layer, response)
-						.then =>
-							# do transition, for previous
-							layer.updateContent()
+
+		new Promise(_.bind(layer.preload, layer))
+		.then (response) => 
+			new Promise (resolve, reject) => 
+				Utils.bind layer, -> 
+					try 
+						layer.load(response) 
+					catch error
+						throw error
+
+					resolve(response)
+
+			.then (response) =>
+				layer.updateContent()
+				
+				Utils.delay 0, =>
+					layer.emit "loaded"
+					try 
+						layer.postload(response)
+					catch error
+						throw error
+						
+					# transition to new View
+					if loadingTime?
+						Utils.delay loadingTime, =>
 							@_transitionToPrevious(previous?.transition, options.animate, current, layer)
-						.catch (e) => @_sendError(layer, "postload", e)
-					.catch (e) => @_sendError(layer, "load", e)
-				.catch (e) => @_sendError(layer, "preload", e)
+						return
 
-		if loadingTime
-			loadingTime ?= .5
-			@loading = true
-			@_prepareToLoad()
-			Utils.delay loadingTime, cycle
-			return
+					@_transitionToPrevious(previous?.transition, options.animate, current, layer)
 
-		cycle()
+			, (reason) -> throw reason 
+		, (reason) -> throw reason
 
 
 	getScreenshot: (options = {}) =>
