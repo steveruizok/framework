@@ -355,6 +355,7 @@ class window.App extends FlowComponent
 			@emit("transitionEnd", prev, next, options)	
 			return
 
+		prev.sendToBack()
 		prev._unloadView(@, next, prev, options)
 		@emit("transitionEnd", prev, next, options)	
 
@@ -502,7 +503,7 @@ class window.App extends FlowComponent
 		if layer.preserveContent
 			layer.updateContent()
 			layer.y = @windowFrame.expandY
-			@_transitionToPrevious(previous?.transition, options.animate, previous, layer, options)
+			@_transitionToPrevious(previous?.transition, options.animate, previous.layer, layer, options)
 			return
 
 		# preload the new View
@@ -516,7 +517,7 @@ class window.App extends FlowComponent
 							# do transition, for previous
 							layer.updateContent()
 							layer.y = @windowFrame.expandY
-							@_transitionToPrevious(previous?.transition, options.animate, previous, layer, options)
+							@_transitionToPrevious(previous?.transition, options.animate, previous.layer, layer, options)
 						.catch (e) => @_sendError(layer, "postload", e)
 					.catch (e) => @_sendError(layer, "load", e)
 				.catch (e) => @_sendError(layer, "preload", e)

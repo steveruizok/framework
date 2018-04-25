@@ -282,10 +282,12 @@ class exports.Header extends Layer
 		if @app.showKeys
 			@viewKey = next?.key
 
-		if @app.chrome is "safari"
-			@app.footer.hasPrevious = prev?
+		hasPrevious = @app._stack.length > 1
 
-		showPrevLinks = !next.root and prev?
+		if @app.chrome is "safari"
+			@app.footer.hasPrevious = hasPrevious
+
+		showPrevLinks = !next.root and hasPrevious
 
 		@backIcon?.visible = showPrevLinks
 		@backText?.visible = showPrevLinks

@@ -25,7 +25,6 @@ landingView = new View
 	name: "1"
 	title: "First View"
 	key: "0.0.0"
-	root: true
 
 landingView.onLoad ->
 	new Layer
@@ -126,3 +125,4 @@ app.menu = new Menu
 			links:
 				"sign up": undefined
 				"sign in": undefined
+# app.showNext(secondView)

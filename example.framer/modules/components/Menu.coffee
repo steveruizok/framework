@@ -90,6 +90,7 @@ class exports.Menu extends ScrollComponent
 		@headerContainer = new Layer
 			name: "Header Container"
 			parent: @
+			y: -1
 			width: @width
 			height: 1
 			backgroundColor: @backgroundColor
@@ -100,7 +101,7 @@ class exports.Menu extends ScrollComponent
 			x: Align.center()
 			text: options.title
 			color: @color
-			y: 10
+			y: 11
 		
 		@closeButton = new Icon
 			name: "Menu close button"
@@ -108,7 +109,7 @@ class exports.Menu extends ScrollComponent
 			color: @color
 			icon: "close"
 			x: options.x
-			y: 4
+			y: 5
 			size: 48
 			padding: 12
 
@@ -271,6 +272,11 @@ class exports.Menu extends ScrollComponent
 			
 			@height = 128
 
+			@openButton.animate
+				opacity: 0
+				options:
+					time: .15
+
 			@animate
 				height: @maxHeight
 				opacity: 1
@@ -292,6 +298,11 @@ class exports.Menu extends ScrollComponent
 		
 		@underlay.animate
 			opacity: 0
+			options:
+				time: .2
+
+		@openButton.animate
+			opacity: 1
 			options:
 				time: .15
 			
