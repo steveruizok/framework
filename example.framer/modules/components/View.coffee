@@ -13,8 +13,11 @@ class exports.View extends ScrollComponent
 
 		_.defaults options, theme[MODEL]
 
-		_.assign options,
+		_.defaults options,
 			name: "View"
+			root: false
+
+		_.assign options,
 			width: @app.contentWidth
 			height: @app.windowFrame.height
 			scrollHorizontal: false
@@ -23,6 +26,7 @@ class exports.View extends ScrollComponent
 		super options
 
 		_.assign @,
+			root: options.root
 			key: options.key
 			postload: -> null
 
@@ -96,7 +100,6 @@ class exports.View extends ScrollComponent
 		
 		return if @preserveContent
 
-		@app.modal?.destroy()
 		child.destroy() for child in _.without(@children, @content)
 		child.destroy() for child in @content.children
 

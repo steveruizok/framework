@@ -17,6 +17,7 @@ class exports.Header extends Layer
 			viewKey: ' '
 			tint: "#333"
 			clip: true
+			hidden: false
 		
 		_.assign options,
 			width: Screen.width
@@ -182,22 +183,6 @@ class exports.Header extends Layer
 
 			Utils.linkProperties @, @titleLayer, "color"
 
-
-			@menuChevron = new Icon
-				name: unless options.showLayers then '.' else 'Chevron'
-				parent: @
-				x: @titleLayer.maxX - 28
-				icon: "chevron-down"
-				y: Align.center(10)
-				visible: false
-
-			Utils.linkProperties @titleLayer, @menuChevron, "opacity"
-
-			@titleLayer.on "change:text", => 
-				@titleLayer.x = Align.center()
-				@menuChevron.x = @titleLayer.maxX - 28
-
-
 			@backText = new TextLayer
 				name: unless options.showLayers then '.' else 'Back Text'
 				parent: @
@@ -212,20 +197,14 @@ class exports.Header extends Layer
 
 			@backText.textIndent = 24
 			
+
 			@backIcon = new Icon
 				name: unless options.showLayers then '.' else 'Back Icon'
 				parent: @backText
-				y: Align.center()
+				y: Align.center(1)
 				icon: 'ios-back'
 				visible: false
 
-			# @menuIcon = new Icon
-			# 	name: unless options.showLayers then '.' else 'Menu Icon'
-			# 	parent: @
-			# 	y: Align.center(10)
-			# 	x: Align.right(if options.safari then -16 else -8)
-			# 	icon: 'dots-vertical'
-			# 	rotation: 90
 
 			@hitArea = new Layer
 				name: unless options.showLayers then '.' else 'Hit Area'
@@ -254,7 +233,8 @@ class exports.Header extends Layer
 		# Definitions
 		
 		delete @__constructor
-			
+		
+		Utils.define @, 'hidden', options.hidden, @_showHidden
 		Utils.define @, 'title', options.title, @_setTitle, _.isString, 'View.title must be a string.'
 		Utils.define @, 'viewKey', options.viewKey, @_setViewKey
 		Utils.define @, 'tint', options.tint
@@ -263,6 +243,14 @@ class exports.Header extends Layer
 		
 		# ---------------
 		# Events
+
+		@app.on "transitionStart", =>
+			@hidden = true
+
+		@app.on "transitionEnd", @_update
+
+		@titleLayer.on "change:text", -> 
+			@x = Align.center()
 
 		@statusBar.on "change:color", (color) -> 
 			@viewKeyLayer.color = color
@@ -277,7 +265,6 @@ class exports.Header extends Layer
 		@on "change:tint", =>
 			@backIcon.color = @tint
 			@backText.color = @tint
-			@menuChevron.color = @tint
 			
 
 		# ---------------
@@ -290,6 +277,51 @@ class exports.Header extends Layer
 	# ---------------
 	# Private Methods
 
+	_update: (prev, next, options) =>
+
+		if @app.showKeys
+			@viewKey = next?.key
+
+		if @app.chrome is "safari"
+			@app.footer.hasPrevious = prev?
+
+		showPrevLinks = !next.root and prev?
+
+		@backIcon?.visible = showPrevLinks
+		@backText?.visible = showPrevLinks
+
+		@title = next?.title ? ""
+
+		@hidden = false	
+
+
+	_showHidden: (bool) =>
+		@titleLayer.animateStop()
+
+		if bool
+			@titleLayer?.animate
+				opacity: 0
+				options:
+					time: .2
+
+			@backText?.animate
+				opacity: 0
+				options:
+					time: .2
+
+			return
+		
+		@titleLayer?.animate
+			opacity: 1
+			options: 
+				time: .3
+
+		@backText?.animate
+			opacity: 1
+			options: 
+				time: .3
+
+	
 	_showLoading: (bool, time) =>
 		if bool
 			# loading is true
@@ -369,8 +401,6 @@ class exports.Header extends Layer
 					options: options
 
 
-
-
 	_expand: =>
 		if @urlLayer?
 
@@ -409,29 +439,10 @@ class exports.Header extends Layer
 				height: 72
 				options: options
 
+
 	# ---------------
 	# Public Methods
 
-
-	updateTitle: (title) =>
-		return unless @titleLayer
-
-		@titleLayer.animateStop()
-		
-		do (title) =>
-			@titleLayer.once Events.AnimationEnd, =>
-				@title = title
-				
-				@titleLayer.animate
-					opacity: 1
-					options:
-						time: .3
-						delay: .15
-	
-		@titleLayer.animate
-			opacity: 0
-			options:
-				time: .2
 
 	# ---------------
 	# Special Definitions

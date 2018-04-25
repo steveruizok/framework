@@ -34,10 +34,12 @@ _.assign exports,
 		'Stepper', 
 		'Segment',
 		'TextInput',
+		'Menu',
 		'Link', 
 		'Separator', 
 		'View',
 		'Template',
+		'Toolbar'
 		'FormComponent'
 		"ProgressComponent"
 		'CarouselComponent', 
@@ -249,12 +251,6 @@ class window.App extends FlowComponent
 		Utils.define @, 'viewPoint',	{x:0, y:0}, undefined,		_.isObject, 	'App.viewPoint must be an point object (e.g. {x: 0, y: 0}).'
 		Utils.define @, 'chromeOpacity', options.chromeOpacity, @_setChromeOpacity, _.isNumber, "App.chromeOpacity must be a number between 0 and 1."
 
-		# when transition starts, update the header
-		@onTransitionStart @_updateHeader
-
-		# when transition ends, reset the previous view
-		@onTransitionEnd @_updatePrevious
-
 		Screen.on Events.EdgeSwipeLeftEnd, @showPrevious
 
 	# ---------------
@@ -270,77 +266,58 @@ class window.App extends FlowComponent
 		# possibly... an app state dealing with an on-screen keyboard
 		return
 
+
 	_safariTransition: (nav, layerA, layerB, overlay) =>
 		options = {time: 0.01}
 		transition =
 			layerA:
-				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.expandY}
-				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.expandY}
+				show: {options: options, x: Align.center(), brightness: 100}
+				hide: {options: options, x: Align.center(), brightness: 109}
 			layerB:
-				show: {options: options, x: Align.center(), brightness: 100, y: @windowFrame.expandY}
-				hide: {options: options, x: Align.center(), brightness: 101, y: @windowFrame.expandY}
+				show: {options: options, x: Align.center(), brightness: 100}
+				hide: {options: options, x: Align.center(), brightness: 109}
+
 
 	_iosTransition: (nav, layerA, layerB, overlay) =>
 		options = {curve: "spring(300, 35, 0)"}
 		transition =
 			layerA:
-				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
-				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.expandY}
+				show: {options: options, x: Align.center()}
+				hide: {options: options, x: 0 - layerA?.width / 2}
 			layerB:
-				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
-				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.expandY}
+				show: {options: options, x: Align.center()}
+				hide: {options: options, x: @width + layerB.width / 2}
+
 
 	_defaultTransition: (nav, layerA, layerB, overlay) =>
 		options = {curve: "spring(300, 35, 0)"}
 		transition =
 			layerA:
-				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
-				hide: {options: options, x: 0 - layerA?.width / 2, y: @windowFrame.expandY}
+				show: {options: options, x: Align.center()}
+				hide: {options: options, x: 0 - layerA?.width / 2}
 			layerB:
-				show: {options: options, x: Align.center(), y: @windowFrame.expandY}
-				hide: {options: options, x: @width + layerB.width / 2, y: @windowFrame.expandY}
+				show: {options: options, x: Align.center()}
+				hide: {options: options, x: @width + layerB.width / 2}
+
 
 	_setWindowFrame: =>
-		@_windowFrame = {
-			expandY: (@header?._expandProps?.height ? @header?.height ? 0)
+		headerMaxY = @header?._expandProps?.height ? @header?.height ? 0
+	
+		@_windowFrame =
+			expandY: headerMaxY
 			y: (@header?.height ? 0)
 			x: @x
 			maxX: @maxX
 			maxY: @height - (@footer?.height ? 0)
-			height: @height - (@footer?.height ? 0) - (@header?._expandProps?.height ? @header?.height ? 0)
+			height: @height - (@footer?.height ? 0) - headerMaxY
 			width: @width
-			size: {
+			size:
 				height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
 				width: @width
-			}
-		}
 
 		@emit "change:windowFrame", @_windowFrame, @
 
-	_updateHeader: (prev, next, direction) =>
-		# header changes
-		return if not @header
 
-		# update the header's 'viewKey' using the next View's 'key'
-		if @showKeys then @header.viewKey = next?.key
-
-
-		Utils.delay .25, =>
-
-			# is there a previous layer? (and is the next layer the initial layer?)
-			hasPrevious = @_stack.length > 1
-
-			# safari changes
-			if @chrome is "safari"
-				@footer.hasPrevious = hasPrevious
-				return
-
-			# ios changes
-			@header.backIcon?.visible = hasPrevious
-			@header.backText?.visible = hasPrevious
-			
-			if next.title 
-				@header.updateTitle(next.title)
 
 	_showLoading: (bool) =>
 		if bool
@@ -371,131 +348,139 @@ class window.App extends FlowComponent
 			return
 
 
-	# Reset the previous View after transitioning
-	_updatePrevious: (prev, next, direction) =>
+	_updatePrevious: (next, prev, options) =>
 		@isTransitioning = false
-		return unless prev? and prev instanceof View
 
-		prev.sendToBack()
-		prev._unloadView(@, next, prev, direction)
+		unless prev? and prev instanceof View
+			@emit("transitionEnd", prev, next, options)	
+			return
+
+		prev._unloadView(@, next, prev, options)
+		@emit("transitionEnd", prev, next, options)	
 
 
-	_transitionToNext: (layer, options) =>
+	_transitionToNext: (next, prev, options) =>
 		transition = options.transition ? @_platformTransition
 
 		@loading = false
 		@isTransitioning = false
-		@transition(layer, transition, options)
+		@transition(next, transition, options)
+		@emit "transitionStart", next
+
+		do (next, prev, options) =>
+			@once Events.TransitionEnd, =>
+				@_updatePrevious(next, prev, options)
 
 
-	_transitionToPrevious: (transition, animate, current, previous) =>
+	_transitionToPrevious: (transition, animate, prev, next, options) =>
 		@loading = false
 		@isTransitioning = false
-		@_runTransition(transition, "back", animate, current, previous)
+		@_runTransition(transition, "back", animate, prev, next)
+		@emit "transitionStart", next
+
+		do (next, prev, options) =>
+			@once Events.TransitionEnd, =>
+				@_updatePrevious(next, prev, options)
+
+
+
+	# lifecycle handlers
+	
+	_prepareToLoad: =>
+		try @header._expand()
+		try @footer._expand()
+		@focused?.blur()
+		@modal?.destroy()
+		@isTransitioning = true
+		Utils.delay .25, => @loading = @isTransitioning
+
+
+	_sendError: (layer, area, error) =>
+		# make this work with Framer's regular error handling
+		print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
+
+
+
+	_preload: (layer) =>
+		new Promise(_.bind(layer.preload, layer))
 
 		
+	_load: (layer, response) =>
+		new Promise (resolve, reject) => 
+			Utils.bind layer, -> 
+				try layer.load(response) 
+				catch error
+					reject(error)
+
+				resolve(response)
+
+
+	_postload: (layer, response) =>
+		new Promise (resolve, reject) =>
+			_.defer =>
+				layer.emit "loaded"
+				layer.updateContent()		
+				try 
+					layer.postload(response)
+				catch error
+					reject(error)
+
+				resolve()
+
 
 	# ---------------
 	# Public Methods
 	
-	# show next view
+
 	showNext: (layer, loadingTime, options={}) ->
 		return if @isTransitioning
-		return if layer is @current and !options.reloading
+		return if layer is @current
 
-		# prepare to load
-
-		try @header._expand()
-		try @footer._expand()
-		
-		app.header?.menuChevron?.visible = false
-
-		@_initial ?= true	
+		@_initial ?= true
 
 		if @chrome is "safari" and not @_initial 
 			loadingTime ?= _.random(.5, .75)
 
-		# prepare to load
+		views = _.filter @views, (v) => v.parent is @
 
-		@focused?.blur()
+		if views.length > 0
+			current = _.maxBy(views, 'index')
 
-		@isTransitioning = true
-
-		Utils.delay .25, => @loading = @isTransitioning
-
-
-		sendError = (area, error) =>
-			print "#{layer.title ? layer.key ? layer.name}, Error in View.#{area}: #{error.message}"
-
-
-		preload = (layer) => 
-			p = new Promise(_.bind(layer.preload, layer))
-			
-			return p
-
-		
-		load = (layer, response) =>
-			p = new Promise (resolve, reject) => 
-				Utils.bind layer, -> 
-					try layer.load(response) 
-					catch error
-						reject(error)
-
-					resolve(response)
-
-			return p
-
-
-		postload = (layer, response) =>
-			p = new Promise (resolve, reject) =>
-
-				layer.updateContent()
-				
-				_.defer =>
-					layer.emit "loaded"
-					try layer.postload(response)
-					catch error
-						reject(error)
-
-					resolve()
-
-			return p
-
-
-		doTransition = =>
-			# transition to new View
-			if loadingTime?
-				Utils.delay loadingTime, =>
-					@_transitionToNext(layer, options)
-				return
-
-			@_transitionToNext(layer, options)
-
-		preload(layer)
-		.then (response) => 
-			load(layer, response)
+		cycle = =>
+			@_preload(layer)
 			.then (response) => 
-				postload(layer, response)
-				.then(doTransition)
-				.catch (e) -> sendError("postload", e)
-			.catch (e) -> sendError("load", e)
-		.catch (e) -> sendError("preload", e)
+				@_load(layer, response)
+				.then (response) => 
+					@_postload(layer, response)
+					.then =>
+						layer.updateContent()
+						layer.y = @windowFrame.expandY
+						@_transitionToNext(layer, current, options)
+					.catch (e) => @_sendError(layer, "postload", e)
+				.catch (e) => @_sendError(layer, "load", e)
+			.catch (e) => @_sendError(layer, "preload", e)
 
-	# show previous view
-	showPrevious: (options={}) =>
+		if loadingTime
+			loadingTime ?= .5
+			@loading = true
+			@_prepareToLoad()
+			Utils.delay loadingTime, cycle
+			return
+
+		cycle()
+
+
+	showPrevious: (loadingTime, options={}) =>
 		return unless @previous
 		return if @isTransitioning
 
-		# prepare to load
+		@_prepareToLoad()
 
-		try @header._expand()
-		try @footer._expand()
+		# force loading time on safari
 
-		@focused?.blur()
-
-		@isTransitioning = true
-
-		Utils.delay .25, => @loading = @isTransitioning
+		if @chrome is "safari"
+			@loading = true
+			loadingTime = _.random(.3, .75)
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
@@ -506,53 +491,46 @@ class window.App extends FlowComponent
 			@showPrevious(animate: false, count: 1) for n in [2..count]
 
 		previous = @_stack.pop()
-		current = @current
-		layer = current
-		
 
-		# force loading time on safari
+		# views = _.filter @views, (v) => v.parent is @
 
-		if @chrome is "safari"
-			@loading = true
-			loadingTime = _.random(.3, .75)
+		# if views.length > 0
+		# 	current = _.maxBy(views, 'index')
+
+		layer = @current
 
 		if layer.preserveContent
-			@_transitionToPrevious(previous?.transition, options.animate, current, layer)
+			layer.updateContent()
+			layer.y = @windowFrame.expandY
+			@_transitionToPrevious(previous?.transition, options.animate, previous, layer, options)
 			return
 
 		# preload the new View
+		cycle = => 
+			@_preload(layer)
+				.then (response) => 
+					@_load(layer, response)
+					.then (response) => 
+						@_postload(layer, response)
+						.then =>
+							# do transition, for previous
+							layer.updateContent()
+							layer.y = @windowFrame.expandY
+							@_transitionToPrevious(previous?.transition, options.animate, previous, layer, options)
+						.catch (e) => @_sendError(layer, "postload", e)
+					.catch (e) => @_sendError(layer, "load", e)
+				.catch (e) => @_sendError(layer, "preload", e)
 
-		new Promise(_.bind(layer.preload, layer))
-		.then (response) => 
-			new Promise (resolve, reject) => 
-				Utils.bind layer, -> 
-					try 
-						layer.load(response) 
-					catch error
-						throw error
 
-					resolve(response)
 
-			.then (response) =>
-				layer.updateContent()
-				
-				Utils.delay 0, =>
-					layer.emit "loaded"
-					try 
-						layer.postload(response)
-					catch error
-						throw error
-						
-					# transition to new View
-					if loadingTime?
-						Utils.delay loadingTime, =>
-							@_transitionToPrevious(previous?.transition, options.animate, current, layer)
-						return
+		if loadingTime
+			loadingTime ?= .5
+			@loading = true
+			@_prepareToLoad()
+			Utils.delay loadingTime, cycle
+			return
 
-					@_transitionToPrevious(previous?.transition, options.animate, current, layer)
-
-			, (reason) -> throw reason 
-		, (reason) -> throw reason
+		cycle()
 
 
 	getScreenshot: (options = {}) =>
@@ -592,7 +570,6 @@ class window.App extends FlowComponent
 					console.log(error)
 			)
 
-
 	screenshotViews: (views, options = {}) =>
 		i = 0
 			
@@ -603,7 +580,7 @@ class window.App extends FlowComponent
 			@showNext(view)
 			i++
 			
-		@onTransitionEnd =>
+		@on "transitionEnded", =>
 			Utils.delay 2.5, =>
 				o = _.clone(options)
 				o.name = @current?.key
@@ -612,8 +589,8 @@ class window.App extends FlowComponent
 		loadNext()
 	
 
+	# DEFINITIONS
+
 	@define "windowFrame",
 		get: -> return @_windowFrame
-
-
 	
