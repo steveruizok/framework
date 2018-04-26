@@ -249,7 +249,7 @@ class exports.Header extends Layer
 
 		@app.on "transitionEnd", @_update
 
-		@titleLayer.on "change:text", -> 
+		@titleLayer?.on "change:text", -> 
 			@x = Align.center()
 
 		@statusBar.on "change:color", (color) -> 
@@ -298,6 +298,8 @@ class exports.Header extends Layer
 
 
 	_showHidden: (bool) =>
+		return unless @titleLayer?
+
 		@titleLayer.animateStop()
 
 		if bool

@@ -212,14 +212,14 @@ class window.App extends FlowComponent
 					return unless @current.isMoving
 					return if @current.content.draggable.isBeyondConstraints
 					
-					@header._collapse()
-					@footer._collapse()
+					try @header._collapse()
+					try @footer._collapse()
 
 				@onSwipeDownEnd =>
 					return unless @current.isMoving
 
-					@header._expand()
-					@footer._expand()
+					try @header._expand()
+					try @footer._expand()
 
 				@header.statusBar.onTap =>
 					@header._expand()
@@ -230,15 +230,15 @@ class window.App extends FlowComponent
 					return unless @current.isMoving 
 					return if @current.content.draggable.isBeyondConstraints
 
-					@header._collapse()
+					try @header._collapse()
 
 				@onSwipeDownEnd =>
 					return unless @current.isMoving
 
-					@header._expand()
+					try @header._expand()
 
 				@header.statusBar.onTap =>
-					@header._expand()
+					try  @header._expand()
 
 		@header?.on "change:height", @_setWindowFrame
 		@footer?.on "change:height", @_setWindowFrame
@@ -455,6 +455,7 @@ class window.App extends FlowComponent
 					@_postload(layer, response)
 					.then =>
 						layer.updateContent()
+						layer.bringToFront()
 						layer.y = @windowFrame.expandY
 						@_transitionToNext(layer, current, options)
 					.catch (e) => @_sendError(layer, "postload", e)
