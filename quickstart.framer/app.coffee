@@ -213,5 +213,3 @@ app.footer = new Toolbar
 			view: thirdView
 
 # app.showNext(secondView)
-
-# Utils.delay 1, => firstView.navbar.height = 100
