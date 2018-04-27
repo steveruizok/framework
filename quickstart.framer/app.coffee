@@ -17,25 +17,72 @@ app = new App
 
 
 # --------------------
+# Pages
+
+# Page 1
+
+createPage1 = (layer, view, title) ->
+	Utils.bind layer, ->
+		
+		for i in _.range(10)
+		
+			new Layer
+				parent: @content
+				y: 32
+				x: Align.center
+				height: 64
+				backgroundColor: blue
+			
+		Utils.stack(@content.children, 16)
+
+# Page 2
+	
+createPage2 = (layer, view, title) ->
+	Utils.bind layer, ->
+		
+		for i in _.range(10)
+		
+			new Layer
+				parent: @content
+				y: 32
+				x: Align.center
+				height: 64
+				backgroundColor: green
+			
+		Utils.stack(@content.children, 16)
+
+# Page 3
+
+createPage3 = (layer, view, title) ->
+	Utils.bind layer, ->
+		
+		for i in _.range(10)
+		
+			new Layer
+				parent: @content
+				y: 32
+				x: Align.center
+				height: 64
+				backgroundColor: yellow
+			
+		Utils.stack(@content.children, 16)
+
+
+# --------------------
 # Views
 
-# 0.0.0 Landing View
+# 0.0.0 First View
 
-landingView = new View
+firstView = new SectionView
 	name: "1"
 	title: "First View"
 	key: "0.0.0"
+	sections:
+		"First Page": createPage1
+		"Second Page": createPage2
+		"Third Page": createPage3
 
-landingView.onLoad ->
-	new Layer
-		parent: @content
-		x: Align.center()
-		
-	new Layer
-		parent: @content
-		x: Align.center()
-	
-landingView.onPostload ->
+firstView.onPostload ->
 	Utils.stack(@content.children, 400)
 
 # 1.0.0 Second View
@@ -49,6 +96,39 @@ secondView.onLoad ->
 	
 	btn = new Button
 		parent: @content
+		x: 16
+		y: 32
+		width: @width - 32
+	
+	btn.onSelect ->
+		app.showNext(anotherView)
+	
+	new Layer
+		parent: @content
+		x: Align.center()
+		
+	new Layer
+		parent: @content
+		x: Align.center()
+	
+	
+secondView.onPostload ->
+	Utils.stack(@content.children, 400)
+
+# 1.1.0 Another View
+
+anotherView = new View
+	name: "2.1"
+	title: "Another View"
+	key: "1.1.0"
+
+anotherView.onLoad ->
+	
+	btn = new Button
+		parent: @content
+		x: 16
+		y: 32
+		width: @width - 32
 	
 	btn.onSelect ->
 		app.showNext(thirdView)
@@ -62,7 +142,7 @@ secondView.onLoad ->
 		x: Align.center()
 	
 	
-secondView.onPostload ->
+anotherView.onPostload ->
 	Utils.stack(@content.children, 400)
 
 # 2.0.0 Third View
@@ -80,38 +160,38 @@ thirdView.onLoad ->
 	new Layer
 		parent: @content
 		x: Align.center()
-	
-	
+
 thirdView.onPostload ->
 	Utils.stack(@content.children, 400)
+	
+
 
 # --------------------
 # Kickoff
 
-# app.showNext(landingView)
+# Toolbar
 
 app.footer = new Toolbar
-	labels: true
-	start: 0
-	indicator: true
 	links:
 		"Home":
 			icon: "home"
-			view: landingView
+			view: firstView
 		"Second":
 			icon: "flag"
 			view: secondView
-			loader: true
+			loader: false
 		"Third":
 			icon: "star"
 			view: thirdView
-	
+
+# Menu
+
 app.menu = new Menu
 	structure:
 		0:
 			title: "Menu"
 			links:
-				"First View": -> app.showNext(landingView)
+				"First View": -> app.showNext(firstView)
 				"Second View": -> app.showNext(secondView)
 				"Third View": -> app.showNext(thirdView)
 		1:
@@ -125,4 +205,5 @@ app.menu = new Menu
 			links:
 				"sign up": undefined
 				"sign in": undefined
+				
 # app.showNext(secondView)

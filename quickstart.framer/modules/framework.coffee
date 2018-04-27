@@ -40,7 +40,9 @@ _.assign exports,
 		'View',
 		'Template',
 		'Toolbar'
-		'FormComponent'
+		'SectionView'
+		'Navbar',
+		'FormComponent',
 		"ProgressComponent"
 		'CarouselComponent', 
 		'SafariHeader'

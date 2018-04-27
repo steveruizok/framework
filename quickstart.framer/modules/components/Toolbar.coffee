@@ -1,4 +1,5 @@
 ###
+
 Toolbar
 
 An footer with links to views.
@@ -13,7 +14,7 @@ An footer with links to views.
 @param {boolean} options.labels		Whether to use labels in the toolbar.
 @param {Object} options.links		
 @param {array} options.pages
-@param {Object} options.flow
+
 ###
 
 class exports.Toolbar extends Layer
@@ -26,13 +27,14 @@ class exports.Toolbar extends Layer
 			height: 1
 			backgroundColor: white
 			color: black
-			tint: black
 			clip: true
 			animationOptions:
 				time: .25
+
+			border: 4
+			tint: black
 			start: 0
 			hidden: false
-			border: 4
 			indicator: false
 			labels: false
 			links:
@@ -45,14 +47,14 @@ class exports.Toolbar extends Layer
 					view: undefined
 					loader: true
 			pages: []
-			flow: @app
 		
 		super options
 		
 		_.assign @,
+			initial: true
+			border: options.border
 			start: options.start
 			pages: options.pages
-			flow: options.flow
 			links: options.links
 			labels: options.labels
 			prevCurrent: undefined
@@ -107,6 +109,8 @@ class exports.Toolbar extends Layer
 
 			return link
 
+		# indicator
+
 		@indicator = new SVGLayer
 			name: "Indicator"
 			parent: @
@@ -123,13 +127,27 @@ class exports.Toolbar extends Layer
 		Utils.contain(linksContainer)
 		linksContainer.x = Align.center()
 		
+
+		# EVENTS
+
+		@links.forEach (link, i) =>
+			link.onTap => @active = i
+
+		@app.on "transitionEnded", => @_transitioning = false
+
+		@app.on "transitionStart", (layer) =>
+			link = _.find(@links, (l) -> l.view is layer)
+			if link? then @_showActive(link)
+			@_active = @links.indexOf(link)
+
 		
 		# DEFINITIONS
 		
 		Utils.define @, "hidden", options.hidden, @_showHidden
 		Utils.define @, "active", undefined, @_setActiveLink
 
-		# cleanup
+
+		# CLEANUP
 		
 		_.defer =>
 			@height = 64
@@ -138,47 +156,35 @@ class exports.Toolbar extends Layer
 			
 			app.rootView = @links[@start].view
 			@active = @start
-		
 
-		# EVENTS
-
-
-		@links.forEach (link, i) =>
-			link.onTap =>
-				@active = i
-
-		@app.on "transitionEnded", =>
-			@_transitioning = false
-
-		@app.on "transitionStart", (layer) =>
-			link = _.find(@links, (l) -> l.view is layer)
-			if link? then @_showActive(link)
-			@_active = @links.indexOf(link)
+			@initial = false
 	
 
 	# PRIVATE METHODS
 
 	_showHidden: (bool) =>
 		if bool
-			@animate
+			props =
 				y: @app.height
 				options:
 					time: .2
-			return
+		else
+			props =
+				y: Align.bottom()
+				options:
+					time: .3
 
-		@animate
-			y: Align.bottom()
-			options:
-				time: .3
+		setOrAnimateProps(@, props, @initial)
 
 
 	_setActiveLink: (index) =>
 		return unless index >= 0
 		
 		link = @links[index]
+		@_showActive(link)
+
 		currentIndex = _.indexOf(@links, @prevCurrent) ? -1
 		transition = @_getTransition(index, currentIndex)
-		@_showActive(link)
 		
 		if link.view? and link.view isnt @app.current
 			@_transitioning = true
@@ -190,73 +196,84 @@ class exports.Toolbar extends Layer
 	
 
 	_showActive: (link) =>
-		@indicator.animate
-			midX: link.x + (link.width / 2) + link.parent.x
-		
 		bumpDown = @labels and @hasIndicator
+		sibs = _.without(@links, link)
 
-		link.animate
+		sibProps =
+			opacity: .8
+			y: Align.center()
+
+		linkProps =
 			opacity: 1
 			y: Align.center(if bumpDown then 3 else 0)
-		
-		for sib in _.without(@links, link)
-			sib.animate
-				opacity: .8
-				y: Align.center()
-	
+
+		indicatorProps =
+			midX: link.x + (link.width / 2) + link.parent.x
+
+		setOrAnimateProps(link, linkProps, @initial)
+		setOrAnimateProps(@indicator, indicatorProps, @initial)
+		setOrAnimateProps(sib, sibProps, @initial) for sib in sibs
+
 
 	_getTransition: (nextIndex, currentIndex) =>
-		
-		leftTransition = (nav, layerA, layerB, overlay) =>
-			transition =
-				layerA:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: -Screen.width
-						options:
-							time: .45
-				layerB:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: Screen.width
-						options:
-							time: .45
-						
-		rightTransition = (nav, layerA, layerB, overlay) =>
-			transition = 
-				layerA:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: Screen.width
-						options:
-							time: .45
-				layerB:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: -Screen.width
-						options:
-							time: .45
-		
 		if currentIndex > nextIndex
 			return rightTransition
-		else
-			return leftTransition
+		
+		return leftTransition
 	
 
-	# DEFINITIONS
+	# READ-ONLY DEFINITIONS
 
 	@define "current",
-		get: -> 
-			return @links[@active]
+		get: => @links[@active]
+
+
+setOrAnimateProps = (layer, props, bool) =>
+	if bool
+		layer.props = props
+		return
+
+	layer.animate props
+
+
+leftTransition = (nav, layerA, layerB, overlay) =>
+	transition =
+		layerA:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: -Screen.width
+				options:
+					time: .45
+		layerB:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: Screen.width
+				options:
+					time: .45
+				
+rightTransition = (nav, layerA, layerB, overlay) =>
+	transition = 
+		layerA:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: Screen.width
+				options:
+					time: .45
+		layerB:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: -Screen.width
+				options:
+					time: .45
