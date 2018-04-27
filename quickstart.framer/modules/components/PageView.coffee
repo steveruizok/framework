@@ -123,7 +123,7 @@ class exports.PageView extends View
 
 			@navbar.on "change:active", (num) => @start = num
 				
-			new Promise options.preload
+			new Promise options.preload.bind(@)
 			.then resolve
 
 		@onPreload = -> throw "PageView.preload is read only outside of the constructor. Use the preload option when creating a PageView instance."

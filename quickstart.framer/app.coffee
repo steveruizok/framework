@@ -78,6 +78,10 @@ firstView = new PageView
 	name: "1"
 	title: "First View"
 	key: "0.0.0"
+# 	start: 1
+# 	preload: (resolve, reject) -> 
+# 		@name = "Preloaded"
+# 		resolve()
 	pages:
 		"First Page": createPage1
 		"Second Page": createPage2
@@ -175,6 +179,11 @@ thirdView.onPostload ->
 # Menu
 
 app.menu = new Menu
+# 	open: false
+# 	title: "Menu"
+# 	dividers: false
+# 	tint: red
+# 	padding: {top: 56, bottom: 16, left: 8, right: 8, stack: 4}
 	structure:
 		0:
 			title: "Menu"
@@ -197,9 +206,12 @@ app.menu = new Menu
 # Toolbar
 
 app.footer = new Toolbar
-	labels: true
-	border: 3
+# 	labels: true
+# 	start: 0
+# 	color: red
+# 	border: 3
 # 	indicator: true
+# 	tint: red
 	links:
 		"Home":
 			icon: "home"

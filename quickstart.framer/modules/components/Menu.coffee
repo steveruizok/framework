@@ -30,12 +30,12 @@ class exports.Menu extends ScrollComponent
 			color: black
 			backgroundColor: white
 			scrollHorizontal: false
+			
 			padding: {top: 56, bottom: 16, left: 20, right: 20, stack: 4}
 			tint: black
 			title: ""
 			open: false
 			dividers: true
-			showSublayers: false
 			structure:
 				0:
 					title: "Menu"
@@ -80,7 +80,7 @@ class exports.Menu extends ScrollComponent
 			name: if options.showSublayers then 'Menu open button' else "."
 			parent: options.parent
 			x: options.x
-			y: @y + 4
+			y: @y + 2
 			size: 48
 			padding: 12
 			icon: "menu"
@@ -101,7 +101,6 @@ class exports.Menu extends ScrollComponent
 			x: Align.center()
 			text: options.title
 			color: @color
-			y: 11
 		
 		@closeButton = new Icon
 			name: "Menu close button"
@@ -109,9 +108,11 @@ class exports.Menu extends ScrollComponent
 			color: @color
 			icon: "close"
 			x: options.x
-			y: 5
+			y: 2
 			size: 48
 			padding: 12
+
+		@titleLayer.midY = @closeButton.midY
 
 		Utils.contain(@headerContainer, true, 0, 4)
 

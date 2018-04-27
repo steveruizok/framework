@@ -31,8 +31,8 @@ class exports.Toolbar extends Layer
 			clip: true
 			animationOptions: { time: .25 }
 
-			border: 4
-			tint: black
+			border: 1
+			tint: black.alpha(.16)
 			start: 0
 			hidden: false
 			indicator: false
