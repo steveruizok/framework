@@ -3,6 +3,7 @@ require "framework"
 app = new App
 	printErrors: true
 	showKeys: true
+# 	showSublayers: true
 
 # --------------------
 # Data
@@ -73,11 +74,11 @@ createPage3 = (layer, view, title) ->
 
 # 0.0.0 First View
 
-firstView = new SectionView
+firstView = new PageView
 	name: "1"
 	title: "First View"
 	key: "0.0.0"
-	sections:
+	pages:
 		"First Page": createPage1
 		"Second Page": createPage2
 		"Third Page": createPage3
@@ -99,6 +100,7 @@ secondView.onLoad ->
 		x: 16
 		y: 32
 		width: @width - 32
+		text: "Show another view"
 	
 	btn.onSelect ->
 		app.showNext(anotherView)
@@ -129,6 +131,7 @@ anotherView.onLoad ->
 		x: 16
 		y: 32
 		width: @width - 32
+		text: "Show third view"
 	
 	btn.onSelect ->
 		app.showNext(thirdView)
@@ -169,9 +172,34 @@ thirdView.onPostload ->
 # --------------------
 # Kickoff
 
+# Menu
+
+app.menu = new Menu
+	structure:
+		0:
+			title: "Menu"
+			links:
+				"First View": firstView.show
+				"Second View": secondView.show
+				"Third View": thirdView.show
+		1:
+			title: undefined
+			links:
+				"secondary link 1": -> new Alert {title: "Secondary 1 tapped!"}
+				"secondary link 2": -> new Alert {title: 'Secondary 2 tapped!'}
+				"secondary link 3": -> new Alert {title: 'Secondary 3 tapped!'}
+		2:
+			title: undefined
+			links:
+				"sign up": undefined
+				"sign in": undefined
+
 # Toolbar
 
 app.footer = new Toolbar
+	labels: true
+	border: 3
+# 	indicator: true
 	links:
 		"Home":
 			icon: "home"
@@ -184,26 +212,6 @@ app.footer = new Toolbar
 			icon: "star"
 			view: thirdView
 
-# Menu
-
-app.menu = new Menu
-	structure:
-		0:
-			title: "Menu"
-			links:
-				"First View": -> app.showNext(firstView)
-				"Second View": -> app.showNext(secondView)
-				"Third View": -> app.showNext(thirdView)
-		1:
-			title: undefined
-			links:
-				"secondary link 1": undefined
-				"secondary link 2": undefined
-				"secondary link 3": undefined
-		2:
-			title: undefined
-			links:
-				"sign up": undefined
-				"sign in": undefined
-				
 # app.showNext(secondView)
+
+# Utils.delay 1, => firstView.navbar.height = 100

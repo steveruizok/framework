@@ -1,36 +1,60 @@
-# NavBar
+###
+
+Navbar
+
+A drop-down menu to select sub-pages.
+
+@extends {Layer}
+@param {Object} options 			The navbar's attributes.
+@param {number} options.height	 	The navbar's collapsed height.
+@param {string} options.color 		The color to use for the navbar's labels.
+@param {number} options.start		The initial linked page.
+@param {Object} options.links		An object of key value pairs, where the key is the title of the link and the value is the callback used to create that link's page content.
+@param {Object} options.padding		An object to set the top, bottom, and stack paddings for the navbar's link labels.
+
+###
 
 class exports.Navbar extends Layer
 	constructor: (options = {}) ->
 		
 		_.defaults options,
 			name: "Toolbar"
-			height: 44
 			width: Screen.width
 			backgroundColor: white
 			color: black
 			shadowY: 1
 			shadowColor: black.alpha(.16)
+			clip: true
 			animationOptions:
 				time: .25
 
-			clip: true
-			flow: @app
-			links:
+			padding: {}
+			flow: undefined
+			pages:
 				"First Page": undefined
 				"Second Page": undefined
 				"Third Page": undefined
-			pages: []
 			start: 2
+
+		_.defaults options.padding,
+			top: 0
+			stack: 0
+			bottom: 8
 		
 		super options
 
-		_.assign @,
-			start: options.start
-			pages: options.pages
-			links: options.links
-			flow: options.flow
-			prevCurrent: undefined
+		_.assign @, 
+			_.pick options, [
+				'padding'
+				'start'
+				'padding'
+				'links'
+				'flow'
+				'pages'
+				],
+			{
+				prevCurrent: undefined
+			}
 		
 
 		# LAYERS
@@ -38,6 +62,7 @@ class exports.Navbar extends Layer
 		# current selected
 
 		@currentLayer = new Layer
+			name: "Current"
 			parent: @
 			width: @width
 			height: @height
@@ -45,6 +70,7 @@ class exports.Navbar extends Layer
 
 		@currentLabel = new H5Link
 			parent: @currentLayer
+			name: "Current Label"
 			text: ""
 			width: @width
 			textAlign: "center"
@@ -53,12 +79,13 @@ class exports.Navbar extends Layer
 			padding: {top: 16, bottom: 16}
 			animationOptions: @animationOptions
 
-		@height = @currentLabel.height
+		@height = options.height ? @currentLabel.height
 		@currentLayer.height = @height
 		
 		# chevron
 		
 		@chevron = new Icon
+			name: "Chevron"
 			parent: @currentLayer
 			x: Align.right(-16)
 			icon: 'chevron-down'
@@ -68,28 +95,28 @@ class exports.Navbar extends Layer
 		
 		# link labels
 
-		@links = _.map options.links, (value, key) =>
+		@links = _.map options.pages, (page, i) =>
 			label = new H5Link
 				parent: @
-				name: '.'
-				text: key
+				name: page.name + ' Label'
+				text: page.name
 				width: @width
 				textAlign: "center"
 				color: @color
 				opacity: 1
-				y: @currentLabel.maxY
+				y: @currentLabel.maxY + @padding.top
 				padding: {top: 16, bottom: 16}
 					
 			label.onTap =>
 				return unless @open
-				@active = _.keys(options.links).indexOf(key)
+				@active = i
 			
 			return label
 		
-		Utils.stack(@links)
+		Utils.stack(@links, @padding.stack)
 
-		@fullHeight = _.last(@links)?.maxY + 8 ? @height
-	
+		@fullHeight = _.last(@links)?.maxY + @padding.bottom ? @height
+
 	
 		# DEFINITIONS
 		
@@ -100,34 +127,42 @@ class exports.Navbar extends Layer
 		
 
 		# EVENTS
-		
+
 		@onTap => @open = !@open
+
+
+		# CLEANUP
+		
+		delete @initial
+		
+		child.name = '.' for child in @children unless options.showSublayers
+		
 	
 
 	# PRIVATE METHODS
-	
+
 	_setOpen: (bool) =>
 		if bool
-			@animate { height: @fullHeight }
-			@currentLabel.animate { opacity: .8 }
-			@chevron.animate { rotation: 180 }
+			Utils.setOrAnimateProps @, @initial, { height: @fullHeight }
+			Utils.setOrAnimateProps @currentLabel, @initial, { opacity: .8 }
+			Utils.setOrAnimateProps @chevron, @initial, { rotation: 180 }
 			return
 		
-		@animate { height: @currentLayer.height + 1 }
-		@currentLabel.animate { opacity: 1 }
-		@chevron.animate { rotation: 0 }
+		Utils.setOrAnimateProps @, @initial, { height: @currentLayer.height + 1 }
+		Utils.setOrAnimateProps @currentLabel, @initial, { opacity: 1 }
+		Utils.setOrAnimateProps @chevron, @initial, { rotation: 0 }
 
 
 	_setActiveLink: (index) =>
 		link = @links[index]
 		@currentLabel.text = link.text
 
-		currentIndex = _.indexOf(@links, @prevCurrent) ? -1
+		currentIndex = @prevCurrent ? -1
 		transition = @_getTransition(index, currentIndex)
 		
 		@flow.transition(@pages[index], transition)
 		@emit "change:current", @pages[index]
-		@prevCurrent = link
+		@prevCurrent = index
 
 
 	_getTransition: (nextIndex, currentIndex) =>

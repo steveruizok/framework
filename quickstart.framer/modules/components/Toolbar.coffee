@@ -5,7 +5,8 @@ Toolbar
 An footer with links to views.
 
 @extends {Layer}
-@param {Object} options 			The toolbar's attributes.@param {number} options.height	 	The menu's max expanded height
+@param {Object} options 			The toolbar's attributes.
+@param {number} options.height	 	The menu's max expanded height
 @param {string} options.color 		The color to use for the toolbar's icons and labels.
 @param {string} options.tint 		The color to use for the toolbar's accents colors.
 @param {number} options.border 		The width of the toolbar's top border.
@@ -23,13 +24,12 @@ class exports.Toolbar extends Layer
 		_.defaults options,
 			name: "Toolbar"
 			y: Align.bottom()
+			height: 64
 			width: Screen.width
-			height: 1
 			backgroundColor: white
 			color: black
 			clip: true
-			animationOptions:
-				time: .25
+			animationOptions: { time: .25 }
 
 			border: 4
 			tint: black
@@ -46,24 +46,30 @@ class exports.Toolbar extends Layer
 					icon: "flag"
 					view: undefined
 					loader: true
-			pages: []
 		
 		super options
-		
-		_.assign @,
-			initial: true
-			border: options.border
-			start: options.start
-			pages: options.pages
-			links: options.links
-			labels: options.labels
-			prevCurrent: undefined
-			tint: options.tint
-			hasIndicator: options.indicator
-			style:
-				borderTop: "#{Utils.px(options.border)} solid #{options.tint}"
-		
+
+		_.assign @, 
+			_.pick options, [
+				'border'
+				'start'
+				'links'
+				'labels'
+				'tint'
+				]
+			{
+				pages: []
+				initial: true
+				prevCurrent: undefined
+				hasIndicator: options.indicator
+			}
+			
 		# LAYERS
+
+		# top border
+
+		_.assign @style,
+			borderTop: "#{Utils.px(@border)} solid #{@tint}"
 		
 		# links
 
@@ -148,16 +154,16 @@ class exports.Toolbar extends Layer
 
 
 		# CLEANUP
+
+		child.name = '.' for child in @children unless options.showSublayers
 		
 		_.defer =>
-			@height = 64
-			@y = Align.bottom()
 			linksContainer.y = Align.center(if options.labels then -10 else 0)
 			
 			app.rootView = @links[@start].view
 			@active = @start
 
-			@initial = false
+			delete @initial
 	
 
 	# PRIVATE METHODS
@@ -174,7 +180,7 @@ class exports.Toolbar extends Layer
 				options:
 					time: .3
 
-		setOrAnimateProps(@, props, @initial)
+		Utils.setOrAnimateProps(@, @initial, props)
 
 
 	_setActiveLink: (index) =>
@@ -190,6 +196,7 @@ class exports.Toolbar extends Layer
 			@_transitioning = true
 			@app.showNext link.view, link.loader,
 				transition: transition
+
 			@emit "change:current", @pages[index]
 		
 		@prevCurrent = link
@@ -200,7 +207,7 @@ class exports.Toolbar extends Layer
 		sibs = _.without(@links, link)
 
 		sibProps =
-			opacity: .8
+			opacity: .618
 			y: Align.center()
 
 		linkProps =
@@ -210,9 +217,9 @@ class exports.Toolbar extends Layer
 		indicatorProps =
 			midX: link.x + (link.width / 2) + link.parent.x
 
-		setOrAnimateProps(link, linkProps, @initial)
-		setOrAnimateProps(@indicator, indicatorProps, @initial)
-		setOrAnimateProps(sib, sibProps, @initial) for sib in sibs
+		Utils.setOrAnimateProps(link, @initial, linkProps)
+		Utils.setOrAnimateProps(@indicator, @initial, indicatorProps)
+		Utils.setOrAnimateProps(sib, @initial, sibProps) for sib in sibs
 
 
 	_getTransition: (nextIndex, currentIndex) =>
@@ -226,14 +233,6 @@ class exports.Toolbar extends Layer
 
 	@define "current",
 		get: => @links[@active]
-
-
-setOrAnimateProps = (layer, props, bool) =>
-	if bool
-		layer.props = props
-		return
-
-	layer.animate props
 
 
 leftTransition = (nav, layerA, layerB, overlay) =>

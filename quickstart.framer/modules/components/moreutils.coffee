@@ -527,6 +527,15 @@ Utils.StateManager = class StateManager
 		
 		return @_state
 
+
+Utils.setOrAnimateProps = (layer, bool, props) =>
+	if bool
+		layer.props = props
+		return
+
+	layer.animate props
+
+
 # arrange layers in an array into a grid, using a set number of columns and row/column margins
 # @example    Utils.grid(layers, 4)
 Utils.grid = (array = [], cols = 4, rowMargin = 16, colMargin) ->

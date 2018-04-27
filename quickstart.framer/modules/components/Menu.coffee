@@ -77,7 +77,7 @@ class exports.Menu extends ScrollComponent
 
 
 		@openButton = new Icon
-			name: 'Menu open button'
+			name: if options.showSublayers then 'Menu open button' else "."
 			parent: options.parent
 			x: options.x
 			y: @y + 4
@@ -96,7 +96,7 @@ class exports.Menu extends ScrollComponent
 			backgroundColor: @backgroundColor
 		
 		@titleLayer = new H4
-			name: "Tiitle"
+			name: "Title"
 			parent: @headerContainer
 			x: Align.center()
 			text: options.title
@@ -218,8 +218,8 @@ class exports.Menu extends ScrollComponent
 		@sections.forEach (section) =>
 			section.links.forEach (link) =>
 				link.onSelect => 
-					link.value()
-					_.defer => @open = false
+					@open = false
+					@once Events.AnimationEnd, link.value
 
 		@app.on "transitionStart", (prev, next, options) =>
 			@hidden = true

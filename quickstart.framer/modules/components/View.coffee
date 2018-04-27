@@ -149,8 +149,10 @@ class exports.View extends ScrollComponent
 		@postload = callback
 
 	
-	onUnload: (callback) -> 
+	onUnload: (callback) => 
 		@unload = callback
+
+	show: => @app.showNext(@)
 
 	
 	# ---------------

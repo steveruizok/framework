@@ -1,36 +1,50 @@
-# { View } = require 'components/View'
-# { Navbar } = require 'components/Navbar'
+###
 
-# Section View
+Page View
 
-class exports.SectionView extends View
+A view that manages several pages through a nav bar.
+
+@extends {Layer}	
+@param {Object} options 			The pageview's attributes.
+@param {function} options.preload 	A promise function that will run immediately before the View's onLoad.
+@param {boolean} options.pages 		An object composed of key value pairs, where the key is the name of the page and the value is the callback used to create that page.	 	
+@param {string} options.start 	
+@param {number} options.placeholder
+
+###
+
+class exports.PageView extends View
 	constructor: (options = {}) ->
 		
 		_.defaults options,
 			name: "Section View"
 			title: "Section View"
-			# y: app.header?.maxY
-			# height: app.height
 			backgroundColor: white
+			clip: false
 			contentInset:
 				top: 0
 				bottom: 48
-			sections:
+
+			start: 0
+			placeholder: createBlankPage
+			preload: (resolve, reject) -> resolve()
+			pages:
 				"First Page": undefined
 				"Second Page": undefined
 				"Third Page": undefined
-			preload: new Promise (resolve, reject) -> resolve()
-			start: 0
-			clip: false
-			placeholder: createBlankPage
 		
 		super options
-		
-		_.assign @,
-			start: options.start 
-			sections: options.sections
-			pages: []
-			placeholder: options.placeholder
+
+		_.assign @, 
+			_.pick options, [
+				'start'
+				'placeholder'
+				'tint'
+				]
+			{
+				prevCurrent: undefined
+			}
+
 
 		@content.backgroundColor = @backgroundColor
 
@@ -53,27 +67,22 @@ class exports.SectionView extends View
 			
 			# Pages
 
-			@pages = _.map @sections, (value, key) =>
+			@pages = _.map options.pages, (value, key) =>
 
 				# Page
 
 				page = new ScrollComponent
 					name: key
+					parent: @
 					width: @width 
 					height: @height - 44
 					scrollHorizontal: false
 					contentInset: {top: 0, bottom: 96}
 					backgroundColor: @backgroundColor
-					
+				
+				page.callback = value ? => @placeholder(page, @, key)
 				page.content.backgroundColor = null
-
-				# Store back to object
-
-				callback = value ? => @placeholder(page, @, key)
-
-				@sections[key] =
-					page: page
-					callback: value?.callback ? callback
+				page.sendToBack()
 
 				# Swipe handlers
 				
@@ -97,6 +106,7 @@ class exports.SectionView extends View
 					@off Events.SwipeRightEnd, goLeft
 				
 				page.sendToBack()
+
 				return page
 			
 			# Nav Bar
@@ -107,10 +117,16 @@ class exports.SectionView extends View
 				flow: @flow
 				pages: @pages
 				start: @start
-				links: @sections
+				links: options.pages
+
+			# update sectionview's start when active changes
+
+			@navbar.on "change:active", (num) => @start = num
 				
-			options.preload
+			new Promise options.preload
 			.then resolve
+
+		@onPreload = -> throw "PageView.preload is read only outside of the constructor. Use the preload option when creating a PageView instance."
 
 
 		# EVENTS
@@ -119,15 +135,21 @@ class exports.SectionView extends View
 			
 		@onPostload @updateContent
 
+
+		# CLEANUP
+
+		child.name = '.' for child in @children unless options.showSublayers
+
+
 	# PRIVATE METHODS
 
 	# PUBLIC METHODS
 
 	createContent: =>
-		_.map @sections, (value, key) =>
+		_.map @pages, (page) =>
 			view = @
-			Utils.bind value.page, -> 
-				value.callback(value.page, view)
+			Utils.bind page, -> 
+				page.callback(page, view)
 
 
 

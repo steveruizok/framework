@@ -40,7 +40,7 @@ _.assign exports,
 		'View',
 		'Template',
 		'Toolbar'
-		'SectionView'
+		'PageView'
 		'Navbar',
 		'FormComponent',
 		"ProgressComponent"
@@ -76,6 +76,10 @@ exports.components.forEach (componentName) ->
 	window[componentName] = class FrameworkComponent extends component
 		constructor: (options = {}) ->
 			@app = exports.app
+
+			_.assign options,
+				showSublayers: @app.showSublayers
+
 			super options
 
 # ... and finally, the App class
@@ -94,6 +98,7 @@ class window.App extends FlowComponent
 			perspective: 1000
 			screenshot: true
 			printErrors: false
+			showSublayers: false
 
 		super options
 
@@ -103,6 +108,7 @@ class window.App extends FlowComponent
 			contentWidth: options.contentWidth
 			_windowFrame: {}
 			views: []
+			showSublayers: options.showSublayers
 			keyboard: Keyboard
 			printErrors: options.printErrors
 			preload: new Promise (resolve, reject) -> _.defer resolve
@@ -367,6 +373,7 @@ class window.App extends FlowComponent
 
 		@loading = false
 		@isTransitioning = false
+
 		@transition(next, transition, options)
 		@emit "transitionStart", next
 
