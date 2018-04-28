@@ -132,12 +132,11 @@ class exports.Navbar extends Layer
 
 		# CLEANUP
 
+		child.name = '.' for child in @children unless options.showSublayers
+
 		@index = @start
 		
 		delete @initial
-
-		child.name = '.' for child in @children unless options.showSublayers
-		
 	
 
 	# PRIVATE METHODS

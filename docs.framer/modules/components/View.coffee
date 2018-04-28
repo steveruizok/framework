@@ -96,6 +96,8 @@ class exports.View extends ScrollComponent
 
 	
 	_unloadView: (app, next, prev, direction) =>
+		@sendToBack()
+
 		try @unload(app, next, prev, direction)
 		
 		return if @preserveContent

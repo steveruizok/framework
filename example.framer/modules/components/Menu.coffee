@@ -192,6 +192,7 @@ class exports.Menu extends ScrollComponent
 
 		@underlay = new Layer
 			parent: app
+			y: @y
 			name: "menu underlay"
 			size: Screen.size
 			visible: false
@@ -289,7 +290,7 @@ class exports.Menu extends ScrollComponent
 				options:
 					time: .15
 			
-			@underlay.placeBefore(app.current)
+			@underlay.bringToFront()
 			return
 				
 		@once Events.AnimationEnd, =>

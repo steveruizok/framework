@@ -146,7 +146,7 @@ class exports.Toolbar extends Layer
 		@app.on "transitionStart", (layer) =>
 			link = _.find(@links, (l) -> l.view is layer)
 			if link? then @_showActive(link)
-			@_active = @links.indexOf(link)
+			@active = @links.indexOf(link)
 
 		
 		# DEFINITIONS

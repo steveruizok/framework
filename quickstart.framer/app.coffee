@@ -42,6 +42,7 @@ createPage1 = (data, page, view) ->
 			backgroundColor: blue
 		
 	Utils.stack(@content.children, 16)
+	@updateContent()
 
 # Page 2
 	
@@ -56,6 +57,7 @@ createPage2 = (data, page, view) ->
 			backgroundColor: green
 		
 	Utils.stack(@content.children, 16)
+	@updateContent()
 
 # Page 3
 
@@ -70,6 +72,7 @@ createPage3 = (data, page, view) ->
 			backgroundColor: yellow
 		
 	Utils.stack(@content.children, 16)
+	@updateContent()
 
 
 # --------------------
@@ -94,10 +97,6 @@ firstView = new PageView
 # 			x: Align.center()
 # 			y: 32
 # 			text: "Placeholder for " + page.name
-	
-
-firstView.onPostload ->
-	Utils.stack(@content.children, 400)
 
 # 1.0.0 Second View
 
@@ -118,14 +117,16 @@ secondView.onLoad ->
 	btn.onSelect ->
 		app.showNext(anotherView)
 	
-	new Layer
+	btn = new Button
 		parent: @content
-		x: Align.center()
-		
-	new Layer
-		parent: @content
-		x: Align.center()
+		x: 16
+		y: 32
+		width: @width - 32
+		text: "Show takeover view"
 	
+	btn.onSelect ->
+		app.showNext(new TakeoverView)
+			
 	nav = new Navbar
 		parent: @
 		start: 0
@@ -136,9 +137,14 @@ secondView.onLoad ->
 			
 	@app.on "transitionEnd", => 
 		Utils.pin nav, app.header, 'bottom'
+			
+	for i in _.range(4)
+		new Layer
+			parent: @content
+			x: Align.center()
 	
 secondView.onPostload ->
-	Utils.stack(@content.children, 400)
+	Utils.stack(@content.children, 16)
 
 # 1.1.0 Another View
 
@@ -158,28 +164,14 @@ anotherView.onLoad ->
 	
 	btn.onSelect ->
 		app.showNext(thirdView)
-	
-	btn = new Button
-		parent: @content
-		x: 16
-		y: 32
-		width: @width - 32
-		text: "Show takeover view"
-	
-	btn.onSelect ->
-		app.showNext(new TakeoverView)
-	
-	new Layer
-		parent: @content
-		x: Align.center()
-		
-	new Layer
-		parent: @content
-		x: Align.center()
-	
+			
+	for i in _.range(4)
+		new Layer
+			parent: @content
+			x: Align.center()
 	
 anotherView.onPostload ->
-	Utils.stack(@content.children, 400)
+	Utils.stack(@content.children, 16)
 
 # 1.2.0 Takeover View
 
@@ -194,21 +186,20 @@ class TakeoverView extends View
 		super options
 		
 		@onLoad ->
-			new H5
+			info = new Body
 				parent: @content
-				text: "Notice the toolbar is gone."
+				text: "On views with the `oneoff` property, the Toolbar will hide away, giving the View a focused 'takeover' appearance. This ensures that the user will navigate away form the View using `showPrevious`, which will remove the `oneoff` View."
 				x: 32
 				width: @width - 64
-			
-			new Layer
-				parent: @content
-				x: Align.center()
 				
-			new Layer
-				parent: @content
-				x: Align.center()
+			Utils.toMarkdown(info)
+			
+			for i in _.range(4)
+				new Layer
+					parent: @content
+					x: Align.center()
 	
-			Utils.stack(@content.children, 400)
+			Utils.stack(@content.children, 16)
 
 # 2.0.0 Third View
 

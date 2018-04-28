@@ -356,15 +356,14 @@ class window.App extends FlowComponent
 			return
 
 
-	_updatePrevious: (next, prev, options) =>
+	_updatePrevious: (next, prev, options, direction) =>
 		@isTransitioning = false
 
 		unless prev? and prev instanceof View
 			@emit("transitionEnd", prev, next, options)	
 			return
 
-		prev.sendToBack()
-		prev._unloadView(@, next, prev, options)
+		prev._unloadView(@, next, prev, options, direction)
 		@emit("transitionEnd", prev, next, options)	
 
 
@@ -379,7 +378,7 @@ class window.App extends FlowComponent
 
 		do (next, prev, options) =>
 			@once Events.TransitionEnd, =>
-				@_updatePrevious(next, prev, options)
+				@_updatePrevious(next, prev, options, "forward")
 
 
 	_transitionToPrevious: (transition, animate, prev, next, options) =>
@@ -390,7 +389,7 @@ class window.App extends FlowComponent
 
 		do (next, prev, options) =>
 			@once Events.TransitionEnd, =>
-				@_updatePrevious(next, prev, options)
+				@_updatePrevious(next, prev, options, "back")
 
 
 
@@ -464,8 +463,8 @@ class window.App extends FlowComponent
 				.then (response) => 
 					@_postload(layer, response)
 					.then =>
+						layer.placeBehind(@overlay)
 						layer.updateContent()
-						layer.bringToFront()
 						layer.y = @windowFrame.expandY
 						@_transitionToNext(layer, current, options)
 					.catch (e) => @_sendError(layer, "postload", e)
@@ -520,6 +519,7 @@ class window.App extends FlowComponent
 						@_postload(layer, response)
 						.then =>
 							# do transition, for previous
+							layer.placeBehind(@overlay)
 							layer.updateContent()
 							layer.y = @windowFrame.expandY
 							@_transitionToPrevious(previous?.transition, options.animate, previous.layer, layer, options)

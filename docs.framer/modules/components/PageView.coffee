@@ -90,12 +90,12 @@ class exports.PageView extends View
 				# Swipe handlers
 				
 				goLeft = =>
-					return if @navbar.active is 0
-					@navbar.active--
+					return if @navbar.index is 0
+					@navbar.index--
 					
 				goRight = =>
-					return if @navbar.active is @navbar.links.length - 1
-					@navbar.active++
+					return if @navbar.index is @navbar.links.length - 1
+					@navbar.index++
 				
 				# Swipe events
 
