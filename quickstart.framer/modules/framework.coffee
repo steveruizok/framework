@@ -455,6 +455,7 @@ class window.App extends FlowComponent
 
 		if views.length > 0
 			current = _.maxBy(views, 'index')
+		
 
 		cycle = =>
 			@_preload(layer)
@@ -471,10 +472,11 @@ class window.App extends FlowComponent
 				.catch (e) => @_sendError(layer, "load", e)
 			.catch (e) => @_sendError(layer, "preload", e)
 
+		@_prepareToLoad()
+
 		if loadingTime
 			loadingTime ?= .5
 			@loading = true
-			@_prepareToLoad()
 			Utils.delay loadingTime, cycle
 			return
 
@@ -484,8 +486,6 @@ class window.App extends FlowComponent
 	showPrevious: (loadingTime, options={}) =>
 		return unless @previous
 		return if @isTransitioning
-
-		@_prepareToLoad()
 
 		# force loading time on safari
 
@@ -502,11 +502,6 @@ class window.App extends FlowComponent
 			@showPrevious(animate: false, count: 1) for n in [2..count]
 
 		previous = @_stack.pop()
-
-		# views = _.filter @views, (v) => v.parent is @
-
-		# if views.length > 0
-		# 	current = _.maxBy(views, 'index')
 
 		layer = @current
 
@@ -532,12 +527,11 @@ class window.App extends FlowComponent
 					.catch (e) => @_sendError(layer, "load", e)
 				.catch (e) => @_sendError(layer, "preload", e)
 
-
+		@_prepareToLoad()
 
 		if loadingTime
 			loadingTime ?= .5
 			@loading = true
-			@_prepareToLoad()
 			Utils.delay loadingTime, cycle
 			return
 
@@ -591,7 +585,7 @@ class window.App extends FlowComponent
 			@showNext(view)
 			i++
 			
-		@on "transitionEnded", =>
+		@on "transitionEnd", =>
 			Utils.delay 2.5, =>
 				o = _.clone(options)
 				o.name = @current?.key

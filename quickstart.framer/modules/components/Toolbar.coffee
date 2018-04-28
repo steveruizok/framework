@@ -139,7 +139,9 @@ class exports.Toolbar extends Layer
 		@links.forEach (link, i) =>
 			link.onTap => @active = i
 
-		@app.on "transitionEnded", => @_transitioning = false
+		@app.on "transitionEnd", (prev, next) => 
+			@_transitioning = false
+			@hidden = @app.current?.oneoff ? false
 
 		@app.on "transitionStart", (layer) =>
 			link = _.find(@links, (l) -> l.view is layer)

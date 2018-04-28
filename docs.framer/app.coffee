@@ -306,7 +306,7 @@ class RowLink extends Layer
 		if @link?
 			
 			@linkLayer.onSelect (event) =>
-				app.showNext(@link)
+				app.showNext(@link, .15)
 				
 		
 

@@ -22,51 +22,54 @@ app = new App
 
 # Page 1
 
-createPage1 = (layer, view, title) ->
-	Utils.bind layer, ->
+createPage1 = (data, page, view) ->
+	
+	new H4
+		parent: @content
+		text: data ? "(Preloaded data here)"
+		y: 32
+		x: 16
+		width: @width - 32
+		textAlign: "center"
 		
-		for i in _.range(10)
+	for i in _.range(10)
+	
+		new Layer
+			parent: @content
+			y: 32
+			x: Align.center
+			height: 64
+			backgroundColor: blue
 		
-			new Layer
-				parent: @content
-				y: 32
-				x: Align.center
-				height: 64
-				backgroundColor: blue
-			
-		Utils.stack(@content.children, 16)
+	Utils.stack(@content.children, 16)
 
 # Page 2
 	
-createPage2 = (layer, view, title) ->
-	Utils.bind layer, ->
+createPage2 = (data, page, view) ->
+	for i in _.range(10)
+	
+		new Layer
+			parent: @content
+			y: 32
+			x: Align.center
+			height: 64
+			backgroundColor: green
 		
-		for i in _.range(10)
-		
-			new Layer
-				parent: @content
-				y: 32
-				x: Align.center
-				height: 64
-				backgroundColor: green
-			
-		Utils.stack(@content.children, 16)
+	Utils.stack(@content.children, 16)
 
 # Page 3
 
-createPage3 = (layer, view, title) ->
-	Utils.bind layer, ->
+createPage3 = (data, page, view) ->
+	for i in _.range(10)
+	
+		new Layer
+			parent: @content
+			y: 32
+			x: Align.center
+			height: 64
+			backgroundColor: yellow
 		
-		for i in _.range(10)
-		
-			new Layer
-				parent: @content
-				y: 32
-				x: Align.center
-				height: 64
-				backgroundColor: yellow
-			
-		Utils.stack(@content.children, 16)
+	Utils.stack(@content.children, 16)
 
 
 # --------------------
@@ -75,17 +78,23 @@ createPage3 = (layer, view, title) ->
 # 0.0.0 First View
 
 firstView = new PageView
-	name: "1"
+	name: "0"
 	title: "First View"
 	key: "0.0.0"
-# 	start: 1
-# 	preload: (resolve, reject) -> 
-# 		@name = "Preloaded"
-# 		resolve()
 	pages:
 		"First Page": createPage1
 		"Second Page": createPage2
-		"Third Page": createPage3
+		"Third Page": undefined
+# 	start: 1
+# 	preload: (resolve, reject) -> 
+# 		resolve("Preloaded Data!")
+# 	placeholder: (data, page, view) ->
+# 		new H4
+# 			parent: @
+# 			x: Align.center()
+# 			y: 32
+# 			text: "Placeholder for " + page.name
+	
 
 firstView.onPostload ->
 	Utils.stack(@content.children, 400)
@@ -93,7 +102,7 @@ firstView.onPostload ->
 # 1.0.0 Second View
 
 secondView = new View
-	name: "2"
+	name: "1"
 	title: "Second View"
 	key: "1.0.0"
 
@@ -102,7 +111,7 @@ secondView.onLoad ->
 	btn = new Button
 		parent: @content
 		x: 16
-		y: 32
+		y: 72
 		width: @width - 32
 		text: "Show another view"
 	
@@ -117,6 +126,16 @@ secondView.onLoad ->
 		parent: @content
 		x: Align.center()
 	
+	nav = new Navbar
+		parent: @
+		start: 0
+		links:
+			"Scroll to Top": => @scrollToTop()
+			"Scroll to Bottom": => @scrollToPoint
+				x: 0, y: 999999
+			
+	@app.on "transitionEnd", => 
+		Utils.pin nav, app.header, 'bottom'
 	
 secondView.onPostload ->
 	Utils.stack(@content.children, 400)
@@ -124,7 +143,7 @@ secondView.onPostload ->
 # 1.1.0 Another View
 
 anotherView = new View
-	name: "2.1"
+	name: "1.1"
 	title: "Another View"
 	key: "1.1.0"
 
@@ -140,6 +159,16 @@ anotherView.onLoad ->
 	btn.onSelect ->
 		app.showNext(thirdView)
 	
+	btn = new Button
+		parent: @content
+		x: 16
+		y: 32
+		width: @width - 32
+		text: "Show takeover view"
+	
+	btn.onSelect ->
+		app.showNext(new TakeoverView)
+	
 	new Layer
 		parent: @content
 		x: Align.center()
@@ -152,10 +181,39 @@ anotherView.onLoad ->
 anotherView.onPostload ->
 	Utils.stack(@content.children, 400)
 
+# 1.2.0 Takeover View
+
+class TakeoverView extends View
+	constructor: (options = {}) ->
+		_.defaults options,
+			name: "1.2"
+			title: "Takeover View"
+			key: "1.2.0"
+			oneoff: true
+
+		super options
+		
+		@onLoad ->
+			new H5
+				parent: @content
+				text: "Notice the toolbar is gone."
+				x: 32
+				width: @width - 64
+			
+			new Layer
+				parent: @content
+				x: Align.center()
+				
+			new Layer
+				parent: @content
+				x: Align.center()
+	
+			Utils.stack(@content.children, 400)
+
 # 2.0.0 Third View
 
 thirdView = new View
-	name: "3"
+	name: "2"
 	title: "Third View"
 	key: "2.0.0"
 

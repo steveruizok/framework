@@ -1,10 +1,12 @@
 ###
+
 Toolbar
 
 An footer with links to views.
 
 @extends {Layer}
-@param {Object} options 			The toolbar's attributes.@param {number} options.height	 	The menu's max expanded height
+@param {Object} options 			The toolbar's attributes.
+@param {number} options.height	 	The menu's max expanded height
 @param {string} options.color 		The color to use for the toolbar's icons and labels.
 @param {string} options.tint 		The color to use for the toolbar's accents colors.
 @param {number} options.border 		The width of the toolbar's top border.
@@ -13,7 +15,7 @@ An footer with links to views.
 @param {boolean} options.labels		Whether to use labels in the toolbar.
 @param {Object} options.links		
 @param {array} options.pages
-@param {Object} options.flow
+
 ###
 
 class exports.Toolbar extends Layer
@@ -22,17 +24,17 @@ class exports.Toolbar extends Layer
 		_.defaults options,
 			name: "Toolbar"
 			y: Align.bottom()
+			height: 64
 			width: Screen.width
-			height: 1
 			backgroundColor: white
 			color: black
-			tint: black
 			clip: true
-			animationOptions:
-				time: .25
+			animationOptions: { time: .25 }
+
+			border: 1
+			tint: black.alpha(.16)
 			start: 0
 			hidden: false
-			border: 4
 			indicator: false
 			labels: false
 			links:
@@ -44,24 +46,30 @@ class exports.Toolbar extends Layer
 					icon: "flag"
 					view: undefined
 					loader: true
-			pages: []
-			flow: @app
 		
 		super options
-		
-		_.assign @,
-			start: options.start
-			pages: options.pages
-			flow: options.flow
-			links: options.links
-			labels: options.labels
-			prevCurrent: undefined
-			tint: options.tint
-			hasIndicator: options.indicator
-			style:
-				borderTop: "#{Utils.px(options.border)} solid #{options.tint}"
-		
+
+		_.assign @, 
+			_.pick options, [
+				'border'
+				'start'
+				'links'
+				'labels'
+				'tint'
+				]
+			{
+				pages: []
+				initial: true
+				prevCurrent: undefined
+				hasIndicator: options.indicator
+			}
+			
 		# LAYERS
+
+		# top border
+
+		_.assign @style,
+			borderTop: "#{Utils.px(@border)} solid #{@tint}"
 		
 		# links
 
@@ -107,6 +115,8 @@ class exports.Toolbar extends Layer
 
 			return link
 
+		# indicator
+
 		@indicator = new SVGLayer
 			name: "Indicator"
 			parent: @
@@ -123,140 +133,148 @@ class exports.Toolbar extends Layer
 		Utils.contain(linksContainer)
 		linksContainer.x = Align.center()
 		
+
+		# EVENTS
+
+		@links.forEach (link, i) =>
+			link.onTap => @active = i
+
+		@app.on "transitionEnd", (prev, next) => 
+			@_transitioning = false
+			@hidden = @app.current?.oneoff ? false
+
+		@app.on "transitionStart", (layer) =>
+			link = _.find(@links, (l) -> l.view is layer)
+			if link? then @_showActive(link)
+			@_active = @links.indexOf(link)
+
 		
 		# DEFINITIONS
 		
 		Utils.define @, "hidden", options.hidden, @_showHidden
 		Utils.define @, "active", undefined, @_setActiveLink
 
-		# cleanup
+
+		# CLEANUP
+
+		child.name = '.' for child in @children unless options.showSublayers
 		
 		_.defer =>
-			@height = 64
-			@y = Align.bottom()
 			linksContainer.y = Align.center(if options.labels then -10 else 0)
 			
 			app.rootView = @links[@start].view
 			@active = @start
-		
 
-		# EVENTS
-
-
-		@links.forEach (link, i) =>
-			link.onTap =>
-				@active = i
-
-		@app.on "transitionEnded", =>
-			@_transitioning = false
-
-		@app.on "transitionStart", (layer) =>
-			link = _.find(@links, (l) -> l.view is layer)
-			if link? then @_showActive(link)
-			@_active = @links.indexOf(link)
+			delete @initial
 	
 
 	# PRIVATE METHODS
 
 	_showHidden: (bool) =>
 		if bool
-			@animate
+			props =
 				y: @app.height
 				options:
 					time: .2
-			return
+		else
+			props =
+				y: Align.bottom()
+				options:
+					time: .3
 
-		@animate
-			y: Align.bottom()
-			options:
-				time: .3
+		Utils.setOrAnimateProps(@, @initial, props)
 
 
 	_setActiveLink: (index) =>
 		return unless index >= 0
 		
 		link = @links[index]
+		@_showActive(link)
+
 		currentIndex = _.indexOf(@links, @prevCurrent) ? -1
 		transition = @_getTransition(index, currentIndex)
-		@_showActive(link)
 		
 		if link.view? and link.view isnt @app.current
 			@_transitioning = true
 			@app.showNext link.view, link.loader,
 				transition: transition
+
 			@emit "change:current", @pages[index]
 		
 		@prevCurrent = link
 	
 
 	_showActive: (link) =>
-		@indicator.animate
-			midX: link.x + (link.width / 2) + link.parent.x
-		
 		bumpDown = @labels and @hasIndicator
+		sibs = _.without(@links, link)
 
-		link.animate
+		sibProps =
+			opacity: .618
+			y: Align.center()
+
+		linkProps =
 			opacity: 1
 			y: Align.center(if bumpDown then 3 else 0)
-		
-		for sib in _.without(@links, link)
-			sib.animate
-				opacity: .8
-				y: Align.center()
-	
+
+		indicatorProps =
+			midX: link.x + (link.width / 2) + link.parent.x
+
+		Utils.setOrAnimateProps(link, @initial, linkProps)
+		Utils.setOrAnimateProps(@indicator, @initial, indicatorProps)
+		Utils.setOrAnimateProps(sib, @initial, sibProps) for sib in sibs
+
 
 	_getTransition: (nextIndex, currentIndex) =>
-		
-		leftTransition = (nav, layerA, layerB, overlay) =>
-			transition =
-				layerA:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: -Screen.width
-						options:
-							time: .45
-				layerB:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: Screen.width
-						options:
-							time: .45
-						
-		rightTransition = (nav, layerA, layerB, overlay) =>
-			transition = 
-				layerA:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: Screen.width
-						options:
-							time: .45
-				layerB:
-					show:
-						x: 0
-						options:
-							time: .45
-					hide:
-						x: -Screen.width
-						options:
-							time: .45
-		
 		if currentIndex > nextIndex
 			return rightTransition
-		else
-			return leftTransition
+		
+		return leftTransition
 	
 
-	# DEFINITIONS
+	# READ-ONLY DEFINITIONS
 
 	@define "current",
-		get: -> 
-			return @links[@active]
+		get: => @links[@active]
+
+
+leftTransition = (nav, layerA, layerB, overlay) =>
+	transition =
+		layerA:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: -Screen.width
+				options:
+					time: .45
+		layerB:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: Screen.width
+				options:
+					time: .45
+				
+rightTransition = (nav, layerA, layerB, overlay) =>
+	transition = 
+		layerA:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: Screen.width
+				options:
+					time: .45
+		layerB:
+			show:
+				x: 0
+				options:
+					time: .45
+			hide:
+				x: -Screen.width
+				options:
+					time: .45

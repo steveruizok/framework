@@ -22,11 +22,10 @@ class exports.Header extends Layer
 		_.assign options,
 			width: Screen.width
 			height: 72
-			shadowY: 1
-			shadowBlur: 6
 			color: black80
-			shadowColor: 'rgba(0,0,0,.16)'
-			backgroundColor: "rgba(255, 255, 255, 1)"
+			backgroundColor: white
+			shadowY: 1
+			shadowColor: black.alpha(.16)
 
 			name: 'Header'
 
