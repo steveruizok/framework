@@ -16,18 +16,18 @@ class exports.View extends ScrollComponent
 		_.defaults options,
 			name: "View"
 			root: false
+			key: undefined
 
 		_.assign options,
 			width: @app.contentWidth
 			height: @app.windowFrame.height
 			scrollHorizontal: false
-			key: undefined
 
 		super options
 
 		_.assign @,
 			root: options.root
-			key: options.key
+			viewKey: options.key
 			postload: -> null
 
 		# ---------------

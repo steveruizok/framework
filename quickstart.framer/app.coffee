@@ -1,9 +1,10 @@
 require "framework"
 
 app = new App
+	chrome: "safari"
 	printErrors: true
 	showKeys: true
-# 	showSublayers: true
+	showSublayers: true
 
 # --------------------
 # Data
@@ -136,6 +137,7 @@ secondView.onLoad ->
 				x: 0, y: 999999
 			
 	@app.on "transitionEnd", => 
+		return unless app.header?
 		Utils.pin nav, app.header, 'bottom'
 			
 	for i in _.range(4)
@@ -268,9 +270,9 @@ app.footer = new Toolbar
 		"Second":
 			icon: "flag"
 			view: secondView
-			loader: false
+			loader: true
 		"Third":
 			icon: "star"
 			view: thirdView
 
-# app.showNext(secondView)
+app.showNext(thirdView)

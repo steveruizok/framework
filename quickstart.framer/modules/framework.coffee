@@ -6,7 +6,7 @@ Keyboard = require 'components/Keyboard'
 
 colors.updateColors()
 
-# disable hints
+# disable hints 
 Framer.Extras.Hints.disable()
 
 # get rid of dumb thing that blocks events in the upper left-hand corner
@@ -15,14 +15,13 @@ dumbthing?.style.width = "0px"
 
 # Exports for theme support 
 _.assign exports,
-	defaultTitle: ""
+	defaultTitle: "framework.com"
 	app: undefined
 	components: [
 		'Switch'
 		'Alert'
 		'Button', 
 		'Footer'
-		'Header', 
 		'Radiobox',
 		'Checkbox',
 		'Container',
@@ -30,6 +29,8 @@ _.assign exports,
 		'Toggle',
 		'Tooltip',
 		'Select',
+		'HeaderBase'
+		'iOSHeader'
 		'Icon', 
 		'Stepper', 
 		'Segment',
@@ -42,6 +43,7 @@ _.assign exports,
 		'Toolbar'
 		'PageView'
 		'Navbar',
+		'iOSStatusBar'
 		'FormComponent',
 		"ProgressComponent"
 		'CarouselComponent', 
@@ -103,6 +105,7 @@ class window.App extends FlowComponent
 		super options
 
 		_.assign @,
+			title: options.title
 			chrome: options.chrome
 			showKeys: options.showKeys
 			contentWidth: options.contentWidth
@@ -112,32 +115,7 @@ class window.App extends FlowComponent
 			keyboard: Keyboard
 			printErrors: options.printErrors
 			preload: new Promise (resolve, reject) -> _.defer resolve
-	
 
-		if options.chrome is "browser" and Screen.width isnt 1440
-			_.defer ->
-				Framer.Device.customize
-					deviceType: Framer.Device.Type.Desktop
-					devicePixelRatio: 1
-					screenWidth: 1440
-					screenHeight: 900
-					deviceImageWidth: 900
-					deviceImageHeight: 1440
-
-				_.assign Framer.Device.screenBackground,
-					backgroundColor: null
-
-				_.assign Framer.Device.content, 
-					borderWidth: 1
-					borderRadius: 4
-					backgroundColor: null
-					clip: true
-
-				Canvas.backgroundColor = "#1E1E1E"
-				
-				_.defer ->
-					Utils.reset()
-					CoffeeScript.load("app.coffee")
 
 		# Transition
 		 
@@ -151,124 +129,55 @@ class window.App extends FlowComponent
 			else
 				@_defaultTransition
 
-		# layers
-
-		@loadingLayer = new Layer 
-			name: '.'
-			size: Screen.size
-			backgroundColor: if @chrome is "safari" or @chrome is "browser" then 'rgba(0,0,0,0)' else 'rgba(0,0,0,.14)'
-			visible: false
-
-		@loadingLayer._element.style["pointer-events"] = "all"
-		@loadingLayer.sendToBack()
-
-
-		# By this point, these should be different classes...
-		unless @chrome is "safari" or @chrome is "browser"
-			Utils.bind @loadingLayer, ->
-				
-				@loadingContainer = new Layer
-					name: '.'
-					parent: @
-					x: Align.center()
-					y: Align.center()
-					size: 48
-					backgroundColor: 'rgba(0,0,0,.64)'
-					borderRadius: 8
-					opacity: .8
-					backgroundBlur: 30
-
-				@iconLayer = new Icon 
-					parent: @loadingContainer
-					height: 32
-					width: 32
-					point: Align.center()
-					style:
-						lineHeight: 1
-					color: white
-					icon: "loading"
-
-			@loadingAnim = new Animation @loadingLayer.iconLayer,
-				rotation: 360
-				options:
-					curve: "linear"
-					looping: true
-
 
 		# header
 
-		if @chrome
-			# don't show safari bar when opening this project on mobile web
-			# ... but this might require a lot of app.header?.etc
-			if @chrome is 'safari' and Utils.isSafari()
-				@chrome = null
-			
-			if @chrome is "browser"
+		switch @chrome
+			when "ios"
+				@header = new iOSHeader
+			when "safari"
 				@header = new SafariHeader
-					title: options.title
-			else 
-				@header = new Header
-					app: @
-					safari: @chrome is 'safari'
-					title: options.title
-			
-			if @chrome is 'safari'
-				@footer = new Footer 
-					app: @
 
-				@onSwipeUpEnd =>
-					return unless @current.isMoving
-					return if @current.content.draggable.isBeyondConstraints
-					
-					try @header._collapse()
-					try @footer._collapse()
-
-				@onSwipeDownEnd =>
-					return unless @current.isMoving
-
-					try @header._expand()
-					try @footer._expand()
-
-				@header.statusBar.onTap =>
-					@header._expand()
-
-			if @chrome is 'ios'
-
-				@onSwipeUpEnd =>
-					return unless @current.isMoving 
-					return if @current.content.draggable.isBeyondConstraints
-
-					try @header._collapse()
-
-				@onSwipeDownEnd =>
-					return unless @current.isMoving
-
-					try @header._expand()
-
-				@header.statusBar.onTap =>
-					try  @header._expand()
-
-		@header?.on "change:height", @_setWindowFrame
 		@footer?.on "change:height", @_setWindowFrame
 
 		@_setWindowFrame()
 
-		# definitions
-		Utils.define @, 'focused', 		null, 		@_showFocused,	_.isObject,		"App.focused must be an html element."
-		Utils.define @, 'loading', 		false, 		@_showLoading, 	_.isBoolean,	"App.loading must be a boolean (true or false)."
-		Utils.define @, 'viewPoint',	{x:0, y:0}, undefined,		_.isObject, 	'App.viewPoint must be an point object (e.g. {x: 0, y: 0}).'
-		Utils.define @, 'chromeOpacity', options.chromeOpacity, @_setChromeOpacity, _.isNumber, "App.chromeOpacity must be a number between 0 and 1."
+
+		# DEFINITIONS
+
+		Utils.define @, 'focused', 		null, 					@_showFocused,		_.isObject,		"App.focused must be an html element."
+		Utils.define @, 'loading', 		false, 					@_showLoading, 		_.isBoolean,	"App.loading must be a boolean (true or false)."
+		Utils.define @, 'viewPoint',	{x:0, y:0}, 			undefined,			_.isObject, 	'App.viewPoint must be an point object (e.g. {x: 0, y: 0}).'
+		Utils.define @, 'chromeOpacity', options.chromeOpacity, @_setChromeOpacity, _.isNumber, 	"App.chromeOpacity must be a number between 0 and 1."
+		Utils.define @, 'time', 		new Date()
+		Utils.define @, 'winowFrame', 	undefined
 
 		Screen.on Events.EdgeSwipeLeftEnd, @showPrevious
 
+
+		# KICKOFF
+
+		# update time
+		@_setTime()
+		
+		# ... and update time every sixty seconds
+		Utils.delay (60 - new Date().getSeconds()), =>
+			@_setTime()
+			Utils.interval 60, @_setTime
+
+
 	# ---------------
 	# Private Methods
+
+	_setTime: => @time = new Date()
+
 
 	_setChromeOpacity: (num) =>
 		num = _.clamp(num, 0, 1)
 		for layer in [@header, @footer]
 			continue if not layer
 			layer.opacity = num
+
 
 	_showFocused: (el) =>
 		# possibly... an app state dealing with an on-screen keyboard
@@ -309,9 +218,9 @@ class window.App extends FlowComponent
 
 
 	_setWindowFrame: =>
-		headerMaxY = @header?._expandProps?.height ? @header?.height ? 0
+		headerMaxY = @header?.fullHeight?.height ? @header?.height ? 0
 	
-		@_windowFrame =
+		@windowFrame =
 			expandY: headerMaxY
 			y: (@header?.height ? 0)
 			x: @x
@@ -323,37 +232,9 @@ class window.App extends FlowComponent
 				height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
 				width: @width
 
-		@emit "change:windowFrame", @_windowFrame, @
-
-
 
 	_showLoading: (bool) =>
-		if bool
-			@focused?.blur()
-			@loadingLayer.visible = true
-			@loadingLayer.bringToFront()
-			@loadingAnim?.restart()
-
-			# show safari loading
-			if @chrome is "safari" or @chrome is "browser"
-				try @footer?._expand()
-				try @header?._expand()
-				@header?._showLoading(true)
-				return
-
-			# show ios loading
-			return
-
-		@loadingLayer.visible = false
-		@loadingLayer.sendToBack()
-		@loadingAnim?.stop()
-
-		# show safari loading ended
-		if @chrome is "safari" or @chrome is "browser"
-			try @footer?._expand()
-			try @header?._expand()
-			@header?._showLoading(false)
-			return
+		@focused?.blur()
 
 
 	_updatePrevious: (next, prev, options, direction) =>
@@ -396,7 +277,8 @@ class window.App extends FlowComponent
 	# lifecycle handlers
 	
 	_prepareToLoad: =>
-		try @header._expand()
+		@header?.expand()
+
 		try @footer._expand()
 		@focused?.blur()
 		@modal?.destroy()
@@ -489,7 +371,6 @@ class window.App extends FlowComponent
 		# force loading time on safari
 
 		if @chrome is "safari"
-			@loading = true
 			loadingTime = _.random(.3, .75)
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
@@ -595,7 +476,3 @@ class window.App extends FlowComponent
 	
 
 	# DEFINITIONS
-
-	@define "windowFrame",
-		get: -> return @_windowFrame
-	

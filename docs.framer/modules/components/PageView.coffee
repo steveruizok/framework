@@ -124,7 +124,9 @@ class exports.PageView extends View
 
 			# Events
 
-			@app.on "transitionEnd", => Utils.pin @navbar, @app.header, 'bottom'
+			@app.on "transitionEnd", => 
+				return unless @app.header
+				Utils.pin @navbar, @app.header, 'bottom'
 
 			@navbar.on "change:active", @_changePages
 			

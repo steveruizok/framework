@@ -1,14 +1,9 @@
 Theme = require "components/Theme"
 theme = undefined
 
-class exports.Icon extends Layer
+class exports.Icon extends SVGLayer
 	constructor: (options = {}) ->
 		theme = Theme.theme
-		@__constructor = true
-		@__instancing = true
-
-		# ---------------
-		# Options
 
 		_.defaults options,
 			name: 'Icon'
@@ -16,6 +11,7 @@ class exports.Icon extends Layer
 			icon: 'star'
 			backgroundColor: null
 			clip: true
+			color: black
 			lineHeight: 0
 			padding: 0
 			animationOptions:
@@ -24,75 +20,50 @@ class exports.Icon extends Layer
 
 		super options
 
-		_.assign @,
-			padding: options.padding
+		# LAYERS
 
-		# ---------------
-		# Layers
 
-		svgNS = "http://www.w3.org/2000/svg"
-		@ctx = document.createElementNS(svgNS, 'svg')
-		@svgIcon = document.createElementNS(svgNS, 'path')
-		
-		@ctx.appendChild(@svgIcon)
-		@_element.appendChild(@ctx)
-		@_element.style.padding = Utils.px(@padding)
-
-		# ---------------
-		# Events
+		# EVENTS
 
 		@on "change:color", @_refresh
-		@on "change:size", @_setSize
 
-		@color = options.color
 
-		# ---------------
-		# Definitions
+		# DEFINITIONS
 		
-		delete @__constructor
-		
+		Utils.define @, 'padding', options.padding, @_setPadding, _.isNumber, 'Icon.padding must be a number.'
 		Utils.define @, "icon", options.icon, @_refresh, _.isString, 'Icon.icon must be a string.'
 
-		delete @__instancing
-		
-		# ---------------
-		# Cleanup
 
-		@_setSize()
+		# CLEANUP
 
 		child.name = '.' for child in @children unless options.showSublayers
 
-	# ---------------
-	# Private Methods
 
-	_setSize: =>
-		Utils.setAttributes @ctx,
-			width: "100%"
-			height: "100%"
-			viewBox: "0 0 512 512"
+		# KICKOFF
 
-	_refresh: ->
-		return if not @color? or not @icon?
+		@_refresh()
 
-		@_setSize()
+	
+	# PRIVATE METHODS
 
-		icon = @icon
-		if @icon is 'random' then @icon = _.sample(_.keys(theme.icons))
-
-		Utils.setAttributes @svgIcon,
-			d: theme.icons[icon]
-			fill: @color
-			transform: "scale(1, -1), translate(0, -448)"
+	_setPadding: =>
+		@_element.style.padding = Utils.px(@padding)
 
 
-	# ---------------
-	# Public Methods
+	_refresh: =>
+		icon = theme.icons[@icon]
+		if @icon is 'random' then icon = _.sample(_.keys(theme.icons))
 
-	addIcon: (name, svg) ->
+		@svg = "<svg height='100%' width='100%' viewBox='0 0 512 512'><path transform='scale(1, -1), translate(0, -448)' fill='#{@color}' d='#{icon}'/>"
+
+
+	# PUBLIC METHODS
+
+	addIcon: (name, svg) =>
 		iconObj = {}
 		iconObj[name] = svg
 		theme.icons = _.merge(theme.icons, iconObj)
 		@icon = name
 
 	# ---------------
-	# Special Definitions
+	# DEFINITIONS

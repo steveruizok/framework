@@ -1,175 +1,180 @@
-class exports.SafariHeader extends Layer
+###
+
+Safari Header
+
+A Safari browser frome for iOS devices.
+
+@extends {HeaderBase}
+###
+
+Theme = require "components/Theme"
+theme = undefined
+
+class exports.SafariHeader extends HeaderBase
 	constructor: (options = {}) ->
+		theme = Theme.theme
 
 		_.defaults options,
-			width: Screen.width
-			height: 36
-			gradient:
-				start: "#d6d5d7"
-				end: "f7f6f7"
-			shadowY: 1
-			shadowColor: "#a2a1a3"
+			name: "Safari Header"
+			color: black
+			backgroundColor: white
+			
+			title: "Safari Header"
+			tint: blue
+			hidden: false
+			collapsed: false
+			collapsedHeight: 40
 
 		super options
 
-		for color, i in ['#ff5f58', '#ffbd2d', '#28cc42']
-			button = new Layer
-				parent: @
-				x: 16 + ((20) * i)
-				y: Align.center
-				size: 24
-				borderRadius: 12
-				backgroundColor: color
-				borderColor: new Color(color).darken(10)
-				borderWidth: 1
-				scale: .5
-			
-		# back button
-		
-		@backButton = new Layer
+		# LAYERS
+
+		@statusBar = new iOSStatusBar
 			parent: @
-			x: button.maxX + (8)
-			y: Align.center
-			height: 44
-			width: 50
-			borderRadius: 4
-			borderWidth: 1
-			borderColor: "#cecdcf"
-			shadowY: 1
-			shadowColor: "#a5a4a6"
-			gradient:
-				start: "#f1f1f1"
-				end: "#fdfdfd"
-			scale: .5
-		
-		@backButtonIcon = new Icon
-			parent: @backButton
-			x: Align.center
-			y: Align.center(4)
-			icon: "ios-back"
-			color: "#808080"
-			
-		@backButton.onTap => app.showPrevious()
-		
-		@forwardButton = new Layer
+			color: @color
+
+
+		@addressContainer = new Layer
+			name: 'Address'
 			parent: @
-			x: button.maxX + (32)
-			y: Align.center
-			height: 44
-			width: 50
-			borderRadius: 4
-			borderWidth: 1
-			borderColor: "#cecdcf"
-			shadowY: 1
-			shadowColor: "#a5a4a6"
-			gradient:
-				start: "#f1f1f1"
-				end: "#fdfdfd"
-			scale: .5
-				
-		@forwardButtonIcon = new Icon
-			parent: @forwardButton
-			x: Align.center
-			y: Align.center(-2)
-			icon: "ios-back"
-			rotation: 180
-			color: "#808080"
-		
-		# address field
-		@addressField = new Layer
-			parent: @
-			height: 48
-			width: @width * .618
-			point: Align.center()
-			gradient:
-				start: "#f1f1f1"
-				end: "#fefefe"
-			borderRadius: 4
-			borderColor: "#cac9cb"
-			shadowY: 1
-			shadowColor: "#a5a4a6"
-			scale: .5
-			
-		@textLayer = new TextLayer
-			parent: @addressField
-			point: Align.center()
-			text: "framework.com"
-			fontSize: 24
-			color: '#333'
-		
-		#icons
-		@readerIcon = new Icon
-			parent: @addressField
-			x: 8
-			y: Align.center()
-			height: 26
-			width: 26
-			icon: "format-align-left"
-			color: '#7c7c7d'
-		
-		@lockIcon = new Icon
-			parent: @addressField
-			x: @textLayer.x - 32
-			y: Align.center()
-			height: 22
-			width: 22
-			icon: "lock"
-			color: '#7c7c7d'
-			
+			width: @width - 20
+			height: 29
+			x: Align.center()
+			y: Align.center(10)
+			borderRadius: 8
+			backgroundColor: 'rgba(0,0,0,.09)'
+			clip: true
+			animationOptions: @animationOptions
+
 		@refreshIcon = new Icon
-			parent: @addressField
-			x: Align.right(-8)
-			y: Align.center()
-			height: 26
-			width: 26
-			icon: "refresh"
-			color: '#7c7c7d'
+			name: 'Menu Icon'
+			parent: @addressContainer
+			y: Align.center(1)
+			x: Align.right(-6)
+			icon: 'refresh'
+			rotation: -45
+			color: '#333'
+			height: 18
+			width: 18
+			animationOptions: @animationOptions
 
 		@refreshIcon.onTap -> window.location.reload()
 
-		@loadingLayer = new Layer
+		@addressLoadingLayer = new Layer
 			name: '.'
-			parent: @addressField
+			parent: @addressContainer
 			x: 0
 			y: Align.bottom()
 			height: 2
 			width: 1
 			backgroundColor: "#007AFF"
 			visible: false
+	
+		@titleLayer = new TextLayer
+			name: 'Title'
+			parent: @addressContainer
+			y: Align.center()
+			width: @addressContainer.width
+			textAlign: 'center'
+			text: '{title}'
+			fontFamily: "Helvetica Neue"
+			fontSize: 15
+			fontWeight: 400
+			color: '#000'
+			animationOptions: @animationOptions
+
+
+		# DEFINITIONS	
+
 
 		# EVENTS
 
-		@backButton.onTap => @app.showPrevious()
-		
-	# ---------------
-	# Private Methods
+		@statusBar.onTap @expand
 
-	_showLoading: (bool, time) =>
+		@on "change:title",		@_setTitle
+		@on "change:viewKey",	@_setViewKey
+		@on "change:tint",		@_setTint
+		@on "change:color",		@_setColor
+		@on "change:hidden",	@_showHidden
+		@on "change:collapsed",	@_showCollapsed
+		@on "change:loading",	@_showLoading
+
+
+		# KICKOFF
+
+		delete @_initial
+
+		@title = @app.title
+
+
+	# PRIVATE METHODS
+
+	_setTitle: (string) =>
+		@titleLayer.template = string
+
+
+	_setViewKey: (string) =>
+		@statusBar.viewKey = string
+
+
+	_setColor: (string) =>
+
+
+	_setTint: (color) =>
+
+
+	_showLoading: (bool) =>
 		if bool
-			# loading is true
-			_.assign @loadingLayer,
+			_.assign @addressLoadingLayer,
 				width: 1
 				visible: true
 
-			@loadingLayer.animate
-				width: @addressField.width
+			@addressLoadingLayer.animate
+				width: @addressContainer.width
 				options:
-					time: time ? 2
+					time: 1.7
 					curve: "linear"
 			return
 
 		# loading is false
-		_.assign @loadingLayer,
+		_.assign @addressLoadingLayer,
 			width: 1
 			visible: false
 
 
-	_setViewKey: (value) =>
-		@statusBar.viewKeyLayer.template = value ? ''
+	_showHidden: (bool) =>
 
-	# ---------------
-	# Public Methods
 
-	updateTitle: (title) =>
-		@addressField.text = title
-		
+	_showCollapsed: (bool) =>
+		if bool
+			@addressContainer.animate
+				midY: @statusBar.height + (@collapsedHeight - @statusBar.height) / 2
+				backgroundColor: 'rgba(0,0,0,0)'
+
+			@refreshIcon.animate
+				opacity: 0
+
+			@titleLayer.animate
+				scale: .75
+			
+			return
+
+
+		@addressContainer.animate
+			midY: @statusBar.height + (@fullHeight - @statusBar.height) / 2
+			backgroundColor: 'rgba(0,0,0,.09)'
+
+		@refreshIcon.animate
+			opacity: 1
+
+		@titleLayer.animate
+			scale: 1
+
+
+	# PUBLIC METHODS
+
+	update: (prev, next, options) =>
+		@viewKey = next?.viewKey if @app.showKeys
+			
+		hasPrevious = @app._stack.length > 1
+		showPrevLinks = !next?.root and hasPrevious

@@ -22,7 +22,7 @@ class exports.Menu extends ScrollComponent
 			parent: @app.header
 			name: "Menu"
 			x: 4
-			y: (app.header?.statusBar.maxY ? app.header?.maxY ? 0)
+			y: app.header?.statusBar?.maxY ? 0
 			width: Screen.width
 			height: Screen.height * .618
 			shadowY: 1
@@ -30,6 +30,8 @@ class exports.Menu extends ScrollComponent
 			color: black
 			backgroundColor: white
 			scrollHorizontal: false
+
+			showSublayers: true
 			
 			padding: {top: 56, bottom: 16, left: 20, right: 20, stack: 4}
 			tint: black
@@ -70,14 +72,14 @@ class exports.Menu extends ScrollComponent
 			x: 0
 			height: 2
 			maxHeight: _.clamp(options.height, 40, Screen.height - @y)
-		
+
+
 		# LAYERS
 
 		# open button
 
-
 		@openButton = new Icon
-			name: if options.showSublayers then 'Menu open button' else "."
+			name: 'Menu button'
 			parent: options.parent
 			x: options.x
 			y: @y + 2
@@ -227,20 +229,23 @@ class exports.Menu extends ScrollComponent
 			@hidden = true
 
 		@app.on "transitionEnd", (prev, next, options) =>
+			unless @app.chrome
+				@hidden = false
+				return
+
 			@hidden = !next.root
 		
 		@openButton.onTap => 
-			return if @open 
+			return if @open
 			@open = true
 		
 		@underlay.onTap =>
 			return unless @open 
 			@open = false
 					
-		@closeButton.onTap => 
+		@closeButton.onClick => 
 			return unless @open 
 			@open = false
-	
 
 	# PRIVATE METHODS
 
@@ -291,7 +296,13 @@ class exports.Menu extends ScrollComponent
 					time: .15
 			
 			@underlay.bringToFront()
+		
+			@once Events.AnimationEnd, =>
+				@openButton.visible = false
+
 			return
+	
+		@openButton.visible = true	
 				
 		@once Events.AnimationEnd, =>
 			@visible = false
