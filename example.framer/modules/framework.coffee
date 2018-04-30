@@ -2,7 +2,6 @@ require 'components/moreutils'
 theme = require 'components/Theme'
 colors = require 'components/Colors'
 typography = require 'components/Typography'
-Keyboard = require 'components/Keyboard'
 
 colors.updateColors()
 
@@ -15,63 +14,66 @@ dumbthing?.style.width = "0px"
 
 # Exports for theme support 
 _.assign exports,
-	defaultTitle: "framework.com"
 	app: undefined
-	components: [
-		'Switch'
-		'Alert'
-		'Button', 
-		'Footer'
-		'Radiobox',
-		'Checkbox',
-		'Container',
-		'DocComponent',
-		'Toggle',
-		'Tooltip',
-		'Select',
-		'HeaderBase'
-		'iOSHeader'
-		'Icon', 
-		'Stepper', 
-		'Segment',
-		'TextInput',
-		'Menu',
-		'Link', 
-		'Separator', 
-		'View',
-		'Template',
-		'Toolbar'
-		'PageView'
-		'Navbar',
-		'iOSStatusBar'
-		'FormComponent',
-		"ProgressComponent"
-		'CarouselComponent', 
-		'SafariHeader'
-		'SortableComponent'
-		'TabComponent'
-		'StickyComponent'
-		]
-	imports: [
-		'Transitions'
-	]
-	globals: []
-	theme: theme
+	defaultTitle: "framework.com"
 	typography: typography
 	colors: colors
+	theme: theme
+
+components = [
+	'Icon', 
+	'Switch',
+	'Alert',
+	'Button',
+	'Radiobox',
+	'Checkbox',
+	'Container',
+	'DocComponent',
+	'Toggle',
+	'Tooltip',
+	'Select',
+	'HeaderBase'
+	'iOSHeader'
+	'Stepper', 
+	'Segment',
+	'TextInput',
+	'Menu',
+	'Link', 
+	'Separator', 
+	'View',
+	'Template',
+	'Toolbar'
+	'PageView'
+	'Navbar',
+	'iOSStatusBar'
+	'FormComponent',
+	"ProgressComponent"
+	'CarouselComponent', 
+	'SafariHeader'
+	'SortableComponent'
+	'TabComponent'
+	'StickyComponent'
+	]
+
+imports = [
+	'Transitions'
+	'Keyboard'
+]
+
+globals = []
 
 # import as: { module } = require 'module'
-exports.globals.forEach (variable) ->
+globals.forEach (variable) ->
 	mod = require "components/#{variable}"
 	window[variable] = mod[variable]
 
 # import as: module = require 'module'
-exports.imports.forEach (variable) ->
+imports.forEach (variable) ->
 	mod = require "components/#{variable}"
 	window[variable] = mod
 
 # Add components to window
-exports.components.forEach (componentName) ->
+components.forEach (componentName) ->
 	mod = require "components/#{componentName}"
 	component = mod[componentName]
 
@@ -116,31 +118,20 @@ class window.App extends FlowComponent
 			printErrors: options.printErrors
 			preload: new Promise (resolve, reject) -> _.defer resolve
 
-
-		# Transition
-		 
-		@_platformTransition = switch @chrome
-			when "safari"
-				@_safariTransition
-			when "browser"
-				@_safariTransition
-			when "ios"
-				@_iosTransition
-			else
-				@_defaultTransition
-
-
 		# header
 
 		switch @chrome
 			when "ios"
 				@header = new iOSHeader
+				defaultTransition = @_iosTransition
+				chromeLoading = false
 			when "safari"
 				@header = new SafariHeader
-
-		@footer?.on "change:height", @_setWindowFrame
-
-		@_setWindowFrame()
+				defaultTransition = @_safariTransition
+				chromeLoading = true
+			else
+				defaultTransition = @_safariTransition
+				chromeLoading = false
 
 
 		# DEFINITIONS
@@ -149,10 +140,18 @@ class window.App extends FlowComponent
 		Utils.define @, 'loading', 		false, 					@_showLoading, 		_.isBoolean,	"App.loading must be a boolean (true or false)."
 		Utils.define @, 'viewPoint',	{x:0, y:0}, 			undefined,			_.isObject, 	'App.viewPoint must be an point object (e.g. {x: 0, y: 0}).'
 		Utils.define @, 'chromeOpacity', options.chromeOpacity, @_setChromeOpacity, _.isNumber, 	"App.chromeOpacity must be a number between 0 and 1."
+		Utils.define @, 'chromeLoading',chromeLoading,			undefined,			_.isBoolean,	"App.chromeLoading must be boolean (true or false)."
 		Utils.define @, 'time', 		new Date()
-		Utils.define @, 'winowFrame', 	undefined
+		Utils.define @, 'windowFrame', 	undefined
+		Utils.define @, 'defaultTransition', defaultTransition,	undefined,			_.isFunction,	'App.defaultTransition must be a function (see flow.transition).'
 
 		Screen.on Events.EdgeSwipeLeftEnd, @showPrevious
+
+		# EVENTS
+
+		@footer?.on "change:height", @_setWindowFrame
+
+		@_setWindowFrame()
 
 
 		# KICKOFF
@@ -218,18 +217,20 @@ class window.App extends FlowComponent
 
 
 	_setWindowFrame: =>
-		headerMaxY = @header?.fullHeight?.height ? @header?.height ? 0
-	
+		footerHeight = @footer?.height ? 0
+		headerHeight = @header?.height ? 0
+		headerFullHeight = @header?.fullHeight ? headerHeight
+
 		@windowFrame =
-			expandY: headerMaxY
-			y: (@header?.height ? 0)
+			expandY: headerFullHeight
+			y: headerHeight
 			x: @x
 			maxX: @maxX
-			maxY: @height - (@footer?.height ? 0)
-			height: @height - (@footer?.height ? 0) - headerMaxY
+			maxY: @height - headerHeight
+			height: @height - footerHeight - headerFullHeight
 			width: @width
 			size:
-				height: @height - (@footer?.height ? 0) - (@header?.height ? 0)
+				height: @height - footerHeight - headerFullHeight
 				width: @width
 
 
@@ -249,7 +250,7 @@ class window.App extends FlowComponent
 
 
 	_transitionToNext: (next, prev, options) =>
-		transition = options.transition ? @_platformTransition
+		transition = options.transition ? @defaultTransition
 
 		@loading = false
 		@isTransitioning = false
@@ -323,20 +324,16 @@ class window.App extends FlowComponent
 	# Public Methods
 	
 
-	showNext: (layer, loadingTime, options={}) ->
+	showNext: (layer, load = false, options={}) ->
 		return if @isTransitioning
 		return if layer is @current
 
 		@_initial ?= true
 
-		if @chrome is "safari" and not @_initial 
-			loadingTime ?= _.random(.5, .75)
-
 		views = _.filter @views, (v) => v.parent is @
 
 		if views.length > 0
 			current = _.maxBy(views, 'index')
-		
 
 		cycle = =>
 			@_preload(layer)
@@ -355,23 +352,21 @@ class window.App extends FlowComponent
 
 		@_prepareToLoad()
 
-		if loadingTime
-			loadingTime ?= .5
+
+		if load or (@chromeLoading and not load)
+			loadTime = _.random(.25, .5)
 			@loading = true
-			Utils.delay loadingTime, cycle
+			Utils.delay loadTime, cycle
 			return
 
 		cycle()
 
 
-	showPrevious: (loadingTime, options={}) =>
+	showPrevious: (load = false, options={}) =>
 		return unless @previous
 		return if @isTransitioning
 
 		# force loading time on safari
-
-		if @chrome is "safari"
-			loadingTime = _.random(.3, .75)
 
 		# Maybe people (Jorn, Steve for sure) pass in a layer accidentally
 		options = {} if options instanceof(Framer._Layer)
@@ -410,10 +405,10 @@ class window.App extends FlowComponent
 
 		@_prepareToLoad()
 
-		if loadingTime
-			loadingTime ?= .5
+		if load or (@chromeLoading and not load)
+			loadTime = _.random(.25, .5)
 			@loading = true
-			Utils.delay loadingTime, cycle
+			Utils.delay loadTime, cycle
 			return
 
 		cycle()

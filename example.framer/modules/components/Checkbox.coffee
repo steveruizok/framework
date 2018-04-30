@@ -1,9 +1,33 @@
+###
+
+Checkbox
+
+A box that can be checked or not, usually part of a family of other checkboxes.
+
+@extends {Layer}
+@param	{Object}	options 			The component's attributes.
+@param	{boolean}	options.checked 	Whether the checkbox should begin checked.
+@param	{boolean}	options.disabled 	Whether the button should begin disabled.
+
+
+Button.disabled <boolean> 
+	Sets the button's disabled state.
+	Emits a "change:loading" event when changed.
+
+Button.loading <boolean> 
+	Sets the button's loading state.
+	Emits a "change:loading" event when changed.
+
+
+Button.onSelect(callback <function>)
+	Sets the callback to run when the button is tapped.
+###
+
 Theme = require "components/Theme"
 theme = undefined
-
 MODEL = 'checkbox'
 
-class exports.Checkbox extends Layer
+class exports.Checkbox extends Icon
 	constructor: (options = {}) ->
 		theme = Theme.theme
 		@__constructor = true
@@ -14,8 +38,9 @@ class exports.Checkbox extends Layer
 
 		_.defaults options,
 			name: 'Checkbox'
-			height: 32
-			width: 32
+			height: 44
+			width: 44
+			padding: 10
 			animationOptions:
 				time: .2
 				colorModel: 'husl'
@@ -38,22 +63,9 @@ class exports.Checkbox extends Layer
 			unless _.includes(@parent.checkboxes, @) then @parent.checkboxes.push(@)
 
 
-		# ---------------
-		# Layers
-		
-		@iconLayer = new Icon
-			name: "Icon"
-			parent: @
-			x: 0
-			y: 4
-			icon: 'checkbox-blank-outline'
-			color: options.color
+		# LAYERS
 
-		Utils.linkProperties @, @iconLayer, "color"
-
-
-		# ---------------
-		# Events
+		# EVENTS
 
 		if Utils.isMobile()
 			@onTapEnd =>
@@ -62,36 +74,26 @@ class exports.Checkbox extends Layer
 			@onTap => 
 				return if @disabled 
 				@checked = !@checked
-			@onMouseOver => 
-				return if @disabled 
-				@hovered = true
-			@onMouseOut => 
-				return if @disabled 
-				@hovered = false
 
 
-		# ---------------
-		# Definitions
+		# DEFINITIONS
 		
 		delete @__constructor
 		
-		Utils.define @, 'theme', 'default', @_setTheme
-		Utils.define @, 'checked', options.checked, @_showChecked, _.isBoolean, 'Checkbox.checked must be a boolean (true or false)'
-		Utils.define @, 'hovered', false, @_showHovered, _.isBoolean, "Checkbox.hovered must be a boolean (true or false)."
-		Utils.define @, 'error', options.disabled, @_showError, _.isBoolean, "Checkbox.error must be a boolean (true or false)."
-		Utils.define @, 'disabled', options.disabled, @_showDisabled, _.isBoolean, "Checkbox.disabled must be a boolean (true or false)."
+		Utils.define @, 'theme', 	'default', 			@_setTheme
+		Utils.define @, 'checked', 	options.checked, 	@_showChecked,	_.isBoolean,	'Checkbox.checked must be a boolean (true or false)'
+		Utils.define @, 'error', 	options.disabled, 	@_showError,	_.isBoolean,	"Checkbox.error must be a boolean (true or false)."
+		Utils.define @, 'disabled',	options.disabled, 	@_showDisabled,	_.isBoolean,	"Checkbox.disabled must be a boolean (true or false)."
 		
 		delete @__instancing
 
 
-		# ---------------
-		# Cleanup
+		# CLEANUP
 		
 		child.name = '.' for child in @children unless options.showSublayers
 
 
-	# ---------------
-	# Private Methods
+	# PRIVATE METHODS
 
 	_getCustomTheme: (color, backgroundColor) ->
 		return {
@@ -112,8 +114,9 @@ class exports.Checkbox extends Layer
 				shadowColor: 'rgba(0,0,0,.16)'
 			}
 
+
 	_setTheme: (value) =>
-		@iconLayer.animateStop()
+		@animateStop()
 		props = @customTheme?[value] ? _.defaults(
 			_.clone(@customOptions), 
 			theme[MODEL][value]
@@ -122,6 +125,7 @@ class exports.Checkbox extends Layer
 		if @__instancing then @props = props 
 		else @animate props
 
+
 	_showChecked: (bool) =>
 
 		if @parent?.checkboxes?
@@ -129,18 +133,16 @@ class exports.Checkbox extends Layer
 			@parent.emit "change:checked", @parent.checked, @parent
 
 		if not bool
-			@iconLayer.icon = 'checkbox-blank-outline'
+			@icon = 'checkbox-blank-outline'
 			return
 
-		@iconLayer.icon = 'checkbox-marked'
+		@icon = 'checkbox-marked'
+
 
 	_showError: (bool) =>
 		return if @disabled
 		@theme = if bool then "error" else "default"
 
-	_showHovered: (bool) =>
-		return if @disabled
-		@theme = if bool then "hovered" else "default"
 
 	_showDisabled: (bool) =>
 		if bool
@@ -153,9 +155,5 @@ class exports.Checkbox extends Layer
 		@theme = 'default'
 		@ignoreEvents = false
 
-	# ---------------
-	# Public Methods
 
-
-	# ---------------
-	# Special Definitions
+	# PUBLIC METHODS

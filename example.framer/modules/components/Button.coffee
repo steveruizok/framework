@@ -1,3 +1,31 @@
+###
+
+Button
+
+A button that runs callbacks when tapped, with several special states and behaviors.
+
+@extends {Layer}
+@param	{Object}	options 			The component's attributes.
+@param	{boolean}	options.dark 		Whether the button should use a dark theme.
+@param	{boolean}	options.secondary 	Whether the button should use a secondary theme.
+@param	{boolean}	options.disabled 	Whether the button should begin disabled.
+@param	{string}	options.icon		The name of the icon to display on the button.
+@param	{number}	options.loadTime 	How long this button should load before running its select callback.
+
+Button.disabled <boolean> 
+	Sets the button's disabled state.
+	Emits a "change:loading" event when changed.
+
+Button.loading <boolean> 
+	Sets the button's loading state.
+	Emits a "change:loading" event when changed.
+
+
+Button.onSelect(callback <function>)
+	Sets the callback to run when the button is tapped.
+
+###
+
 Theme = require "components/Theme"
 theme = undefined
 MODEL = 'button'
@@ -8,19 +36,17 @@ class exports.Button extends Layer
 		@__constructor = true
 		@__instancing = true
 
-		# light primary
-		if !options.dark and !options.secondary
-			@palette = 'light_primary'
-		else if !options.dark and options.secondary
-			@palette = 'light_secondary'
-		else if options.dark and !options.secondary
-			@palette = 'dark_primary'
-		else if options.dark and options.secondary
-			@palette = 'dark_secondary'
+		if options.dark
+			if options.secondary
+				@palette = 'dark_secondary'
+			else 
+				@palette = 'dark_primary'
+		else
+			if options.secondary
+				@palette = 'light_secondary'
+			else 
+				@palette = 'light_primary'
 
-		# ---------------
-		# Options
-		
 		_.defaults options,
 			x: 0
 			y: 0
@@ -316,17 +342,16 @@ class exports.Button extends Layer
 		return if @disabled
 		
 		if isTouching
-			# show touching
 			@_isTouching = true
 			@theme = "touched"
 			return
 		
-		# show not touching
-		return if not @_isTouching
+		return unless @_isTouching
 		@_isTouching = false
 		@theme = "default"
 
-		unless silent then @_doSelect(event)
+		return if silent
+		@_doSelect(event)
 
 
 	_doSelect: (event) =>
@@ -335,13 +360,13 @@ class exports.Button extends Layer
 		if @loadTime > 0
 			@loading = true
 			Utils.delay @loadTime, => 
-				@select(event, @)
+				try @select(event, @)
 				@emit "select", @
 				@loading = false
 			return
 
 		try @select(event, @)
-		@emit "select", @	
+		@emit "select", @
 
 
 	_panOffTouch: (event) => 

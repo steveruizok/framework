@@ -10,11 +10,16 @@ An footer with links to views.
 @param {string} options.color 		The color to use for the toolbar's icons and labels.
 @param {string} options.tint 		The color to use for the toolbar's accents colors.
 @param {number} options.border 		The width of the toolbar's top border.
-@param {boolean} options.indicator	Whether to use an indicator to show the active icon.
 @param {number} options.start		Which page to start on.
 @param {boolean} options.labels		Whether to use labels in the toolbar.
-@param {Object} options.links		
-@param {array} options.pages
+@param {boolean} options.indicator	Whether to use an indicator to show the active icon.
+@param {Object} options.links		An object of links for the toolbar:
+
+	links:
+		<string>:				The name / label for the link, e.g. "Home"
+			icon: <string>		The link's Icon name, e.g. 'account-outline'
+			view: <View>		The View to load when this link is tapped.
+			loader: <bool>		Whether to show the app's loader first when tapped.
 
 ###
 
@@ -49,6 +54,19 @@ class exports.Toolbar extends Layer
 		
 		super options
 
+		@app.toolbar = @
+
+		if @app.footer?
+			@parent = @app.footer
+			@sendToBack()
+
+			_.assign @style,
+				borderBottom: "1px solid rgba(0,0,0,.16)"
+		else
+			@app.footer = @
+			_.assign @style,
+				borderTop: "#{Utils.px(@border)} solid #{@tint}"
+
 		_.assign @, 
 			_.pick options, [
 				'border'
@@ -62,6 +80,7 @@ class exports.Toolbar extends Layer
 				initial: true
 				prevCurrent: undefined
 				hasIndicator: options.indicator
+				fullHeight: options.height
 			}
 			
 		# LAYERS
@@ -171,16 +190,12 @@ class exports.Toolbar extends Layer
 	# PRIVATE METHODS
 
 	_showHidden: (bool) =>
-		if bool
-			props =
-				y: @app.height
-				options:
-					time: .2
-		else
-			props =
-				y: Align.bottom()
-				options:
-					time: .3
+		isFooter = @app.footer is @
+		openY = if isFooter then @app.height - @fullHeight else -@fullHeight
+		hideY = if isFooter then @app.height else 0
+
+		if bool then props = { y: hideY, height: 0 }
+		else 		 props = { y: openY, height: @fullHeight }
 
 		Utils.setOrAnimateProps(@, @initial, props)
 
@@ -229,6 +244,12 @@ class exports.Toolbar extends Layer
 			return rightTransition
 		
 		return leftTransition
+
+	# PUBLIC METHODS
+	
+	show: => @hidden = false
+	
+	hide: => @hidden = true
 	
 
 	# READ-ONLY DEFINITIONS

@@ -1,3 +1,13 @@
+###
+
+iOS Status Bar
+
+A status bar for iOS devices.
+
+@extends {Layer}
+
+###
+
 class exports.iOSStatusBar extends Layer
 	constructor: (options = {}) ->
 

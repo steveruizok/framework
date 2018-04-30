@@ -4,22 +4,39 @@ Menu
 An expanding menu of links.
 
 @extends {Layer}
-@param {Object} options 			The menu's attributes.@param {number} options.height	 	The menu's max expanded height
-@param {number} options.color	 	The color to use for titles
-@param {Object} options.structure	The menu's links structure
-@param {string} options.title	 	The menu's title
-@param {boolean} options.open	 	Whether to start in an open state
-@param {dividers} options.dividers	Whether to place dividers between sections
-@param {number} options.tint	 	The color to use for links
-@param {Object} options.padding		Padding for positioning links
-@param {Object} options.showSublayers
+@param {Object} 	options 			The component's attributes.
+@param {number} 	options.height	 	The menu's max expanded height
+@param {number} 	options.color	 	The color to use for titles
+@param {string} 	options.title	 	The menu's title
+@param {boolean} 	options.open	 	Whether to start in an open state
+@param {dividers} 	options.dividers	Whether to place dividers between sections
+@param {number} 	options.tint	 	The color to use for links
+@param {Object} 	options.padding		Padding for positioning links
+
+	padding:
+		top: <number>						Space to leave before the first link or title.
+		right: <number>						Space to leave at the right of a link or title.
+		bottom: <number>					Space to leave below each section.
+		left: <number>						Space to leave at the left of a link or title.
+		stack: <number>						Space to leave between links / titles.
+
+@param {array} 		options.structure	The menu's links structure, made up of sections.
+
+	structure: 
+		[
+			{								A section in the menu.
+				title: <string>				The section's title (optional).
+				links:						The section's links.
+					<string>: <function>	The name of the link : the function to run when the link is tapped.
+			}
+		]
 
 ###
+
 class exports.Menu extends ScrollComponent
 	constructor: (options = {}) ->
 		
 		_.defaults options,
-			parent: @app.header
 			name: "Menu"
 			x: 4
 			y: app.header?.statusBar?.maxY ? 0
@@ -30,8 +47,6 @@ class exports.Menu extends ScrollComponent
 			color: black
 			backgroundColor: white
 			scrollHorizontal: false
-
-			showSublayers: true
 			
 			padding: {top: 56, bottom: 16, left: 20, right: 20, stack: 4}
 			tint: black

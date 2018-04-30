@@ -2,14 +2,17 @@
 
 Page View
 
-A view that manages several pages through a nav bar.
+A view that manages several pages through a Navbar.
 
-@extends {Layer}	
+@extends {View}	
 @param 	{Object}	options 			The pageview's attributes.
 @param 	{function}	options.preload 	A promise function that will run immediately before the View's onLoad.
 @param 	{string}	options.start 		The page index to start on.
 @param 	{number}	options.placeholder	A function used for pages without content callbacks.
-@param 	{boolean}	options.pages 		An object composed of key value pairs, where the key is the name of the page and the value is the callback used to create that page's content. This callback receives all data resolved from options.preload, the page, and the PageView instance. It is bound to the page context.
+@param 	{boolean}	options.pages 		An object composed of key value pairs for each page: 
+				
+	pages:
+		<string>: <function>	The title / label for this link : a callback to use to create the content of the page. This callback receives all data resolved from options.preload, the page, and the PageView instance. It is bound to the page context.
 
 ###
 
@@ -146,7 +149,7 @@ class exports.PageView extends View
 
 		# EVENTS
 			
-		@onLoad @createContent
+		@onLoad @_createContent
 			
 		@onPostload @updateContent
 
@@ -160,7 +163,6 @@ class exports.PageView extends View
 		# CLEANUP
 
 		child.name = '.' for child in @children unless options.showSublayers
-
 		
 
 	# PRIVATE METHODS
@@ -181,10 +183,7 @@ class exports.PageView extends View
 
 		return @leftTransition
 
-
-	# PUBLIC METHODS
-
-	createContent: (data) =>
+	_createContent: (data) =>
 		_.map @pages, (page) =>
 			@contentFuncs[page.name].bind(page, data, page, @)()
 

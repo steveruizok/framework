@@ -1,3 +1,17 @@
+###
+
+Toggle
+
+A two-button segment control that can be toggled on or off.
+
+@extends {Layer}
+@param {Object}		options 			The component's attributes.
+@param {number}		options.toggled 	Whether to begin toggled or not.
+@param {array}		options.options	 	The toggle's options as strings, e.g. ["On", "Off"].
+@param {string} 	options.icon 		Whether to display the options strings as icons instead of labels.
+
+###
+
 Theme = require "components/Theme"
 theme = undefined
 
@@ -22,7 +36,6 @@ class exports.Toggle extends Layer
 
 			options: ["Off", "On"]
 			icon: false
-			value: false
 			toggled: false
 
 		@customTheme = if options.backgroundColor and options.color then @_getCustomTheme(options.color, options.backgroundColor) else undefined
@@ -87,7 +100,7 @@ class exports.Toggle extends Layer
 		#				Property		Initial value 		Callback 		Validation	Error
 		Utils.define @, 'activeLayer', 	null, 				@_showActive
 		Utils.define @, 'toggled', 		options.toggled, 	@_setToggled, 	isOk, 		'Toggle.toggled must be a boolean (true or false) or undefined.'
-
+		
 		delete button.__instancing for button in @buttons
 		delete @__instancing
 

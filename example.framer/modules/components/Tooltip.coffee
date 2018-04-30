@@ -1,3 +1,17 @@
+###
+
+Tooltip
+
+A text box used to share information on another content element.
+
+@extends {Layer}
+@param {Object} 	options 			The component's attributes.
+@param {string} 	options.text 		The tooltip's text content.
+@param {array}		options.position	The tooltip's position, relative to the content it explains. Valid options are: "above", "right", "below" or "left".
+
+###
+
+
 Theme = require "components/Theme"
 theme = undefined
 
@@ -30,16 +44,15 @@ class exports.Tooltip extends Layer
 			text: options.text 
 			position: options.position
 
-		# ---------------
-		# Layers
+		#LAYERS
 		
-		@diamond = new Layer
-			name: 'Diamond'
+		@indicator = new Layer
+			name: 'indicator'
 			parent: @
 			size: 12
 			rotation: 45
 
-		Utils.linkProperties @, @diamond, 'backgroundColor'
+		Utils.linkProperties @, @indicator, 'backgroundColor'
 
 		@textLayer = new Body2
 			name: 'Text'
@@ -55,11 +68,9 @@ class exports.Tooltip extends Layer
 		@size = @textLayer.size
 		@textLayer.parent = @
 		
-		# ---------------
-		# Events
-
-		# ---------------
-		# Definitions
+		# EVENTS
+		
+		# DEFINITIONS
 	
 		delete @__constructor
 		
@@ -68,13 +79,13 @@ class exports.Tooltip extends Layer
 		Utils.define @, 'position',	options.position, 	@_showPosition,	_.isString,	"Tooltip.position must be a string."
 		
 		delete @__instancing
-		# ---------------
-		# Cleanup
+		
+		# CLEANUP
 		
 		child.name = '.' for child in @children unless options.showSublayers
 
-	# ---------------
-	# Private Methods
+
+	# PRIVATE METHODS
 
 	_getCustomTheme: (color, backgroundColor) ->
 		color = new Color(color)
@@ -117,25 +128,25 @@ class exports.Tooltip extends Layer
 	_showPosition: (string) ->
 		switch string
 			when "above"
-				@diamond.props =
+				@indicator.props =
 					x: Align.center
 					y: Align.bottom(6)
 					scaleX: .7
 					scaleY: 1
 			when "below"
-				@diamond.props =
+				@indicator.props =
 					x: Align.center
 					y: -6
 					scaleX: .7
 					scaleY: 1
 			when "right"
-				@diamond.props =
+				@indicator.props =
 					x: -6
 					y: Align.center()
 					scaleX: 1
 					scaleY: .7
 			when "left"
-				@diamond.props =
+				@indicator.props =
 					x: Align.right(6)
 					y: Align.center()
 					scaleX: 1
@@ -144,9 +155,4 @@ class exports.Tooltip extends Layer
 				throw 'Tooltip.position must be either "above", "right", "below", or "left".'
 
 
-	# ---------------
-	# Public Methods
-
-
-	# ---------------
-	# Special Definitions
+	# PUBLIC METHODS

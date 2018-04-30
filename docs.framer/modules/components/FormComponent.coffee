@@ -1,3 +1,66 @@
+###
+
+FormComponent
+
+Creates forms out of other components.
+
+@extends {Layer}	
+@param 	{Object}		options 				The component's attributes.
+@param 	{boolean}		options.warn			Whether to show a warning state for incomplete required fields.
+@param 	{boolean}		options.indicators		Whether to show indicators for each required field.
+@param 	{Object}		options.target 			An object to use for this form's initial values, and to post changes to.
+@param 	{Object}		options.padding 		The padding to use between the form's rows.
+	
+	padding:
+		top: <number>					The space to leave at the top of the form.  
+		bottom: <number>				The space to leave at the bottom of the form.
+		stack:
+			x: <number>					The horizontal space to leave between components on the same row.  
+			y: <number>					The vertical space to leave between rows.    
+
+
+@param 	{array}			options.structure 		The structure of the form's inputs, arranged in an array of rows.
+	
+	structure: [
+		{
+			<string>:					The input's name.
+				label: <string>			The input's label.
+				field: <Component>		The component to use for this input, e.g. TextInput.
+				text: <string>			Text to display (instead of a field).
+				width: <number>			The width of the input, as a percentage of the form's width (0 to 100).
+				validation: <function>	A function that will return true or false, based on the value of the field.
+				required: <boolean>		Whether this input is required.
+				microText: <string>		Text to display beneath the input when empty. (e.g. "Please enter a valid email address.")
+				errorText: <string>		Text to display when the input's value does not pass its validation. (e.g. "The email you've entered is not valid.")
+				placeholder: <string>	The placeholder to use for this input's value, when empty.
+				options: <array>		An array of options for the input, as strings.
+		}
+	]
+
+
+FormComponent.complete
+	Returns whether the form is complete or not. 
+	Emits a "change:complete" event when any field's value changes.
+
+FormComponent.status
+	Returns either "complete" or "incomplete".
+	Emits a "change:status" event when any field's value changes.
+
+
+FormComponent.refresh()	
+	Rebuilds all layers.
+	Emits a "refresh" event.
+
+FormComponent.post()	
+	Updates the target data object with its current values.
+	Emits a "post" event.
+
+FormComponent.reset()
+	Clears all values from the form's inputs.
+	Emits a "reset" event.
+
+###
+
 class exports.FormComponent extends Layer
 	constructor: (options = {}) ->
 		@__constructor = true
@@ -9,9 +72,10 @@ class exports.FormComponent extends Layer
 			x: 0
 			height: 32
 			width: Screen.width
-			padding: {x: 16, y: 16, top: 0, bottom: 0}
+
+			padding: {stack: {x: 16, y: 16}, top: 0, bottom: 0}
 			target: {}
-			data: exampleData
+			structure: exampleStructure
 			warn: false
 			indicators: true
 		
@@ -25,12 +89,13 @@ class exports.FormComponent extends Layer
 			layers: []
 			
 		_.defaults @padding,
-			x: 0
-			y: 16
 			bottom: 0
 			top: 0
+			stack: {}
 
-		@_createLayers()
+		_.defaults @padding.stack,
+			x: 0
+			y: 16
 
 		# EVENTS
 
@@ -44,11 +109,11 @@ class exports.FormComponent extends Layer
 		
 		_.assign @,
 			warn: options.warn
-			data: options.data
+			structure: options.structure
+
+		@refresh()
 
 
-	
-	# ###############
 	# PRIVATE METHODS
 
 	_createLayers: =>
@@ -59,9 +124,9 @@ class exports.FormComponent extends Layer
 
 		startY = @padding.top
 		
-		_.forIn @data, (v, k) =>
+		_.forIn @structure, (v, k) =>
 		
-			startX = -@padding.x
+			startX = -@padding.stack.x
 			
 			_.forIn v, (input, key) =>
 				
@@ -88,7 +153,7 @@ class exports.FormComponent extends Layer
 					label = new Label
 						parent: @
 						y: startY
-						x: startX + @padding.x
+						x: startX + @padding.stack.x
 						text: input.label
 					
 					# Indicator
@@ -98,17 +163,17 @@ class exports.FormComponent extends Layer
 						indicator = new FormIndicator
 							parent: label
 											
-				if key is '_label'
+				if input.text?
 					layer = new Body2
 						parent: @
 						y: label?.maxY ? (startY + input.y)
-						x: input.x ? (startX + @padding.x)
+						x: input.x ? (startX + @padding.stack.x)
 						text: input.text
 						width: if input.width then @width * (input.width / 100)
 					
 					startX = layer.maxX
 					if key is _.last(_.keys(v))
-						startY = @padding.y + (if micro? then micro else layer).maxY
+						startY = @padding.stack.y + (if micro? then micro else layer).maxY
 					
 					return
 					
@@ -116,7 +181,7 @@ class exports.FormComponent extends Layer
 				
 				layer = new input['field']
 					parent: @
-					x: input.x ? (startX + @padding.x)
+					x: input.x ? (startX + @padding.stack.x)
 					y: label?.maxY ? (startY + input.y)
 					placeholder: input.placeholder
 					options: input.options
@@ -179,7 +244,7 @@ class exports.FormComponent extends Layer
 				# update positions
 				startX = layer.maxX
 				if key is _.last(_.keys(v))
-					startY = @padding.y + (if micro? then micro else layer).maxY
+					startY = @padding.stack.y + (if micro? then micro else layer).maxY
 				
 				# add to layers
 				
@@ -228,24 +293,25 @@ class exports.FormComponent extends Layer
 		@emit "change:status", @status, @
 	
 	
-	# ###############
 	# PUBLIC METHODS
 	
 	refresh: =>
 		@_createLayers()
 		@_updateLayers()
 		@_updateStatus()
+		@emit "refresh", @
 	
 	post: =>
 		@_updateTarget()
+		@emit "post", @target, @
 		return @target
 
 	reset: =>
 		@layers.forEach (layer) =>
 			layer[layer._formData.value] = null
+		@emit "reset", @
 
 	
-	# ###############
 	# DEFINITIONS
 	
 	@define "warn",
@@ -265,12 +331,12 @@ class exports.FormComponent extends Layer
 		get: -> if @_complete then 'complete' else 'incomplete'
 	
 	
-	@define "data",
-		get: -> return @_data
-		set: (data) ->
-			throw 'FormComponent.data must be an object.' unless _.isObject(data) 
+	@define "structure",
+		get: -> return @_structure
+		set: (obj) ->
+			throw 'FormComponent.data must be an object.' unless _.isObject(obj) 
 			return if @__constructor
-			@_data = data
+			@_structure = obj
 			@refresh()
 
 
@@ -282,7 +348,7 @@ class FormIndicator extends Icon
 
 		_.defaults options,
 			name: "Indicator"
-			y: Align.center(1)
+			y: Align.center()
 			height: 16
 			width: 16
 			icon: 'checkbox-blank-circle-outline'
@@ -316,15 +382,15 @@ class FormIndicator extends Icon
 					color: blue
 					scale: .7
 
-exampleData = 
-	0:
+exampleStructure = [
+	{
 		name:
 			label: "Name"
 			field: TextInput
 			placeholder: ""
 			width: 100
 			required: true
-	1:
+	}, {
 		email: 
 			label: "Email address"
 			field: TextInput
@@ -334,7 +400,7 @@ exampleData =
 			validation: Utils.isEmail
 			microText: "Please enter a valid email address."
 			errorText: "The email you've entered is not valid."
-	2:
+	}, {
 		_label:
 			label: "Contact preferences"
 			text: "May we contact you about a car accident that wasn't your fault?"
@@ -345,3 +411,5 @@ exampleData =
 			field: Toggle
 			options: ['No', 'Yes']
 			errorText: "Please select."
+	}
+]
