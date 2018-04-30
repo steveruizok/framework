@@ -1,4 +1,4 @@
-require "framework"
+require "myTheme"
 
 app = new App
 	chrome: "ios"
@@ -8,7 +8,6 @@ app = new App
 
 # --------------------
 # Data
-
 
 # --------------------
 # Helpers
@@ -48,7 +47,7 @@ createPage2 = (data, page, view) ->
 			y: 32
 			x: Align.center
 			height: 64
-			backgroundColor: blue
+			backgroundColor: green
 		
 	Utils.stack(@content.children, 16)
 	@updateContent()
@@ -65,6 +64,13 @@ view = new View
 	key: "0.0.0"
 
 view.onLoad ->
+	
+	btn = new Button
+		parent: @content
+		x: Align.center()
+		y: 16
+	
+	btn.onSelect -> app.showNext(pageView)
 	
 	for i in _.range(3)
 		new Layer
@@ -100,10 +106,10 @@ pageView = new PageView
 
 # Menu
 
-app.menu = new Menu
+menu = new Menu
 	structure:
 		0:
-			title: "Menu"
+# 			title: "Views"
 			links:
 				"View": view.show
 				"PageView": pageView.show
@@ -115,7 +121,7 @@ app.menu = new Menu
 
 # Toolbar
 
-app.footer = new Toolbar
+new Toolbar
 	links:
 		"Home":
 			icon: "home"
@@ -129,3 +135,7 @@ app.footer = new Toolbar
 # 	border: 3
 # 	indicator: true
 # 	tint: red
+
+app.showNext(view)
+
+window.addEventListener 'keydown', Keyboard.printKey

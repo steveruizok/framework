@@ -1,4 +1,25 @@
-# Capture keyboard events
+###
+
+Keyboard
+
+A module to capture keyboard events.
+
+# Methods
+
+Keyboard.on(key <string>, handler <function>[, throttleTime <number>])	
+	Adds a handler to the given key, optionally throttled.
+
+Keyboard.off(key <string>, handler <function>[, throttleTime <number>])	
+	Removes a handler to the given keypress.
+
+Keyboard.printKey(event <event>)	
+	When used as a callback, prints the key pressed.
+	e.g. window.addEventListener 'keydown', Keyboard.printKey
+
+Keyboard.preventDefault <bool>	
+	When set to true, will prevent key pressed from triggering their default action.
+
+###
 
 keyHandlers = {}
 enabled = false
@@ -21,4 +42,4 @@ _.assign exports,
 
 	printKey: (event) -> print event.key
 
-	preventDefault: false
+	preventDefault: true

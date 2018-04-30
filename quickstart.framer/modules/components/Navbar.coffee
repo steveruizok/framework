@@ -5,13 +5,27 @@ Navbar
 A drop-down menu.
 
 @extends {Layer}
-@param	{Object}	options 		The navbar's attributes.
-@param	{number}	options.height	The navbar's collapsed height.
-@param	{string}	options.color 	The color to use for the navbar's labels.
+@param	{Object}	options 			The component's attributes.
+@param	{number}	options.height		The navbar's collapsed height.
+@param	{string}	options.color 		The color to use for the navbar's labels.
+@param	{number}	options.start		The initial active link.
+@param	{Object}	options.padding		An object to set the top, bottom, and stack paddings for the navbar's link labels.
+@param	{Object}	options.links		An object of links for the navbar:
 
-@param	{number}	options.start	The initial active link.
-@param	{Object}	options.padding	An object to set the top, bottom, and stack paddings for the navbar's link labels.
-@param	{Object}	options.links	An object of key value pairs, where the key is the title of the link and the value is the callback to be fired when the link is clicked.
+	links:
+		<string>: <function>	The title / label for this link : a callback to fire when the link is selected.
+
+
+Navbar.index {number}
+	Sets the index of the link to activate.
+	Emits a "change:index" event.
+
+
+Navbar.open()	
+	Opens the navbar. Equivilent to navbar.open = true.
+
+Navbar.close()	
+	Closed the navbar. Equivilent to navbar.open = false.
 
 ###
 
@@ -160,3 +174,10 @@ class exports.Navbar extends Layer
 		@emit("change:active", index, @prevIndex, @)
 
 		@prevIndex = index
+
+
+	# PUBLIC METHODS
+	
+	open: => @open = true
+
+	close: => @open = false

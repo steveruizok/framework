@@ -5,12 +5,22 @@ Header Base
 A base class for other headers.
 
 @extends {Layer}	
-@param 	{Object}	options 				The header's attributes.
+@param 	{Object}	options 				The component's attributes.
 @param 	{string}	options.title 			The header's initial title.
 @param 	{string}	options.tint 			The header's tint color.
 @param 	{boolean}	options.hidden			Whether the header should begin with its content hidden.
 @param 	{boolean}	options.collapsed		Whether the header should begin in its collapsed state.
 @param 	{number}	options.collapsedHeight	How tall the header should be when collapsed.
+
+HeaderBase.loading {boolean}
+	Turns on or off the header's loading state, if any. 
+	Emits a "change:loading" event.
+
+HeaderBase.expand()	
+	Expands the header.
+
+HeaderBase.collapse()	
+	Collapses the header.
 
 ###
 

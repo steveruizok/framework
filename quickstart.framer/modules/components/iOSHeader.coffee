@@ -5,6 +5,11 @@ iOS Header
 A header for iOS devices.
 
 @extends {HeaderBase}
+
+
+iOSHeader.update()	
+	Updates the header's title, viewKey, and Back link.
+
 ###
 
 Theme = require "components/Theme"

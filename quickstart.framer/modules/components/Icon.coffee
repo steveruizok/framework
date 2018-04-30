@@ -1,3 +1,19 @@
+###
+
+Icon
+
+An SVGLayer that displays one of about 1600 icons from www.materialdesignicons.com.
+
+@extends {SVGLayer}
+@param	{Object}	options 			The component's attributes.
+@param	{string}	options.icon		The name of the icon to use (e.g. "account-outline").
+@param	{string}	options.padding 	How much padding to place around the icon.
+
+Icon.addIcon(name <string>, path <string>)	
+	Adds a new icon to the collection. The SVG should be the `d` property of an SVG path, vertically flipped and designed for a viewBox of 0 0 512 512.
+
+###
+
 Theme = require "components/Theme"
 theme = undefined
 
@@ -8,15 +24,14 @@ class exports.Icon extends SVGLayer
 		_.defaults options,
 			name: 'Icon'
 			size: 24
-			icon: 'star'
 			backgroundColor: null
 			clip: true
 			color: black
-			lineHeight: 0
-			padding: 0
 			animationOptions:
 				time: .25
-				colorModel: 'husl'
+
+			icon: 'star'
+			padding: 0
 
 		super options
 
