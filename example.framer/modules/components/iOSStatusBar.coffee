@@ -101,6 +101,11 @@ class exports.iOSStatusBar extends Layer
 		@color = options.color
 
 
+		# CLEANUP
+
+		child.name = '.' for child in @children unless options.showSublayers
+
+
 		# KICKOFF
 
 		@timeLayer.template = new Date()

@@ -2,24 +2,28 @@
   "orientation" : 0,
   "updateDelay" : 0.29999999999999999,
   "designModeSelected" : 0,
-  "cachedDeviceHeight" : 900,
+  "cachedDeviceHeight" : 667,
   "contentScale" : 1,
-  "cachedDeviceWidth" : 1440,
+  "cachedDeviceWidth" : 375,
   "fullScreen" : false,
-  "deviceType" : "apple-macbook-air",
+  "deviceType" : "apple-iphone-8-space-gray",
   "sharedPrototype" : true,
   "propertyPanelToggleStates" : {
 
   },
-  "projectId" : "436D5A41-61FF-4109-A60A-C5F87570B9C4",
+  "projectId" : "DC3132CB-11FA-4892-9FE0-6BD58BA45ED3",
   "deviceOrientation" : 0,
   "selectedHand" : "",
   "showBezel" : false,
   "foldedCodeRanges" : [
-    "{140, 723}",
-    "{906, 3862}",
-    "{4769, 683}",
-    "{5453, 749}"
+    "{246, 1646}",
+    "{1893, 228}",
+    "{2122, 228}",
+    "{2384, 388}",
+    "{2773, 1301}",
+    "{4075, 735}",
+    "{4811, 854}",
+    "{5666, 436}"
   ],
   "deviceScale" : "fit"
 }

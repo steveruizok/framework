@@ -1,288 +1,321 @@
-# require "framework"
-require "myTheme"
+require "framework"
 
 app = new App
-	chrome: "safari"	# [1] 
-	showKeys: false		# [2] bar
+	chrome: "ios"
+	printErrors: true
+	showKeys: true
+# 	showSublayers: true
 
-# ----------------
-# Data [3]
+# --------------------
+# Data
 
-# Items
 
-# [1]
-list_items = [0...6].map (i) ->
-	return {
-		title: "Link " + i 
-		description: Utils.randomText(48, true, false) #[2]
-		image: Utils.randomImage()
-		}
-	
+# --------------------
+# Helpers
 
-### Notes _____________________________________________________
 
-[1] Here we're using the `Array.map` method to return an array
-	of objects, which we'll use in our 1.0.0 List View. By 
-	keeping that data here, rather than in the view, we can more 
-	easily find and change it later.
-	
-[2] Framework comes with many useful new Util methods. We can
-	use `Utils.randomText` to give us 48 words of lorem ipsum.
-	The `true` argument tells the method to give us this text as 
-	sentences; if the third argument were `true`, we'd get it in
-	paragraphs, too.
+# --------------------
+# Components
 
-###
 
-# Header
+# --------------------
+# Pages
 
-# ----------------
-# Views [4]
+# Page 1
 
-# 0.0.0 Landing View
-
-landingView = new View
-	title: 'Landing' # [1]
-	key: "0.0.0" # [2]
-	contentInset: # [3]
-		bottom: 0
+createPage1 = (preloadedData, page, view) ->
 		
-landingView.onPreload (resolve, reject) -> # [4]
-	preloadData = 
-		title: "Best App"
-	
-	resolve(preloadData)
-
-landingView.onLoad (preloadData) -> # [5]
-		
-	title = new H2
+	info = new Body
 		parent: @content
-		x: Align.center()
-		y: 128
-		text: preloadData.title # [5.1]
-	
-	container = new Container # [6]
-		parent: @content
-		x: Align.center()
-		padding: 
-			left: 0
-			right: 0, 
-			top: 16, 
-			bottom: 16, 
-			stack: 4
-
-	label = new Label
-		parent: container
-		text: "Email"
-	
-	input = new TextInput 
-		parent: container
-		placeholder: "Enter your email"
-		width: container.width
-	
-	button = new Button
-		parent: @content
-		x: Align.center()
-		width: container.width
-		text: "Sign in"
-		disabled: true
-	
-	# Events
-	
-	input.onChange "value", (value) ->
-		inputIsEmail = Utils.isEmail(value)
-		button.disabled = not inputIsEmail # [7]
+		text: "This is the first page of a `PageView`.\n\nUnlike regular `Views`, which are extended `ScrollComponents`, a `PageView` is an extended `FlowComponent` that manages its own set of `ScrollComponents`. Both `View` and `PageView` instances are managed by the larger `App` instance, which is also an extended `FlowComponent`.\n\n`PageView`s use a `NavBar` instance to navigate between their pages. You'll use functions to create the content for each of a `PageView`'s pages. For example, the content for this page is created using the `createPage1` function.\n\n`PageView`s also take a Promise for their `preload` property. The results of this data are passed into each of the content functions, allowing for dynamic content. The date below comes from this `PageView`'s '`preload`:"
+		x: 32
+		y: 32
+		width: @width - 64
 		
-	button.onSelect -> 
-		app.showNext(listView, 1) #[8]
-
-landingView.onPostload (preloadData) -> #[9]
-	Utils.stack(@content.children, 16)
-
-### Notes _____________________________________________________
-
-[1] If the `App` has a `chrome` of `iOS`, the App's header will 
-	display the current View's `title` string as its title text. 
+	Utils.toMarkdown(info)
 	
-[2]	If the `App`'s `showKeys' option is `true` (as it is by 
-	default), the App's header will also show the current View's 
-	`key` in its status bar.
-	
-[3] Beneath all the extra action, Views are essentially just
-	scroll components. You can set their options in the same way 
-	you would when creating a ScrollComponent instance.
-
-[4] Views have four "life cycle" methods. The first, `view.preload`, 
-	is a Promise. This allows for true preloading: if data needs  
-	to be fetched from an online source, you eventually resolve
-	this data into the next method, `view.load`.
-
-[5]	Every View *must* have an `load` property, set using
-	`view.onLoad`. This is where you should all of the View's 
-	content: layers, events, and functions that rely on them.
-	It gets passed whatever data came out of `view.preload`, as
-	shown at [5.1].
-	
-	There's a very important reason for building with `load`:   
-	when App navigates to a View, it immediately runs this new 
-	View's `load` function. Later, when the App navigates
-	away from that View, the View purges its descendants,
-	destroying destroys all of its sublayers except for 
-	`view.content`. Then it destroys all of `view.content`'s 
-	sublayers too. 
-	
-	However, so long as all of those layers were created inside 
-	of the View's `load` function, all of this destruction won't
-	matter to the user: the next time they navigate to the View, 
-	all of that content will re-created for them before the 
-	transition occurs, as if it had been there all along!
-
-[6] The Container class is a great parent: it automatically 
-	hugs its children, while giving them exactly the space you 
-	tell it to. Building with Containers gives you more control 
-	over spacing and positioning: set the paddings of your
-	containers, then use Utils.stack to place them one after the 
-	next.
-
-[7] Here we're using one of the new Utils methods, `Utils.isEmail` 
-	to validate whether the content of our email input is, in fact,
-	an email address. Then we're using the value it returns 
-	(true or false) to set the `disabled` status of our button.
-
-[8] Though Framework's preload function does support real asyncronous 
-	delays, sometimes we'll want to fake that delay. App's transition 
-	method, `app.showNext`, takes two arguments: the new View to
-	show, and how much fake delay we want to add.
-
-[9] Dependng on how complicated your views are, you may want to 
-	use the view's last method, `view.postload`, to clean up. 
-	This method fires after `view.load` completes and also has
-	access to any data that `view.preload` resolved. It's useful
-	for Utils.stack calls.
-
-###
-
-# 1.0.0 List View
-
-listView = new View
-	title: "List View"
-	key: "1.0.0"
-
-
-listView.onLoad () ->
-	
-	app.getScreenshot()
-	
-	# Iterate over items (see the "Data" code fold)
-	links = list_items.map (item, i) =>
+	new H4
+		parent: @content
+		y: 32
+		x: 16
+		width: @width - 32
+		textAlign: "center"
+		text: preloadedData ? "(Preloaded data here)"
 		
-		link = new H3Link
-			x: 32
-			y: 48
+	info = new Body
+		parent: @content
+		text: "Note that all of the content for each of a `PageView`'s pages is created simultaneously when that `PageView` loads – and destroyed again when the `PageView` unloads. If the content of these pages is very complex, `PageView`s may take longer to load than regular `View`s."
+		x: 32
+		y: 32
+		width: @width - 64
+		
+	Utils.toMarkdown(info)
+	
+	for i in _.range(10)
+	
+		new Layer
 			parent: @content
-			width: @width - 64
-			text: item.title
+			y: 32
+			x: Align.center
+			height: 64
+			backgroundColor: blue
 		
-		photo = new Layer
-			parent: link
-			x: Align.right()
-			size: link.height
-			image: item.image
-		
-		return link
-		
-	# Events
-	
-	links.forEach (link, i) -> 
-		link.onSelect ->
-			detailView = new DetailView
-				item: list_items[i]
-			
-			app.showNext(detailView)
-		
-	Utils.offsetY(@content.children, 16)
+	Utils.stack(@content.children, 16)
 	@updateContent()
 
-listView.onPostload (preloadData) ->
-	null 
+# Page 2
+	
+createPage2 = (data, page, view) ->
+	for i in _.range(10)
+	
+		new Layer
+			parent: @content
+			y: 32
+			x: Align.center
+			height: 64
+			backgroundColor: green
+		
+	Utils.stack(@content.children, 16)
+	@updateContent()
 
-# 2.0.x Detail View
+# Page 3
 
-class DetailView extends View
+createPage3 = (data, page, view) ->
+	for i in _.range(10)
+	
+		new Layer
+			parent: @content
+			y: 32
+			x: Align.center
+			height: 64
+			backgroundColor: yellow
+		
+	Utils.stack(@content.children, 16)
+	@updateContent()
+
+
+# --------------------
+# Views
+
+# 0.0.0 First View
+
+firstView = new PageView
+	name: "0"
+	title: "First View"
+	key: "0.0.0"
+	pages:
+		"First Page": createPage1
+		"Second Page": createPage2
+		"Third Page": undefined
+	preload: (resolve, reject) -> 
+		resolve(new Date())
+# 	start: 1
+# 	placeholder: (data, page, view) ->
+# 		new H4
+# 			parent: @
+# 			x: Align.center()
+# 			y: 32
+# 			text: "Placeholder for " + page.name
+
+# 1.0.0 Second View
+
+secondView = new View
+	name: "1"
+	title: "Second View"
+	key: "1.0.0"
+
+secondView.onLoad ->
+	info = new Body
+		parent: @content
+		text: "This is a another root view, associated with the second tab in the `Toolbar`.\n\nIt also has a NavBar, however unlike the first view (a `PageView`), which will automatically create a `NavBar` to navigate between its pages, we've made this one by hand -- and we can use it for whatever we want. Here we've given it links to navigate to the top and bottom of the view's content."
+		x: 32
+		y: 72
+		width: @width - 64
+		
+	Utils.toMarkdown(info)
+	
+	btn = new Button
+		parent: @content
+		x: 16
+		y: 72
+		width: @width - 32
+		text: "Show another view"
+	
+	btn.onSelect ->
+		app.showNext(anotherView)
+	
+	btn = new Button
+		parent: @content
+		x: 16
+		y: 32
+		width: @width - 32
+		text: "Show takeover view"
+	
+	btn.onSelect ->
+		app.showNext(new TakeoverView)
+			
+	nav = new Navbar
+		parent: @
+		start: 0
+		links:
+			"Scroll to Top": => @scrollToTop()
+			"Scroll to Bottom": => @scrollToPoint
+				x: 0, y: 999999
+			
+	@app.on "transitionEnd", => 
+		return unless app.header?
+		Utils.pin nav, app.header, 'bottom'
+			
+	for i in _.range(4)
+		new Layer
+			parent: @content
+			x: Align.center()
+	
+secondView.onPostload ->
+	Utils.stack(@content.children, 16)
+
+# 1.1.0 Another View
+
+anotherView = new View
+	name: "1.1"
+	title: "Another View"
+	key: "1.1.0"
+
+anotherView.onLoad ->
+	info = new Body
+		parent: @content
+		text: "This is a regular view.\n\nIt's not a `root` view and it's not one of the views associated with a tab in the toolbar. As a result, we've hidden the menu button and replaced it with a `showPrevious` link in the header."
+		x: 32
+		y: 16
+		width: @width - 64
+		
+	Utils.toMarkdown(info)
+	
+	btn = new Button
+		parent: @content
+		x: 16
+		y: 32
+		width: @width - 32
+		text: "Show third view"
+	
+	btn.onSelect ->
+		app.showNext(thirdView)
+			
+	for i in _.range(4)
+		new Layer
+			parent: @content
+			x: Align.center()
+	
+anotherView.onPostload ->
+	Utils.stack(@content.children, 16)
+
+# 1.2.0 Takeover View
+
+class TakeoverView extends View
 	constructor: (options = {}) ->
-		
 		_.defaults options,
-			name: "Detail View"
-			key: "2.0.x"
-			item: list_items[0]
-			padding: null
+			name: "1.2"
+			title: "Takeover View"
+			key: "1.2.0"
 			oneoff: true
-		
+
 		super options
 		
-		item = options.item
-				
-		@onLoad (data) ->
-		
-# 		Utils.bind @, ->  # un-comment to find errors
-				
-			photo = new Layer
+		@onLoad ->
+			info = new Body
 				parent: @content
-				size: @width
-				image: item.image
-			
-			@padding =
-				left: 16
-				right: 16
-			
-			title = new H3 
-				parent: @content
-				padding: { top: 24 }
-				text: item.title 
-			
-			body = new Body 
-				parent: @content
-				width: @width
-				text: item.description
+				text: "This is a takeover view. Takeover views are used for dead ends and terminal content - the bedrock of a drill-down, where the only way out is back.\n\nOn views with the `oneoff` property, the Toolbar will hide away, giving the View a focused 'takeover' appearance. This ensures that the user will navigate away form the View using `showPrevious`, which will remove the `oneoff` View.\n\n"
+				x: 32
+				y: 16
+				width: @width - 64
 				
-			Utils.offsetY(@content.children, 16)
-			@updateContent()
-		
-				
-		@onPostload (preloadData) ->
-			null
-
-# ----------------
-# Kickoff / Testing [3]
-
-app.showNext(landingView)
-# app.showNext(listView)
-# app.showNext(new DetailView)
-
-
-### Notes _____________________________________________________
-
-[1] The `chrome` property sets which device chrome to use.
-	It can be either "ios" (the default value), "safari",
-	or null to hide the device chrome altogether.
-
-[2] The `showKeys` property sets whether or not to show the
-	view keys (a special name given to each View, like "0.0.0"), 
-	in the status bar. View keys help keep track of where you 
-	or your user is in the flow.
+			Utils.toMarkdown(info)
+			
+			for i in _.range(4)
+				new Layer
+					parent: @content
+					x: Align.center()
 	
-[3] If your project uses data, like a list of names or objects,
-	it's best to keep that data somewhere easy to find, rather 
-	than hidden deep in your Views.
+			Utils.stack(@content.children, 16)
 
-[4] With Framework, your project will (almost certainly) be made
-	up of View instances. To keep things organized, I suggest using
-	a different code folds for each View and naming it with its
-	view key (e.g. "1.1.0") and the name or purpose of the view.
+# 2.0.0 Third View
 
-[5] You'll want to start your project by showing one of your Views.
-	When building a View, it's useful to start the project at that
-	view.
+thirdView = new View
+	name: "2"
+	title: "Third View"
+	key: "2.0.0"
 
- 
-###
+thirdView.onLoad ->
+	
+	info = new Body
+		parent: @content
+		text: "This is another `root` view, associated with the third tab in the toolbar."
+		x: 32
+		y: 16
+		width: @width - 64
+		
+	new Layer
+		parent: @content
+		x: Align.center()
+		
+	new Layer
+		parent: @content
+		x: Align.center()
+
+thirdView.onPostload ->
+	Utils.stack(@content.children, 400)
+	
+
+
+# --------------------
+# Kickoff
+
+# Menu
+
+app.menu = new Menu
+# 	open: false
+# 	title: "Menu"
+# 	dividers: false
+# 	tint: red
+# 	padding: {top: 56, bottom: 16, left: 8, right: 8, stack: 4}
+	structure:
+		0:
+			title: "Menu"
+			links:
+				"First View": firstView.show
+				"Second View": secondView.show
+				"Third View": thirdView.show
+		1:
+			title: undefined
+			links:
+				"secondary link 1": -> new Alert {title: "Secondary 1 tapped!"}
+				"secondary link 2": -> new Alert {title: 'Secondary 2 tapped!'}
+				"secondary link 3": -> new Alert {title: 'Secondary 3 tapped!'}
+		2:
+			title: undefined
+			links:
+				"sign up": undefined
+				"sign in": undefined
+
+# Toolbar
+
+app.footer = new Toolbar
+# 	labels: true
+# 	start: 0
+# 	color: red
+# 	border: 3
+# 	indicator: true
+# 	tint: red
+	links:
+		"Home":
+			icon: "home"
+			view: firstView
+		"Second":
+			icon: "flag"
+			view: secondView
+			loader: true
+		"Third":
+			icon: "star"
+			view: thirdView
+
+app.showNext(firstView)

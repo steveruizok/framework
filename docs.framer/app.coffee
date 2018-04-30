@@ -371,8 +371,6 @@ titleDiv = (options = {}) ->
 # App
 
 app = new App
-# 	showKeys: false
-# 	chrome: "safari"
 
 
 # ----------------
@@ -571,13 +569,17 @@ iconsView.onLoad ->
 
 
 # ----------------
-# Structure
+# Navigation
 
 # App
 
+# Header
+
 # View
 
-# Header
+# PageView
+
+# NavBar
 
 
 # ----------------
@@ -2998,10 +3000,10 @@ homeView.onLoad ->
 	
 	structure =
 		"Foundations":
-			Theme: undefined
 			Color: colorsView 
 			Typography: typographyView
 			Icon: iconsView
+			Theme: undefined
 		"Buttons":
 			Button: buttonsView
 			Link: linksView
@@ -3014,19 +3016,21 @@ homeView.onLoad ->
 			Segment: segmentsView
 			Toggle: togglesView
 		"Components":
-			DocComponent: undefined
-			CarouselComponent: undefined
 			SortableComponent: sortableComponentView
-			StickyComponent: undefined
 			TabComponent: tabComponentView
-		"Structure":
+			CarouselComponent: undefined
+			StickyComponent: undefined
+			DocComponent: undefined
+		"Navigation":
 			App: undefined
-			View: undefined 
 			Header: undefined
+			View: undefined
+			PageView: undefined
+			NavBar: undefined
 		"Misc":
+			Alert: undefined
 			Tooltip: tooltipsView
 			Utils: utilsView
-			Alert: undefined
 	
 	links = _.map structure, (value, key) =>
 		

@@ -132,6 +132,12 @@ class exports.iOSHeader extends HeaderBase
 		@on "change:tint",		@_setTint
 		@on "change:color",		@_setColor
 
+
+		# CLEANUP
+
+		child.name = '.' for child in @children unless options.showSublayers
+
+
 		# KICKOFF
 
 		delete @_initial
