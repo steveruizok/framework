@@ -137,5 +137,3 @@ new Toolbar
 # 	tint: red
 
 app.showNext(view)
-
-window.addEventListener 'keydown', Keyboard.printKey
