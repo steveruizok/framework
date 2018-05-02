@@ -45,6 +45,7 @@ components = [
 	'Toolbar'
 	'PageView'
 	'Navbar',
+	'ActionSheet', 
 	'iOSStatusBar'
 	'FormComponent',
 	"ProgressComponent"
