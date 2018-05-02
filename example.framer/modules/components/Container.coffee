@@ -79,5 +79,9 @@ class exports.Container extends Layer
 		if @padding.left > 0 and _.find(@children, (c) => c.x < @padding.left)?
 			for child in @children
 				child.x += @padding.left
-			
-		Utils.contain(@, !shrink, @padding.right, @padding.bottom)
+		
+		if shrink
+			Utils.contain(@, false, @padding.right, @padding.bottom)
+			return
+		
+		Utils.contain(@, true, 0, @padding.bottom)

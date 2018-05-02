@@ -289,7 +289,7 @@ class exports.Button extends Layer
 			return
 
 		# show not loading
-		@loadingIcon.once Events.AnimationEnd,
+		@loadingIcon.once Events.AnimationEnd, =>
 			_.assign @loadingIcon, 
 				visible: false
 				opacity: 0

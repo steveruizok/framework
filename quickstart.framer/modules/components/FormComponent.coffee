@@ -9,6 +9,7 @@ Creates forms out of other components.
 @param 	{boolean}		options.warn			Whether to show a warning state for incomplete required fields.
 @param 	{boolean}		options.indicators		Whether to show indicators for each required field.
 @param 	{Object}		options.target 			An object to use for this form's initial values, and to post changes to.
+@param 	{number}		options.delay 			How long to wait after last input before making validation checks.
 @param 	{Object}		options.padding 		The padding to use between the form's rows.
 	
 	padding:
@@ -78,6 +79,7 @@ class exports.FormComponent extends Layer
 			structure: exampleStructure
 			warn: false
 			indicators: true
+			delay: .2
 		
 		super options
 		
@@ -85,6 +87,7 @@ class exports.FormComponent extends Layer
 			indicators: options.indicators
 			padding: options.padding
 			target: options.target
+			delay: options.delay
 			results: {}
 			layers: []
 			
@@ -94,7 +97,7 @@ class exports.FormComponent extends Layer
 			stack: {}
 
 		_.defaults @padding.stack,
-			x: 0
+			x: 16
 			y: 16
 
 		# EVENTS
@@ -111,8 +114,6 @@ class exports.FormComponent extends Layer
 			warn: options.warn
 			structure: options.structure
 
-		@refresh()
-
 
 	# PRIVATE METHODS
 
@@ -123,22 +124,23 @@ class exports.FormComponent extends Layer
 		@layers = []
 
 		startY = @padding.top
-		
-		_.forIn @structure, (v, k) =>
+
+		_.forIn @structure, (row) =>
 		
 			startX = -@padding.stack.x
+			rowStackWidth = 0
 			
-			_.forIn v, (input, key) =>
+			_.forIn row, (input, key) =>
 				
 				_.defaults input,
 					field: TextInput
 					password: false
 					placeholder: ""
+					width: 100
 					y: 0
 					x: undefined
 					label: undefined
 					required: undefined
-					width: undefined
 					microText: undefined
 					errorText: undefined
 				
@@ -146,9 +148,17 @@ class exports.FormComponent extends Layer
 				indicator = undefined
 				layer = undefined
 				micro = undefined
-			
+
+				# width
+				inputWidth = _.clamp(
+					rowStackWidth + (@width * (input.width / 100)),
+					1,
+					@width - rowStackWidth
+					)
+
+				rowStackWidth = inputWidth + @padding.stack.x
+
 				# Label
-				
 				if input.label?
 					label = new Label
 						parent: @
@@ -157,38 +167,37 @@ class exports.FormComponent extends Layer
 						text: input.label
 					
 					# Indicator
-					
 					if input.required and @indicators
 						label.padding = {left: 24}
 						indicator = new FormIndicator
 							parent: label
-											
+
+				# Text-only
 				if input.text?
 					layer = new Body2
 						parent: @
 						y: label?.maxY ? (startY + input.y)
 						x: input.x ? (startX + @padding.stack.x)
 						text: input.text
-						width: if input.width then @width * (input.width / 100)
+						width: inputWidth
 					
 					startX = layer.maxX
-					if key is _.last(_.keys(v))
+					if key is _.last(_.keys(row))
 						startY = @padding.stack.y + (if micro? then micro else layer).maxY
 					
 					return
 					
 				# Input
-				
 				layer = new input['field']
 					parent: @
 					x: input.x ? (startX + @padding.stack.x)
 					y: label?.maxY ? (startY + input.y)
 					placeholder: input.placeholder
 					options: input.options
-					width: if input.width then @width * (input.width / 100)
+					width: inputWidth
 					value: null
 					password: input.password
-					
+
 				if input.label is "" then label?.x = layer.x + layer.width - 16
 					
 				# Microtext
@@ -201,7 +210,6 @@ class exports.FormComponent extends Layer
 						width: layer.width
 				
 				# set form data
-				
 				layer._formData =
 					required: input.required
 					referenceValue: key
@@ -232,22 +240,19 @@ class exports.FormComponent extends Layer
 						_.assign layer._formData,
 							value: 'value'
 							validation: input.validation ? (v) -> true
-
 				
 				# set listeners
-				
 				layer.on "change:#{layer._formData.value}", (v, layer) =>
-					Utils.delay .2, =>
+					Utils.delay @delay, =>
 						if v is layer[layer._formData.value]
 							@_updateStatus()
 				
 				# update positions
 				startX = layer.maxX
-				if key is _.last(_.keys(v))
+				if key is _.last(_.keys(row))
 					startY = @padding.stack.y + (if micro? then micro else layer).maxY
 				
 				# add to layers
-				
 				@layers.push(layer)
 		
 		Utils.contain(@, true, 0, @padding.bottom)
@@ -273,6 +278,7 @@ class exports.FormComponent extends Layer
 	
 	_updateStatus: =>
 		@layers.forEach (layer) =>
+
 			value = layer[layer._formData.value]
 			valid = layer._formData.validation(value)
 
@@ -289,8 +295,8 @@ class exports.FormComponent extends Layer
 		
 		@_complete = _.filter(matches).length is required.length
 		
-		@emit "change:complete", @complete, @
-		@emit "change:status", @status, @
+		@emit "change:complete", @complete, @fields, @
+		@emit "change:status", @status, @fields, @
 	
 	
 	# PUBLIC METHODS
@@ -313,6 +319,13 @@ class exports.FormComponent extends Layer
 
 	
 	# DEFINITIONS
+	
+	@define "fields",
+		get: ->
+			obj = {}
+			@layers.forEach (layer) -> obj[layer._formData.referenceValue] = layer[layer._formData.value]
+			return obj
+			
 	
 	@define "warn",
 		get: -> return @_warn

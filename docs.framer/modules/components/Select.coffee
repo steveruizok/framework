@@ -199,7 +199,7 @@ class exports.Select extends Layer
 
 			@app.modal = @optionContainer
 
-			@optionContainer.placeBehind(@app.header)
+			# @optionContainer.placeBehind(@app.header)
 
 			@optionContainer.animate
 				height: @optionContainer.maxHeight

@@ -122,13 +122,15 @@ class exports.Toolbar extends Layer
 			
 			if options.labels
 				label = new Micro
-					parent: link
+					parent: linksContainer
 					text: key
 					x: Align.center()
-					y: Align.bottom(2)
+					y: link.maxY - 16
 					color: @color
 					opacity: 1
-					
+			
+				Utils.pin label, link, 'bottom'
+				link.on "change:point", -> label.midX = link.midX
 				Utils.linkProperties link, label, "opacity"
 				Utils.linkProperties link, label, "color"
 
