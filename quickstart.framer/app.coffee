@@ -137,3 +137,10 @@ new Toolbar
 # 	tint: red
 
 app.showNext(view)
+
+new ActionSheet
+	options: [
+		{text: "Hello!", select: -> print "hello world"},
+		{text: "Goodbye!", select: -> print "goodbye cryel world"}
+	
+	]
