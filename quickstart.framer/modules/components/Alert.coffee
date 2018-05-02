@@ -1,8 +1,6 @@
 Theme = require "components/Theme"
 theme = undefined
 
-# MODEL = 'switch'
-
 class exports.Alert extends Layer
 	constructor: (options = {}) ->
 		if @app.alert
@@ -25,7 +23,6 @@ class exports.Alert extends Layer
 			opacity: 0
 			animationOptions:
 				time: .2
-				colorModel: 'husl'
 			
 			
 			title: "A short title is best"
