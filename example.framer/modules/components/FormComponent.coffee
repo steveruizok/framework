@@ -161,6 +161,7 @@ class exports.FormComponent extends Layer
 				# Label
 				if input.label?
 					label = new Label
+						color: @color
 						parent: @
 						y: startY
 						x: startX + @padding.stack.x
@@ -176,6 +177,7 @@ class exports.FormComponent extends Layer
 				if input.text?
 					layer = new Body2
 						parent: @
+						color: @color
 						y: label?.maxY ? (startY + input.y)
 						x: input.x ? (startX + @padding.stack.x)
 						text: input.text
@@ -196,6 +198,7 @@ class exports.FormComponent extends Layer
 					options: input.options
 					width: inputWidth
 					value: null
+					color: @color	
 					password: input.password
 
 				if input.label is "" then label?.x = layer.x + layer.width - 16
@@ -207,6 +210,7 @@ class exports.FormComponent extends Layer
 						y: layer.maxY
 						x: layer.x
 						text: ""
+						color: @color
 						width: layer.width
 				
 				# set form data
@@ -216,6 +220,7 @@ class exports.FormComponent extends Layer
 					micro: micro
 					indicator: indicator
 					valid: undefined
+					color: @color
 					microText: input.microText
 					errorText: input.errorText
 				

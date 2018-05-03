@@ -37,6 +37,7 @@ components = [
 	'Stepper', 
 	'Segment',
 	'TextInput',
+	"TextArea",
 	'Menu',
 	'Link', 
 	'Separator', 
