@@ -243,6 +243,7 @@ class exports.FormComponent extends Layer
 				
 				# set listeners
 				layer.on "change:#{layer._formData.value}", (v, layer) =>
+					@emit 'change:fields', @fields, @
 					Utils.delay @delay, =>
 						if v is layer[layer._formData.value]
 							@_updateStatus()

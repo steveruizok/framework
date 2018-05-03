@@ -267,6 +267,8 @@ class exports.Button extends Layer
 	_showLoading: (bool) =>
 		if bool is true
 			# show loading
+			@loadingIcon.animateStop()
+
 			for layer in [@iconLayer, @textLayer]
 				layer?.animate
 					opacity: 0
@@ -275,6 +277,7 @@ class exports.Button extends Layer
 			_.assign @loadingIcon, 
 				visible: true
 				opacity: 0
+				rotation: 0
 
 			@loadingIcon.animate
 				opacity: 1
@@ -289,13 +292,12 @@ class exports.Button extends Layer
 			return
 
 		# show not loading
-		@loadingIcon.once Events.AnimationEnd, =>
-			_.assign @loadingIcon, 
-				visible: false
-				opacity: 0
-				rotation: 0
+		_.assign @loadingIcon, 
+			visible: false
+			opacity: 0
+			rotation: 0
 
-			@loadingIcon.animateStop()
+		@loadingIcon.animateStop()
 
 		@loadingIcon.animate
 			opacity: 0

@@ -336,6 +336,10 @@ class window.App extends FlowComponent
 		if views.length > 0
 			current = _.maxBy(views, 'index')
 
+		unless layer instanceof View
+			@_transitionToNext(layer, current, options)
+			return
+
 		cycle = =>
 			@_preload(layer)
 			.then (response) => 
@@ -384,6 +388,10 @@ class window.App extends FlowComponent
 		if layer.preserveContent
 			layer.updateContent()
 			layer.y = @windowFrame.expandY
+			@_transitionToPrevious(previous?.transition, options.animate, previous.layer, layer, options)
+			return
+
+		unless previous.layer instanceof View
 			@_transitionToPrevious(previous?.transition, options.animate, previous.layer, layer, options)
 			return
 

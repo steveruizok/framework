@@ -143,3 +143,5 @@ class exports.HeaderBase extends Layer
 	expand: => @collapsed = false
 
 	collapse: => @collapsed = true
+
+
