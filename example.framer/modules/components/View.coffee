@@ -19,7 +19,7 @@ class exports.View extends ScrollComponent
 			key: undefined
 
 		_.assign options,
-			width: @app.contentWidth
+			width: @app.windowFrame.width
 			height: @app.windowFrame.height
 			scrollHorizontal: false
 
@@ -71,6 +71,10 @@ class exports.View extends ScrollComponent
 
 		# ---------------
 		# Events
+
+		@app.on "change:size", => 
+			@size = @app.size
+			@x = 0
 		
 		@content.on "change:children", @_fitChildrenToPadding
 

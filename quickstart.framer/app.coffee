@@ -1,9 +1,10 @@
 require "myTheme"
 
 app = new App
-	chrome: "ios"
+	chrome: "browser"
 	printErrors: true
 	showKeys: true
+	title: "www.framework.com"
 # 	showSublayers: true
 
 # --------------------

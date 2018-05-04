@@ -84,4 +84,4 @@ class exports.Container extends Layer
 			Utils.contain(@, false, @padding.right, @padding.bottom)
 			return
 		
-		Utils.contain(@, true, 0, @padding.bottom)
+		Utils.contain(@, true, @padding.right, @padding.bottom)

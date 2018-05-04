@@ -1,41 +1,48 @@
-class exports.SafariHeader extends Layer
+###
+
+Browser Header
+
+A  header for desktop browser devices.
+
+@extends {HeaderBase}
+
+
+iOSHeader.update()	
+	Updates the header's title, viewKey, and Back link.
+
+###
+
+class exports.BrowserHeader extends HeaderBase
 	constructor: (options = {}) ->
 
 		_.defaults options,
-			width: Screen.width
+			name: "Browser Header"
+			color: black
+			backgroundColor: white
 			height: 36
-			gradient:
-				start: "#d6d5d7"
-				end: "f7f6f7"
-			shadowY: 1
-			shadowColor: "#a2a1a3"
+			
+			title: "Browser Header"
+			tint: blue
+			hidden: false
+			collapsed: false
+			collapsedHeight: 20
 
 		super options
 
-		if options.chrome is "browser" and Screen.width isnt 1440
-			_.defer ->
-				Framer.Device.customize
-					deviceType: Framer.Device.Type.Desktop
-					devicePixelRatio: 1
-					screenWidth: 1440
-					screenHeight: 900
-					deviceImageWidth: 900
-					deviceImageHeight: 1440
+		_.assign Framer.Device.screenBackground,
+			backgroundColor: null
 
-				_.assign Framer.Device.screenBackground,
-					backgroundColor: null
+		_.assign Framer.Device.content, 
+			borderWidth: 1
+			borderRadius: 4
+			backgroundColor: null
+			clip: true
 
-				_.assign Framer.Device.content, 
-					borderWidth: 1
-					borderRadius: 4
-					backgroundColor: null
-					clip: true
+		Canvas.backgroundColor = "#1E1E1E"
 
-				Canvas.backgroundColor = "#1E1E1E"
-				
-				_.defer ->
-					Utils.reset()
-					CoffeeScript.load("app.coffee")
+		app.size = Screen.size
+		
+		# minimize, etc buttons
 
 		for color, i in ['#ff5f58', '#ffbd2d', '#28cc42']
 			button = new Layer
@@ -48,7 +55,8 @@ class exports.SafariHeader extends Layer
 				borderColor: new Color(color).darken(10)
 				borderWidth: 1
 				scale: .5
-			
+
+
 		# back button
 		
 		@backButton = new Layer
@@ -101,7 +109,7 @@ class exports.SafariHeader extends Layer
 			color: "#808080"
 		
 		# address field
-		@addressField = new Layer
+		@addressContainer = new Layer
 			parent: @
 			height: 48
 			width: @width * .618
@@ -115,16 +123,16 @@ class exports.SafariHeader extends Layer
 			shadowColor: "#a5a4a6"
 			scale: .5
 			
-		@textLayer = new TextLayer
-			parent: @addressField
+		@titleLayer = new TextLayer
+			parent: @addressContainer
 			point: Align.center()
-			text: "framework.com"
+			text: "{url}"
 			fontSize: 24
 			color: '#333'
 		
 		#icons
 		@readerIcon = new Icon
-			parent: @addressField
+			parent: @addressContainer
 			x: 8
 			y: Align.center()
 			height: 26
@@ -133,16 +141,18 @@ class exports.SafariHeader extends Layer
 			color: '#7c7c7d'
 		
 		@lockIcon = new Icon
-			parent: @addressField
-			x: @textLayer.x - 32
+			parent: @addressContainer
+			x: @titleLayer.x - 32
 			y: Align.center()
 			height: 22
 			width: 22
 			icon: "lock"
 			color: '#7c7c7d'
+
+		Utils.pin @lockIcon, @titleLayer, "left"
 			
 		@refreshIcon = new Icon
-			parent: @addressField
+			parent: @addressContainer
 			x: Align.right(-8)
 			y: Align.center()
 			height: 26
@@ -152,9 +162,9 @@ class exports.SafariHeader extends Layer
 
 		@refreshIcon.onTap -> window.location.reload()
 
-		@loadingLayer = new Layer
+		@addressLoadingLayer = new Layer
 			name: '.'
-			parent: @addressField
+			parent: @addressContainer
 			x: 0
 			y: Align.bottom()
 			height: 2
@@ -162,26 +172,49 @@ class exports.SafariHeader extends Layer
 			backgroundColor: "#007AFF"
 			visible: false
 
+		# DEFINITIONS	
+
+
 		# EVENTS
 
 		@backButton.onTap => @app.showPrevious()
-		
-	# ---------------
-	# Private Methods
 
-	_showLoading: (bool, time) =>
-		if bool
-			# loading is true
-			_.assign @loadingLayer,
-				width: 1
-				visible: true
+		@on "change:title",		@_setTitle
+		@on "change:loading",	@_showLoading
 
-			@loadingLayer.animate
-				width: @addressField.width
-				options:
-					time: time ? 2
-					curve: "linear"
-			return
+		# CLEANUP
+
+		child.name = '.' for child in @children unless options.showSublayers
+
+
+		# KICKOFF
+
+		delete @_initial
+
+		@title = ""
+		@title = options.title
+
+
+	# PRIVATE METHODS
+
+
+	_setTitle: (string) =>
+		return if @_initial
+		@titleLayer.template = string
+		@titleLayer.x = Align.center()
+
+
+	_setViewKey: (string) =>
+		@statusBar.viewKey = string
+
+
+	_setColor: (string) =>
+
+
+	_setTint: (color) =>
+
+
+	_showLoading: (bool) =>
 
 		# loading is false
 		_.assign @loadingLayer,
@@ -189,12 +222,36 @@ class exports.SafariHeader extends Layer
 			visible: false
 
 
-	_setViewKey: (value) =>
-		@statusBar.viewKeyLayer.template = value ? ''
+		if bool
+			_.assign @addressLoadingLayer,
+				width: 1
+				visible: true
 
-	# ---------------
-	# Public Methods
+			@addressLoadingLayer.animate
+				width: @addressContainer.width
+				options:
+					time: 1.7
+					curve: "linear"
+			return
 
-	updateTitle: (title) =>
-		@addressField.text = title
-		
+		# loading is false
+		_.assign @addressLoadingLayer,
+			width: 1
+			visible: false
+
+	
+	_showHidden: (bool) =>
+
+
+	_showCollapsed: (bool) =>
+	
+
+	# PUBLIC METHODS
+
+	update: (prev, next, options) =>
+		# @title = next?.title ? ""
+		# @viewKey = next?.viewKey if @app.showKeys
+
+		# hasPrevious = @app._stack.length > 1
+		# showPrevLinks = !next?.root and hasPrevious
+		# @leftHitArea.visible = showPrevLinks

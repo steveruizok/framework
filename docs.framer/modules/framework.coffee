@@ -22,6 +22,11 @@ _.assign exports,
 
 components = [
 	'Icon', 
+	'HeaderBase'
+	'BrowserHeader'
+	'iOSStatusBar'
+	'iOSHeader'
+	'SafariHeader'
 	'Switch',
 	'Alert',
 	'Button',
@@ -32,8 +37,6 @@ components = [
 	'Toggle',
 	'Tooltip',
 	'Select',
-	'HeaderBase'
-	'iOSHeader'
 	'Stepper', 
 	'Segment',
 	'TextInput',
@@ -47,11 +50,9 @@ components = [
 	'PageView'
 	'Navbar',
 	'ActionSheet', 
-	'iOSStatusBar'
 	'FormComponent',
 	"ProgressComponent"
 	'CarouselComponent', 
-	'SafariHeader'
 	'SortableComponent'
 	'TabComponent'
 	'StickyComponent'
@@ -129,6 +130,22 @@ class window.App extends FlowComponent
 				chromeLoading = false
 			when "safari"
 				@header = new SafariHeader
+				defaultTransition = @_safariTransition
+				chromeLoading = true
+			when "browser"
+				Framer.Device.customize
+					deviceType: Framer.Device.Type.Desktop
+					devicePixelRatio: 1
+					screenWidth: 1440
+					screenHeight: 900
+					deviceImageWidth: 900
+					deviceImageHeight: 1440
+
+				_.assign @,
+					width: 1440
+					height: 900
+					header: new BrowserHeader({title: @title})
+				
 				defaultTransition = @_safariTransition
 				chromeLoading = true
 			else
