@@ -88,7 +88,7 @@ class exports.View extends ScrollComponent
 
 			
 	_fitChildrenToPadding: (children) =>
-		return if not @padding
+		return if not @padding?
 
 		w = @width - @padding.right - @padding.left
 

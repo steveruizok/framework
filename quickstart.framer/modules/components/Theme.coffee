@@ -21,7 +21,7 @@ updateTheme = (values = {}) ->
 			backgroundColor: '#FFF'
 			contentInset:
 				bottom: 64
-			padding: {}
+			padding: null
 			title: ''
 			key: null
 			clip: false

@@ -67,9 +67,17 @@ class exports.Container extends Layer
 
 	
 	# PUBLIC METHODS
-	
-	stack: =>
-		Utils.stack(@children, @padding.stack)
+
+	stack: => Utils.stack(@children, @padding.stack)
+
+	hug: =>
+		for layer in @children
+			layer.x += @padding.left
+			layer.y += @padding.top
+
+		@width = _.maxBy(@children, 'maxX').maxX + @padding.right
+		@height = _.maxBy(@children, 'maxY').maxY + @padding.bottom
+
 
 	contain: (shrink = false) =>
 		if @padding.top > 0 and _.find(@children, (c) => c.y < @padding.top)?
@@ -85,3 +93,57 @@ class exports.Container extends Layer
 			return
 		
 		Utils.contain(@, true, @padding.right, @padding.bottom)
+
+
+	@wrap = (layer, options = {}) ->
+		return wrapComponent(layer, options)
+
+
+
+
+# Wrap a layer
+
+wrapComponent = (layer, options = {}) ->
+
+	if not (layer instanceof Layer)
+		throw new Error("ScrollComponent.wrap expects a layer, not #{layer}. Are you sure the layer exists?")
+
+	
+	Utils.bind layer, ->
+		@padding ?= {
+			top: 0, 
+			bottom: 0, 
+			left: 0, 
+			right: 0 
+			stack: 0
+		}
+
+		@stack = =>
+			Utils.stack(@children, @padding.stack)
+
+
+		@hug = =>
+			for layer in @children
+				layer.x += @padding.left
+				layer.y += @padding.top
+
+			@width = _.maxBy(@children, 'maxX').maxX + @padding.right
+			@height = _.maxBy(@children, 'maxY').maxY + @padding.bottom
+
+
+		@contain = (shrink = false) =>
+			if @padding.top > 0 and _.find(@children, (c) => c.y < @padding.top)?
+				for child in @children
+					child.y += @padding.top
+
+			if @padding.left > 0 and _.find(@children, (c) => c.x < @padding.left)?
+				for child in @children
+					child.x += @padding.left
+			
+			if shrink
+				Utils.contain(@, false, @padding.right, @padding.bottom)
+				return
+			
+			Utils.contain(@, true, @padding.right, @padding.bottom)
+		
+		
