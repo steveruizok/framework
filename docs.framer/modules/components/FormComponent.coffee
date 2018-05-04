@@ -200,6 +200,8 @@ class exports.FormComponent extends Layer
 					value: null
 					color: @color	
 					password: input.password
+					leftIcon: input.leftIcon
+					rightIcon: input.rightIcon
 
 				if input.label is "" then label?.x = layer.x + layer.width - 16
 					
