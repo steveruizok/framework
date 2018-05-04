@@ -66,7 +66,7 @@ class exports.Icon extends SVGLayer
 
 
 	_refresh: =>
-		icon = theme.icons[@icon]
+		icon = theme.icons[@icon ? "none"]
 		if @icon is 'random' then icon = _.sample(_.keys(theme.icons))
 
 		@svg = "<svg height='100%' width='100%' viewBox='0 0 512 512'><path transform='scale(1, -1), translate(0, -448)' fill='#{@color}' d='#{icon}'/>"

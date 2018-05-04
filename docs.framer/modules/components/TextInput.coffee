@@ -24,6 +24,8 @@ class exports.TextInput extends Layer
 			disabled: false
 			clip: true
 			value: ''
+			leftIcon: null
+			rightIcon: null
 			animationOptions:
 				time: .15
 
@@ -60,6 +62,29 @@ class exports.TextInput extends Layer
 			text: @placeholder
 
 		Utils.linkProperties @, @textLayer, "color"
+
+		# Icons
+
+		@leftIconLayer = new Icon
+			name: "Left Icon"
+			parent: @
+			x: 12
+			y: Align.center()
+			icon: "none"
+			visible: false
+
+		@rightIconLayer = new Icon
+			name: "Right Icon"
+			parent: @
+			x: Align.right(-12)
+			y: Align.center()
+			icon: "none"
+			visible: false
+
+		Utils.constrain(@leftIconLayer, 'left')
+		Utils.constrain(@rightIconLayer, 'right')
+		Utils.linkProperties @, @leftIconLayer, "color"
+		Utils.linkProperties @, @rightIconLayer, "color"
 		
 		# Input
 		
@@ -103,6 +128,8 @@ class exports.TextInput extends Layer
 		Utils.define @, 'focused', 	false,				@_showFocused, 	_.isBoolean, 'TextInput.focused must be a boolean.'
 		Utils.define @, 'disabled',	options.disabled,	@_showDisabled,	_.isBoolean, 'TextInput.disabled must be a boolean.'
 		Utils.define @, 'password',	options.password,	@_setPassword,	_.isBoolean, 'TextInput.password must be a boolean.'
+		Utils.define @, 'leftIcon',	options.leftIcon,	@_setIcons,		_.isString,	 'TextInput.leftIcon must be a string.'
+		Utils.define @, 'rightIcon',options.rightIcon,	@_setIcons,		_.isString,	 'TextInput.rightIcon must be a string.'
 		
 		delete @__instancing
 
@@ -138,14 +165,47 @@ class exports.TextInput extends Layer
 
 		@_input.setAttribute "type", "text"
 	
+
 	_setValue: () =>
 		value = @_input.value
 		@emit "change:value", value, @
+
 
 	_setTheme: (value) =>
 		@animateStop()
 		props = _.defaults _.clone(@customOptions), theme[MODEL][value]
 		if @__instancing then @props = props else @animate props
+
+
+	_setIcons: =>
+		defaultPadding = theme["textInput"].default.padding ? 12
+		padding =
+			top: defaultPadding
+			left: defaultPadding
+			right: defaultPadding
+			bottom: defaultPadding
+
+		newPadding = _.clone(padding)
+
+		_.assign @leftIconLayer, 
+			visible: @leftIcon?
+			icon: @leftIcon
+
+		if @leftIcon? then newPadding.left = defaultPadding + 36
+		
+		_.assign @rightIconLayer, 
+			visible: @rightIcon?
+			icon: @rightIcon
+
+		if @rightIcon? then newPadding.right = defaultPadding + 36
+
+
+		@textLayer.padding = newPadding
+		_.assign @_input.style,
+			width: Utils.px(@width - (newPadding.right + newPadding.left))
+			paddingRight: Utils.px(newPadding.right)
+			paddingLeft: Utils.px(newPadding.left)
+
 
 	_showHovered: (bool) =>
 		return if @disabled or @focused
@@ -157,6 +217,7 @@ class exports.TextInput extends Layer
 		# hovered is false
 		@theme = "default"
 	
+
 	_showFocused: (bool) =>
 		return if @disabled
 
@@ -168,6 +229,7 @@ class exports.TextInput extends Layer
 		# focused is false
 		@textLayer.visible = @value is ""
 		@theme = "default"
+
 
 	_showDisabled: (bool) =>
 		if bool # disabled is true
