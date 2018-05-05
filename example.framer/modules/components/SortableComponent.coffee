@@ -1,17 +1,12 @@
-Theme = require "components/Theme"
-theme = undefined
-
 class exports.SortableComponent extends Layer
 	constructor: (options = {}) ->
-		theme = Theme.theme
-		@__constructor = true
-		@__instancing = true
-
-		# ---------------
-		# Options
 		
 		_.defaults options,
 			name: 'Sortable Component'
+			animationOptions:
+				time: .31
+			clip: false
+			
 			defaultState: 
 				scale: 1
 				shadowY: 0
@@ -20,187 +15,279 @@ class exports.SortableComponent extends Layer
 				scale: 1.07
 				shadowY: 6
 				shadowBlur: 16
-			animationOptions:
-				time: .31
-			clip: false
+			vertical: true
+			horizontal: true
+			delay: .25
+			shared: []
 			closeGaps: true
 		
 		super options
 		
 		_.assign @,
+			_isSorting: false
 			positions: []
-			closeGaps: options.closeGaps
-			defaultState: options.defaultState
-			draggingState: options.draggingState
-
-
-		# ---------------
-		# Layers
-
-
-		# ---------------
-		# Events
-			
+		
+		# LAYERS
+		
+		
+		# EVENTS
+		
+		@on "change:parent", @_setParentScroll
 		@on "change:children", @_updateChildren
 		@_context.on "layer:destroy", @_checkForLostChildren
-		@on "change:isSorting", (bool) =>
-			scroll = @parent?.parent
-			if scroll instanceof ScrollComponent
-				scroll.scrollVertical = !bool
-
-		# ---------------
-		# Definitions
-
-		Utils.define @, "isSorting", false
-
-		delete @__constructor
-		delete @__instancing
-
-
-	# ---------------
-	# Private Methods
 		
+		
+		# DEFINITIONS
+		
+		Utils.define @, "defaultState",	options.defaultState,	@_updateStates
+		Utils.define @, "draggingState",options.defaultState, 	@_updateStates
+		Utils.define @, "horizontal",	options.horizontal
+		Utils.define @, "vertical",		options.vertical
+		Utils.define @, "delay",		options.delay
+		Utils.define @, "shared",		options.shared
+		Utils.define @, "closeGaps",	options.closeGaps
+
+
+		@_setParentScroll()
+
+
+	# PRIVATE METHODS
+
+	_setParentScroll: =>
+		if @parent?.parent instanceof ScrollComponent
+			@_scrollParent = @parent.parent
+			@_freezeVertical = @_scrollParent.scrollVertical
+			@_freezeHorizontal = @_scrollParent.scrollVertical
+
+
+	_setSorting: (bool) =>
+		@_isSorting = bool
+		@emit "change:isSorting", @_isSorting, @
+		
+		return unless @_scrollParent
+
+		@_scrollParent.scrollVertical = if @_freezeVertical then !bool
+		@_scrollParent.scrollHorizontal = if @_freezeHorizontal then !bool
+	
+
 	_checkForLostChildren: (layer) =>
 		if layer.parent is @
 			@emit "change:children", {added: [], removed: [layer]}
 	
-
+	
 	_updateChildren: (layers) =>
 		# scrub up layers that were removed as children
-		@_removeEvents(layer) for layer in layers.removed
+		for layer in layers.removed
+			layer.position.layer = undefined
+			Utils.delay 0, =>
+				unless layer.parent instanceof SortableComponent
+					@_unwrapLayer(layer) 
 
-		if @closeGaps and layers.removed.length > 0 and @positions.length > 0
-			_.last(@children).once Events.AnimationEnd, @_makePositions
+		# update positions
+		if layers.removed.length > 0 and @positions.length > 0
+			# _.last(@children)?.once Events.AnimationEnd, @_makePositions
 			
 			for child, i in @children
-				child._takePosition(@positions[i])
+				@_moveToPosition(child, @positions[i], true)
 			return
 		
-		Utils.delay 0, @_makePositions
+		# make positions if new positions were added
+		return if layers.added[0]?._sortableWrapped
+
+		for layer in layers.added
+			@makePosition(layer.frame, layer)
 		
 	
-	_makePositions: =>
-		# make positions based on current child arrangements
-		@positions = _.map @children, (layer, i) =>
-		
-			position =
-				index: i
-				layer: layer
-				midY: layer.midY
-		
-			layer.position = position
-			
-			@_setEvents(layer)
-				
-			return position
-
-		@emit "change:current", @current, @
 	
+	_updateStates: (state) =>
+		for position in @positions
+			position.layer.states =
+				default: @defaultState
+				dragging: @draggingState
+	
+	
+	_moveToPosition: (layer, position, animate = true ) =>
+		layer.position = position
+		layer.position.layer = layer
 
-	_setEvents: (layer) =>
-		# skip if this layer already has suffered the treatment
-		return if layer._hasSortableEvents
+		props =
+			midY: position.midY
+			midX: position.midX
+		
+		if animate
+			layer.animate props
+			return
+	
+		layer.props = props
+		
 
-		# assign layer states
+	_wrapLayer: (layer) =>
+		return if layer._sortableWrapped
+
 		layer.states =
 			default: @defaultState
 			dragging: @draggingState
 		
-		# switch to default state
 		layer.stateSwitch('default')
 		
-		# pass on own animation options as defaults
 		_.defaults layer.animationOptions, @animationOptions
-
-		# enable draggable
+		
 		_.assign layer.draggable,
 			enabled: true
 			momentum: false
-			horizontal: false
+			horizontal: @horizontal
+			vertical: @vertical
 			propagateEvents: true
 		
-		# give layer a "take position" property
-		layer._takePosition = ( position, animate = true ) ->	
-
-			@position = position
-			position.layer = @
-			if animate
-				@animate { midY: position.midY }
-		
-		# pass events
 		layer.on Events.DragStart, @_startSearch
 		layer.on Events.Drag, @_duringSearch
 		layer.on Events.DragEnd, @_endSearch
-
+		
 		layer.handle?.on Events.Tap, (event) -> event.stopPropagation()
 		
-		# make a note that this layer has already been treated
-		layer._hasSortableEvents = true
+		layer._sortableWrapped = true
 
 
-	# clear events when a layer is lost as a child
-	_removeEvents: (layer) ->
-		delete layer._takePosition
-		delete layer._hasSortableEvents
-		
+	_unwrapLayer: (layer) =>
 		layer.off Events.TouchStart, @_startSearch
 		layer.off Events.Drag, @_duringSearch
 		layer.off Events.DragEnd, @_endSearch
+		layer.handle?.off Events.Tap, (event) -> event.stopPropagation()
 		
-
-	# when the user starts dragging...
-	_startSearch: (event) ->
+		delete layer._sortableWrapped
+	
+	
+	_startSearch: (event, layer) =>
 		if Utils.isMobile()
 			event = Events.touchEvent(event)
 			
-		return if @handle? and not Utils.pointInLayer(event.point, @handle)
+		if layer.handle?
+			return unless Utils.pointInFrame(
+				event.contextPoint, 
+				Utils.boundingFrame(layer.handle)
+				)
 
-		@parent.isSorting = true
-		@_isSorting = true
-		@bringToFront()
-		@animate "dragging"
-	
+		@_setSorting(true)
 
-	# while the user is dragging...
-	_duringSearch: ->
-		if not @_isSorting
-			@midY = @position.midY
-			return
-
-		above = @parent.positions[ @position.index + 1 ]
-		below = @parent.positions[ @position.index - 1 ]
-
-		if below?.midY < @midY < above?.midY
-			return 
-
-		if @midY > above?.midY
-			above.layer._takePosition( @position, true )
-			@_takePosition( above, false )
-			
-		else if @midY < below?.midY
-			below.layer._takePosition( @position, true )
-			@_takePosition( below, false )
+		layer._isSorting = true
+		layer.bringToFront()
+		layer.animate "dragging"
+		
+		layer.position.layer = undefined
 	
 	
-	# ... and when the user ends the drag
-	_endSearch: ->
-		return if not @_isSorting
+	_duringSearch: (event, layer) =>
+		unless layer._isSorting
+			layer.props = 
+				midX: layer.position.midX
+				midY: layer.position.midY
+	
+		hoverPosition = @_getHoverPosition(layer)
 
-		delete @_isSorting
+		Utils.delay @delay, =>
+			return unless layer._isSorting
+			delayPosition = @_getHoverPosition(layer)
+			if hoverPosition is delayPosition
+				@_updatePositions(layer, hoverPosition)
+	
+	
+	_getHoverPosition: (layer) =>
+		hoverPosition = _.head _.sortBy @positions, (p) ->
+			Utils.pointDistance(
+				{x: p.midX, 	y: p.midY}, 
+				{x: layer.midX, y: layer.midY}
+			)
+	
+	_getEmptyPosition: (startIndex = 0, endIndex = @positions.length - 1) =>
+		emptyPosition = _.find(@positions[startIndex..endIndex], (p) ->
+			return _.isUndefined(p.layer)
+			)
+	
+	_updatePositions: (layer, hoverPosition) =>
+		emptyPosition = @_getEmptyPosition()
+		
+		return unless emptyPosition?
+		return if emptyPosition.index is hoverPosition.index
+
+		if hoverPosition.index < emptyPosition.index
+			bumpPositions = @positions.slice()[hoverPosition.index...emptyPosition.index].reverse()
+			direction = 1
+		else if hoverPosition.index > emptyPosition.index
+			bumpPositions = @positions.slice()[(emptyPosition.index + 1)..hoverPosition.index]
+			direction = -1
+		
+		newPositions = bumpPositions.map (position) =>
+			newPos = @positions[position.index + direction]
+			if position.layer?
+				layer = position.layer
+				position.layer = undefined
+				@_moveToPosition( layer, newPos, true)
+	
+	
+	_endSearch: (event, layer) =>
+		return if not layer._isSorting
 
 		_.defer =>
-			@parent.isSorting = false
-			@_takePosition(@position)
-			@animate 'default'
-			@parent.emit "change:current", @parent.current, @parent
+			@_setSorting(false)
+			delete layer._isSorting
+
+			position = if @closeGaps then @_getEmptyPosition() else @_getHoverPosition(layer)
+			
+			@_moveToPosition(layer, position)
+			layer.animate 'default'
+			@emit "change:current", @current, @
 
 
-	# ---------------
-	# Public Methods
+	# PUBLIC METHODS
+
+	adopt: (layer) =>
+		emptyPosition = @_getEmptyPosition()
+		return unless emptyPosition?
+
+		layer.parent = @
+		layer.position = emptyPosition
+		emptyPosition.layer = layer
 
 
-	# ---------------
-	# Special Definitions
+	makePosition: (frame, layer) =>
+
+		position =
+			index: @positions.length
+			layer: undefined
+			midY: frame.y + frame.height / 2
+			midX: frame.x + frame.width / 2
+	
+		if layer?
+			position.layer = layer
+			layer.position = position
+			@_wrapLayer(layer)
+		
+		@positions.push(position)
+
+		return position
+
+
+	setPosition: (layer, index, animate = true) ->
+
+		index ?= @positions.indexOf @_getEmptyPosition()
+
+		layer.parent = @
+		layer.x -= @x
+		layer.y -= @y
+
+		position = @positions[index] ? throw "SortableComponent: No position found at that index."
+		@_moveToPosition(layer, position, animate)
+
+
+	resetPositions: =>
+		@positions = []
+		@children.forEach (child) => 
+			@makePosition(child.frame, child)
+
+	# SPECIAL DEFINITIONS
+	
+	@define "isSorting",
+		get: -> return @_isSorting
 
 	@define "current",
 		get: -> return @positions.map (p) -> return p.layer
