@@ -136,7 +136,6 @@ class exports.FormComponent extends Layer
 					field: TextInput
 					password: false
 					placeholder: ""
-					width: 100
 					y: 0
 					x: undefined
 					label: undefined
@@ -151,12 +150,12 @@ class exports.FormComponent extends Layer
 
 				# width
 				inputWidth = _.clamp(
-					rowStackWidth + (@width * (input.width / 100)),
+					rowStackWidth + (@width * ((input.width ? 100) / 100)),
 					1,
 					@width - rowStackWidth
 					)
 
-				rowStackWidth = inputWidth + @padding.stack.x
+				rowStackWidth = (input.width ? 100) + @padding.stack.x
 
 				# Label
 				if input.label?
@@ -196,7 +195,7 @@ class exports.FormComponent extends Layer
 					y: label?.maxY ? (startY + input.y)
 					placeholder: input.placeholder
 					options: input.options
-					width: inputWidth
+					width: if input.width then inputWidth
 					value: null
 					color: @color	
 					password: input.password
@@ -242,7 +241,7 @@ class exports.FormComponent extends Layer
 					when Checkbox	 
 						_.assign layer._formData,
 							value: 'checked'
-							validation: input.validation ? (v) -> true
+							validation: input.validation ? (v) -> v
 					else
 						_.assign layer._formData,
 							value: 'value'
