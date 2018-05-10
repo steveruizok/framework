@@ -9,11 +9,13 @@ theme = framework.theme.theme
 # modifying the base files, so that you can update Framework layer
 # without losing your changes.
 
+defaultTitle = "myTheme.com"
+
+
 # -----------------
 # Theme Folder
 #
 # Where should we look for your modules?
-
 
 moduleFolder = "myTheme-components"
 
@@ -623,6 +625,8 @@ themeStyles =
 #
 
 # Update Styles
+
+framework.defaultTitle = defaultTitle
 
 framework.theme.updateTheme(themeStyles)
 

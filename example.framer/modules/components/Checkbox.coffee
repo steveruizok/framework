@@ -75,6 +75,14 @@ class exports.Checkbox extends Icon
 				return if @disabled 
 				@checked = !@checked
 
+			@onMouseOver =>
+				return if @disabled
+				@hovered = true
+
+			@onMouseOut =>
+				return if @disabled
+				@hovered = false
+
 
 		# DEFINITIONS
 		
@@ -82,8 +90,9 @@ class exports.Checkbox extends Icon
 		
 		Utils.define @, 'theme', 	'default', 			@_setTheme
 		Utils.define @, 'checked', 	options.checked, 	@_showChecked,	_.isBoolean,	'Checkbox.checked must be a boolean (true or false)'
-		Utils.define @, 'error', 	options.disabled, 	@_showError,	_.isBoolean,	"Checkbox.error must be a boolean (true or false)."
+		Utils.define @, 'error', 	options.error, 		@_showError,	_.isBoolean,	"Checkbox.error must be a boolean (true or false)."
 		Utils.define @, 'disabled',	options.disabled, 	@_showDisabled,	_.isBoolean,	"Checkbox.disabled must be a boolean (true or false)."
+		Utils.define @, 'hovered',	options.hovered, 	@_showHovered,	_.isBoolean,	"Checkbox.hovered must be a boolean (true or false)."
 		
 		delete @__instancing
 
@@ -137,6 +146,10 @@ class exports.Checkbox extends Icon
 			return
 
 		@icon = 'checkbox-marked'
+
+	_showHovered: (bool) =>
+		return if @disabled
+		@theme = if bool then "hovered" else "default"
 
 
 	_showError: (bool) =>
