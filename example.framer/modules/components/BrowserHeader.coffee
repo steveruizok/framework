@@ -28,19 +28,6 @@ class exports.BrowserHeader extends HeaderBase
 			collapsedHeight: 20
 
 		super options
-
-		_.assign Framer.Device.screenBackground,
-			backgroundColor: null
-
-		_.assign Framer.Device.content, 
-			borderWidth: 1
-			borderRadius: 4
-			backgroundColor: null
-			clip: true
-
-		Canvas.backgroundColor = "#1E1E1E"
-
-		app.size = Screen.size
 		
 		# minimize, etc buttons
 

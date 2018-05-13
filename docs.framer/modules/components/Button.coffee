@@ -196,6 +196,7 @@ class exports.Button extends Layer
 		Utils.define @, 'hovered', 		false, 				@_showHovered, 	_.isBoolean, 	"Button.hovered must be a boolean (true or false)."
 		Utils.define @, 'loadTime', 	options.loadTime, 	undefined, 		_.isNumber,		"Button.loadTime must be a number."
 		Utils.define @, 'loading', 		options.loading,	@_showLoading, 	_.isBoolean,	"Button.loading must be a boolean (true or false)."
+		Utils.define @, 'icon', 		options.icon,		@_setIcon, 		_.isString,		"Button.icon must be a string (an icon name)."
 		
 		delete @__instancing
 
@@ -307,6 +308,12 @@ class exports.Button extends Layer
 			layer?.animate
 				opacity: 1
 				options: {time: .15, delay: .15}
+
+	_setIcon: (string) =>
+		return unless @iconLayer
+
+		@iconLayer.icon = string
+
 
 	_showHovered: (bool) =>
 		return if @disabled

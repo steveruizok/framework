@@ -121,6 +121,31 @@ class window.App extends FlowComponent
 			printErrors: options.printErrors
 			preload: new Promise (resolve, reject) -> _.defer resolve
 
+		# device
+		
+		if @chrome is "browser" or "fullscreen"
+			Framer.Device.customize
+				deviceType: Framer.Device.Type.Desktop
+				devicePixelRatio: 1
+				screenWidth: 1440
+				screenHeight: 900
+				deviceImageWidth: 900
+				deviceImageHeight: 1440
+
+			_.assign @,
+				size: Screen.size
+
+			_.assign Framer.Device.screenBackground,
+				backgroundColor: null
+
+			_.assign Framer.Device.content, 
+				borderWidth: 1
+				borderRadius: 4
+				backgroundColor: null
+				clip: true
+
+			Canvas.backgroundColor = "#1E1E1E"
+
 		# header
 
 		switch @chrome
@@ -132,6 +157,9 @@ class window.App extends FlowComponent
 				@header = new SafariHeader
 				defaultTransition = @_safariTransition
 				chromeLoading = true
+			when "fullscreen"
+				defaultTransition = @_safariTransition
+				chromeLoading = false
 			when "browser"
 				Framer.Device.customize
 					deviceType: Framer.Device.Type.Desktop
