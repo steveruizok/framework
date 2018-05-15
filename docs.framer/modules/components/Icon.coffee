@@ -17,7 +17,7 @@ Icon.addIcon(name <string>, path <string>)
 Theme = require "components/Theme"
 theme = undefined
 
-class exports.Icon extends SVGLayer
+class exports.Icon extends Layer
 	constructor: (options = {}) ->
 		theme = Theme.theme
 
@@ -35,18 +35,26 @@ class exports.Icon extends SVGLayer
 
 		super options
 
+		
 		# LAYERS
+
+		@iconLayer = new SVGLayer
+			parent: @
+			name: "Icon SVG"
+			size: _.min([@height, @width])
+			backgroundColor: null
 
 
 		# EVENTS
 
-		@on "change:color", @_refresh
-		@on "change:size", @_refresh
+		@on "change:color",	@_refresh
+		@on "change:size",	@_refresh
+
 
 		# DEFINITIONS
 		
-		Utils.define @, 'padding', options.padding, @_setPadding, _.isNumber, 'Icon.padding must be a number.'
-		Utils.define @, "icon", options.icon, @_refresh, _.isString, 'Icon.icon must be a string.'
+		Utils.define @, 'padding', 	options.padding, 	@_setPadding, 	_.isNumber, 'Icon.padding must be a number.'
+		Utils.define @, "icon", 	options.icon, 		@_refresh, 		_.isString, 'Icon.icon must be a string.'
 
 
 		# CLEANUP
@@ -62,15 +70,18 @@ class exports.Icon extends SVGLayer
 	# PRIVATE METHODS
 
 	_setPadding: =>
-		@_element.style.padding = Utils.px(@padding)
+		@iconLayer._element.style.padding = Utils.px(@padding)
 
 
 	_refresh: =>
 		icon = theme.icons[@icon ? "none"]
+		
+		@iconLayer.size = _.min([@height, @width])
+
 		if @icon is 'random' then icon = _.sample(_.keys(theme.icons))
 
-		size = Utils.px(@height - (@padding * 2))
-		@svg = "<svg height='#{size}' width='#{size}' viewBox='0 0 512 512'><path transform='scale(1, -1), translate(0, -448)' fill='#{@color}' d='#{icon}'/>"
+		@iconLayer.svg = "<svg height='100%' width='100%' viewBox='0 0 512 512'><path transform='scale(1, -1), translate(0, -448)' fill='#{@color}' d='#{icon}'/>"
+
 
 	# PUBLIC METHODS
 
@@ -79,6 +90,3 @@ class exports.Icon extends SVGLayer
 		iconObj[name] = svg
 		theme.icons = _.merge(theme.icons, iconObj)
 		@icon = name
-
-	# ---------------
-	# DEFINITIONS

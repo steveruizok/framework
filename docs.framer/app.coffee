@@ -1504,12 +1504,11 @@ sortableComponentView.onLoad ->
 		width: @width * .618
 	
 	for i in _.range(3)
-		
 		new Layer
 			parent: sortable
 			name: 'Layer ' + i
 			x: 0
-			y: 16
+			y: 16 + (56 * i)
 			width: sortable.width
 			height: 48
 	
@@ -1549,7 +1548,7 @@ sortableComponentView.onLoad ->
 		
 		last = new Layer
 			parent: sortable
-			y: 0
+			y: 48 * i
 			width: sortable.width
 			height: 48
 			backgroundColor: grey30
@@ -1559,12 +1558,14 @@ sortableComponentView.onLoad ->
 				time: .2
 				curve: 'linear'
 		
-		last.handle = new Layer
+		handle = new Layer
 			parent: last
 			x: Align.right()
 			height: last.height
 			width: 40
 			backgroundColor: null
+			
+		last.handle = handle
 		
 		new Icon
 			parent: last.handle
@@ -1617,7 +1618,7 @@ sortableComponentView.onLoad ->
 		
 		last = new Layer
 			parent: sortable
-			y: 0
+			y: 48 * i
 			width: sortable.width
 			height: 48
 			backgroundColor: green30
@@ -1666,6 +1667,7 @@ sortableComponentView.onLoad ->
 			name: 'Checkbox'
 			parent: sortable
 			width: sortable.width
+			y: i * 48
 			checked: i is 2
 			
 		new Body2
@@ -1680,7 +1682,6 @@ sortableComponentView.onLoad ->
 			height: cb.height
 			width: 40
 			backgroundColor: null
-			propagateEvents: false
 		
 		new Icon
 			parent: cb.handle
@@ -1688,7 +1689,6 @@ sortableComponentView.onLoad ->
 			y: Align.center()
 			icon: 'drag'
 	
-	Utils.offsetY(sortable.children)
 	Utils.contain(sortable)
 			
 	new ComponentExample

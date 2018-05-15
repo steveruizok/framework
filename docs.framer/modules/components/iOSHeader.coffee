@@ -161,6 +161,7 @@ class exports.iOSHeader extends HeaderBase
 
 	_setColor: (string) =>
 		@titleLayer.color = string
+		@statusBar.color = string
 
 
 	_setTint: (color) =>

@@ -44,8 +44,7 @@ view.onLoad (data) ->
 		x: Align.center()
 		y: Align.center(-32)
 		text: "Framework"
-
-
+	
 view.onPostload ->
 	null
 

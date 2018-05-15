@@ -137,9 +137,7 @@
             "top" : 80,
             "visible" : true,
             "width" : 79,
-            "widthFactor" : null,
-            "x" : 69,
-            "y" : 80
+            "widthFactor" : null
           }
         ],
         "clip" : true,
