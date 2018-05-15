@@ -123,7 +123,7 @@ class window.App extends FlowComponent
 
 		# device
 		
-		if @chrome is "browser" or "fullscreen"
+		if @chrome is "browser" or @chrome is "fullscreen"
 			Framer.Device.customize
 				deviceType: Framer.Device.Type.Desktop
 				devicePixelRatio: 1
