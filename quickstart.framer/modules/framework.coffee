@@ -63,7 +63,9 @@ imports = [
 	'Keyboard'
 ]
 
-globals = []
+globals = [
+	'Layout',
+]
 
 # import as: { module } = require 'module'
 globals.forEach (variable) ->
