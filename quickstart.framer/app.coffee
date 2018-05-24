@@ -67,8 +67,6 @@ view.onLoad (data) ->
 		
 	layer.layoutHeight = 2
 	
-	layer.on "change:layoutColumn", (c) -> print c
-	
 view.onPostload ->
 	null
 

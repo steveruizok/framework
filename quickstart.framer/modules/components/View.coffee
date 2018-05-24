@@ -17,6 +17,8 @@ class exports.View extends ScrollComponent
 			name: "View"
 			root: false
 			key: undefined
+			oneoff: false
+			preserveContent: false
 
 		_.assign options,
 			width: @app.windowFrame.width
@@ -54,7 +56,7 @@ class exports.View extends ScrollComponent
 		Utils.define @, 'title', 			options.title, 			undefined, 	_.isString, 	'View.title must be a string.'
 		Utils.define @, 'padding',			options.padding, 		undefined, 	_.isObject, 	'View.padding must be an object.'
 		Utils.define @, 'oneoff', 			options.oneoff, 		undefined, 	_.isBoolean, 	'View.oneoff must be a boolean (true or false).'
-		Utils.define @, 'preserveContent', options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
+		Utils.define @, 'preserveContent',	options.preserveContent, undefined,	_.isBoolean, 	'View.preserveContent must be a boolean (true or false).'
 		Utils.define @, 'load', 			undefined, 				undefined,	_.isFunction, 	'View.load must be a Function.'
 		Utils.define @, 'preload', 			preload, 				undefined, 	_.isFunction, 	'View.preload must be a Function.'
 		Utils.define @, 'postload', 		postload, 				undefined, 	_.isFunction, 	'View.postload must be a Function.'
@@ -99,10 +101,10 @@ class exports.View extends ScrollComponent
 				Utils.delay 0, -> child.width = w
 
 	
-	_unloadView: (app, next, prev, direction) =>
+	_unloadView: (app, next, prev, options, direction) =>
 		@sendToBack()
 
-		try @unload(app, next, prev, direction)
+		try @unload(app, next, prev, options, direction)
 		
 		return if @preserveContent
 
