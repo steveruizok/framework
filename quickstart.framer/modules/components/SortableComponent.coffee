@@ -164,7 +164,7 @@ class exports.SortableComponent extends Layer
 		if layer.handle?
 			return unless Utils.pointInFrame(
 				event.contextPoint, 
-				layer.handle.screenFrame
+				Utils.boundingFrame(layer.handle)
 				)
 
 		@_setSorting(true)

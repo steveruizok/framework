@@ -17,7 +17,7 @@ Icon.addIcon(name <string>, path <string>)
 Theme = require "components/Theme"
 theme = undefined
 
-class exports.Icon extends Layer
+class exports.Icon extends SVGLayer
 	constructor: (options = {}) ->
 		theme = Theme.theme
 
@@ -35,21 +35,13 @@ class exports.Icon extends Layer
 
 		super options
 
-		
 		# LAYERS
-
-		@iconLayer = new SVGLayer
-			parent: @
-			name: "Icon SVG"
-			size: _.min([@height, @width])
-			backgroundColor: null
 
 
 		# EVENTS
 
 		@on "change:color",	@_refresh
 		@on "change:size",	@_refresh
-
 
 		# DEFINITIONS
 		
@@ -70,18 +62,14 @@ class exports.Icon extends Layer
 	# PRIVATE METHODS
 
 	_setPadding: =>
-		@iconLayer._element.style.padding = Utils.px(@padding)
+		@_element.style.padding = Utils.px(@padding)
 
 
 	_refresh: =>
 		icon = theme.icons[@icon ? "none"]
-		
-		@iconLayer.size = _.min([@height, @width])
-
 		if @icon is 'random' then icon = _.sample(_.keys(theme.icons))
 
-		@iconLayer.svg = "<svg height='100%' width='100%' viewBox='0 0 512 512'><path transform='scale(1, -1), translate(0, -448)' fill='#{@color}' d='#{icon}'/>"
-
+		@svg = "<svg height='100%' width='100%' viewBox='0 0 512 512'><path transform='scale(1, -1), translate(0, -448)' fill='#{@color}' d='#{icon}'/>"
 
 	# PUBLIC METHODS
 
@@ -90,3 +78,6 @@ class exports.Icon extends Layer
 		iconObj[name] = svg
 		theme.icons = _.merge(theme.icons, iconObj)
 		@icon = name
+
+	# ---------------
+	# DEFINITIONS

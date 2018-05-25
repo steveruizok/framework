@@ -352,6 +352,7 @@ class Option extends Layer
 			x: 0
 			y: 0
 			text: _.startCase(@value)
+			color: theme[MODEL].default.color ? black
 			padding: theme[MODEL].default.padding ? 12
 			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
 			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13

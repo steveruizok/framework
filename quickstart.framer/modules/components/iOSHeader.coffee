@@ -153,6 +153,7 @@ class exports.iOSHeader extends HeaderBase
 
 	_setTitle: (string) =>
 		@titleLayer.template = string
+		@titleLayer.y = Align.center(@statusBar.height/2)
 
 
 	_setViewKey: (string) =>
