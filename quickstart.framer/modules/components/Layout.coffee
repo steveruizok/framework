@@ -50,14 +50,7 @@ class exports.Layout extends Layer
 					@layoutWidth = @_position.width
 				if @_position.height?
 					@layoutHeight = @_position.height
-			configurable: true
 
-		Layer.define "layoutRow",
-			get: -> @_layout_row ? @y / ((layout.rowHeight * layout.gutterHeight) - layout.gutterHeight)
-			set: (num) ->
-				@_layout_row = num
-				@y = ((layout.rowHeight * layout.gutterHeight) + layout.gutterHeight) * num
-				@emit "change:layoutRow", @_layout_row, @
 			configurable: true
 
 
@@ -66,8 +59,17 @@ class exports.Layout extends Layer
 			set: (num) ->
 				num = _.clamp(num, 0, layout.numberOfColumns - 1)
 				@_layout_column = num
-				@x = layout._startX + (layout.columnWidth + layout.gutterWidth) * num
+				@x = (layout._startX + (layout.columnWidth + layout.gutterWidth) * num)
 				@emit "change:layoutColumn", @_layout_column, @
+			configurable: true
+
+
+		Layer.define "layoutRow",
+			get: -> @_layout_row ? @y / ((layout.rowHeight * layout.gutterHeight) - layout.gutterHeight)
+			set: (num) ->
+				@_layout_row = num
+				@y = (((layout.rowHeight * layout.gutterHeight) + layout.gutterHeight) * num)
+				@emit "change:layoutRow", @_layout_row, @
 			configurable: true
 
 
@@ -78,6 +80,7 @@ class exports.Layout extends Layer
 				@width = layout.getWidth(num)
 				@emit "change:layoutWidth", @_layout_width, @
 			configurable: true
+
 
 		Layer.define "layoutHeight",
 			get: -> @_layout_height ? @height / (layout.rowHeight * layout.gutterHeight)
@@ -202,13 +205,13 @@ class exports.Layout extends Layer
 	
 	# PUBLIC METHODS
 	
-	getWidth: (num) =>
+	getWidth: (num, gutter = false) =>
 		return unless @columns
-		return ((@columnWidth + @gutterWidth) * num) - @gutterWidth
+		return ((@columnWidth + @gutterWidth) * num) + (if gutter then 0 else -@gutterWidth)
 	
-	getHeight: (num) => 
+	getHeight: (num, gutter = false) => 
 		return unless @rows
-		return (((@rowHeight * @gutterHeight) + @gutterHeight) * num) - @gutterHeight
+		return (((@rowHeight * @gutterHeight) + @gutterHeight) * num) + (if gutter then 0 else -@gutterHeight)
 		
 	column: (num) => 
 		return unless @columns

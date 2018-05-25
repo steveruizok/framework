@@ -1217,6 +1217,30 @@ Utils.getDay = (date) ->
 
 	return dayString 
 
+
+# Modified Utils.loadWebFont to use promises. 
+#
+# @param	string 		font 	The font to import from Google webfonts
+# @param	[number] 	weight 	The specific font weight to require
+# @param	[string] 	source 	The source to draw from (see WebFont module)
+#
+# @example Utils.loadWebFont('Roboto').then -> createMyTextLayers()
+
+_isFontLoadedResults = {}
+
+Utils.loadWebFont = (font, weight, source = "google") ->
+	if not _isFontLoadedResults[font]? or _isFontLoadedResults[font] is false
+		delete _isFontLoadedResults[font]
+		config = {}
+		if source is "google"
+			fontToLoad = font
+			fontToLoad += ":#{weight}" if weight?
+			config.google =
+				families: [fontToLoad]
+		return Utils.loadWebFontConfig(config)
+	return new Promise (resolve) -> resolve()
+
+
 # Source words for Utils.randomText()
 #
 loremSource = ["alias", "consequatur", "aut", "perferendis", "sit",
