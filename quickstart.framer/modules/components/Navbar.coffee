@@ -5,20 +5,21 @@ Navbar
 A drop-down menu.
 
 @extends {Layer}
-@param	{Object}	options 			The component's attributes.
-@param	{number}	options.height		The navbar's collapsed height.
-@param	{string}	options.color 		The color to use for the navbar's labels.
-@param	{number}	options.start		The initial active link.
-@param	{Object}	options.padding		An object to set the top, bottom, and stack paddings for the navbar's link labels.
-@param	{Object}	options.links		An object of links for the navbar:
+@param	{Object}	options 				The component's attributes.
+@param	{number}	options.selectedIndex	The index of the link to activate on load.
+@param	{number}	options.height			The navbar's collapsed height.
+@param	{string}	options.color 			The color to use for the navbar's labels.
+@param	{number}	options.start			The initial active link.
+@param	{Object}	options.padding			An object to set the top, bottom, and stack paddings for the navbar's link labels.
+@param	{Object}	options.links			An object of links for the navbar:
 
 	links:
 		<string>: <function>	The title / label for this link : a callback to fire when the link is selected.
 
 
-Navbar.index {number}
+Navbar.selectedIndex {number}
 	Sets the index of the link to activate.
-	Emits a "change:index" event.
+	Emits a "change:selectedIndex" event.
 
 
 Navbar.open()	
@@ -32,6 +33,8 @@ Navbar.close()
 class exports.Navbar extends Layer
 	constructor: (options = {}) ->
 		
+		@initial = true
+
 		_.defaults options,
 			name: "Toolbar"
 			width: Screen.width
@@ -43,7 +46,7 @@ class exports.Navbar extends Layer
 			animationOptions:
 				time: .25
 
-			start: 2
+			selectedIndex: 2
 			padding: {}
 			links:
 				"First Page": undefined
@@ -124,7 +127,7 @@ class exports.Navbar extends Layer
 				try value()
 
 				return unless @open
-				@index = _.indexOf(@links, link) 
+				@selectedIndex = _.indexOf(@links, link) 
 
 			return link
 		
@@ -135,23 +138,21 @@ class exports.Navbar extends Layer
 	
 		# DEFINITIONS
 		
-		Utils.define @, "index", undefined, @_setIndex
-		Utils.define @, "open", false, @_setOpen
-
+		Utils.define @, "open" , false, @_setOpen
 
 		# EVENTS
 
+		@on "change:selectedIndex", @_setSelectedIndex
 		@onTap => @open = !@open
 
 
 		# CLEANUP
 
 		child.name = '.' for child in @children unless options.showSublayers
-
-		@index = @start
 		
 		delete @initial
 	
+		@selectedIndex = options.selectedIndex
 
 	# PRIVATE METHODS
 
@@ -166,14 +167,10 @@ class exports.Navbar extends Layer
 		Utils.setOrAnimateProps @currentLabel, @initial, { opacity: 1 }
 		Utils.setOrAnimateProps @chevron, @initial, { rotation: 0 }
 
-	_setIndex: (index) =>
+	_setSelectedIndex: (index) =>
 		link = @links[index]
 
 		@currentLabel.text = link?.text
-
-		@emit("change:active", index, @prevIndex, @)
-
-		@prevIndex = index
 
 
 	# PUBLIC METHODS
@@ -181,3 +178,14 @@ class exports.Navbar extends Layer
 	open: => @open = true
 
 	close: => @open = false
+
+	@define "selectedIndex",
+		get: -> @_selectedIndex
+		set: (value) ->
+			print value
+			return if @initial
+			return if value is @_selectedIndex or value is null
+
+			@_selectedIndex = value
+			@emit "change:selectedIndex", value, @prevIndex, @
+			@prevIndex = @_selectedIndex

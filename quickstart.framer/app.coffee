@@ -32,8 +32,6 @@ view = new View
 	name: "View"
 	title: "View"
 	key: "0.0.0"
-	contentInset: 
-		top: 300
 
 
 view.onPreload (resolve, reject) ->
@@ -41,7 +39,11 @@ view.onPreload (resolve, reject) ->
 
 
 view.onLoad (data) ->
-	
+	new H3
+		parent: @content
+		text: "Framework"
+		x: Align.center()
+		y: 200
 
 view.onPostload ->
 	null

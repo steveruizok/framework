@@ -93,12 +93,12 @@ class exports.PageView extends View
 				# Swipe handlers
 				
 				goLeft = =>
-					return if @navbar.index is 0
-					@navbar.index--
+					return if @navbar.selectedIndex is 0
+					@navbar.selectedIndex--
 					
 				goRight = =>
-					return if @navbar.index is @navbar.links.length - 1
-					@navbar.index++
+					return if @navbar.selectedIndex is @navbar.links.length - 1
+					@navbar.selectedIndex++
 				
 				# Swipe events
 
@@ -121,7 +121,7 @@ class exports.PageView extends View
 				parent: @
 				width: @width
 				flow: @flow
-				start: null
+				selectedIndex: null
 				links: @links
 
 
@@ -131,7 +131,7 @@ class exports.PageView extends View
 				return unless @app.header
 				Utils.pin @navbar, @app.header, 'bottom'
 
-			@navbar.on "change:active", @_changePages
+			@navbar.on "change:selectedIndex", @_changePages
 			
 
 			# Run preload
@@ -144,7 +144,7 @@ class exports.PageView extends View
 
 			@onPreload = -> throw "PageView.preload is read only outside of the constructor. Use the preload option when creating a PageView instance."
 
-			@navbar.index = @start
+			@navbar.selectedIndex = options.start
 
 
 		# EVENTS
@@ -237,5 +237,10 @@ createBlankPage = (data, page, view) ->
 		x: Align.center
 		text: page.name + '\ncontent'
 		textAlign: "center"
+
+	new Layer 
+		parent: @content
+		y: 200
+		x: 16
 		
 	Utils.stack(@content.children, 16)
