@@ -508,7 +508,7 @@ class window.App extends FlowComponent
 					console.log(error)
 			)
 
-	screenshotViews: (views, options = {}) =>
+	screenshotViews: (views = @views, options = {}) =>
 		i = 0
 			
 		loadNext = =>
@@ -520,11 +520,27 @@ class window.App extends FlowComponent
 			
 		@on "transitionEnd", =>
 			Utils.delay 2.5, =>
-				o = _.clone(options)
-				o.name = @current?.key
-				@getScreenshot(o).then loadNext
+				current = @current
+
+				strings = [(@current.viewKey ? ""), (@current.title ? "")]
+
+				currentOptions = _.assign({}, options, {
+					layer: @
+					name: strings.join("-")
+				})
+
+				@getScreenshot(currentOptions).then(loadNext)
 		
 		loadNext()
-	
 
-	# DEFINITIONS
+	
+	makeDatabase: (key, base, refresh = false) =>
+	
+		if refresh and @database
+			resolve()
+		
+		@database = new Database
+			key: key
+			base: base
+
+		return @database.load()
