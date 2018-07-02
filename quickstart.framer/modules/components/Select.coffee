@@ -42,30 +42,35 @@ class exports.Select extends Layer
 
 		# SelectedContent
 
-		layer = eval(theme[MODEL]['default']['textLayer'])
-		@textLayer = new layer
-			name: '.'
-			parent: @
-			width: @width# - ((theme[MODEL].default.padding ? 12) * 2)
-			x: theme[MODEL].default.padding ? 12
-			y: Align.center()
-			backgroundColor: null
-			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
-			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
-			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
-			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
-			
+		# layer = eval(theme[MODEL]['default']['textLayer'])
+			# fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			# fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
+			# textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+			# textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
 
 		# Input
 		
+		@textLayer = new Body2
+			name: '.'
+			parent: @
+			width: @width - ((theme[MODEL].default.padding ? 12) * 2)
+			y: Align.center()
+			x: theme[MODEL].default.padding ? 12
+			color: black
+		
+		@inputContainer = new Layer
+			parent: @
+			backgroundColor: white.alpha(0)
+			size: @size
+
 		@_input = document.createElement 'select'
-		@_element.appendChild @_input
+		@inputContainer._element.appendChild @_input
 
 		_.assign @_input.style,
 			width: Utils.px(@width)
 			height: Utils.px(@height)
-			color: theme[MODEL].default.backgroundColor
-			backgroundColor: theme[MODEL].default.backgroundColor
+			# color: theme[MODEL].default.backgroundColor
+			backgroundColor: white.alpha(0)
 			'-webkit-appearance': 'none'
 
 		# Option Container
@@ -92,7 +97,6 @@ class exports.Select extends Layer
 		# options
 
 		@optionLayers = _.map options.options, (option, i) =>
-
 
 			opElement = document.createElement "option"
 
@@ -347,17 +351,17 @@ class Option extends Layer
 		
 		# ---------------
 		# Layers
-		layer = eval(theme[MODEL]['default']['textLayer'])
-		@textLayer = new layer
+		# layer = eval(theme[MODEL]['default']['textLayer'])
+		@textLayer = new Body2
 			x: 0
 			y: 0
 			text: _.startCase(@value)
 			color: theme[MODEL].default.color ? black
 			padding: theme[MODEL].default.padding ? 12
-			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
-			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
-			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
-			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
+			# fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
+			# fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
+			# textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+			# textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
 			
 		_.assign @,
 			height: @textLayer.maxY

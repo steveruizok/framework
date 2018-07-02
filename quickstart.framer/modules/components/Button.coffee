@@ -98,7 +98,7 @@ class exports.Button extends Layer
 			
 		# text layer
 		
-		@textLayer = new Label
+		@textLayer = new ButtonLabel
 			name: 'TextLayer'
 			parent: @content
 			y: Align.center()
@@ -135,9 +135,13 @@ class exports.Button extends Layer
 			Utils.linkProperties @, @iconLayer, "color"
 			
 			if @textLayer.text.length > 0
-				_.assign @textLayer,
-					x: @iconLayer.maxX + 8
-					padding: {right: 4}
+				_.assign @iconLayer,
+					x: @textLayer.maxX + 8
+					# padding: {left: 4}
+
+				# _.assign @textLayer,
+				# 	x: @iconLayer.maxX + 8
+				# 	padding: {right: 4}
 
 			@content.width = _.maxBy(@content.children, 'maxX').maxX
 			@loadingIcon.x = Align.center()

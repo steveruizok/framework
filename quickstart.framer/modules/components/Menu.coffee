@@ -4,13 +4,13 @@ Menu
 An expanding menu of links.
 
 @extends {Layer}
-@param {Object} 	options 			The component's attributes.
+@param {Object} 	options 				The component's attributes.
 @param {number} 	options.height	 	The menu's max expanded height
-@param {number} 	options.color	 	The color to use for titles
-@param {string} 	options.title	 	The menu's title
-@param {boolean} 	options.open	 	Whether to start in an open state
-@param {dividers} 	options.dividers	Whether to place dividers between sections
-@param {number} 	options.tint	 	The color to use for links
+@param {number} 	options.color	 		The color to use for titles
+@param {string} 	options.title	 		The menu's title
+@param {boolean} 	options.open	 		Whether to start in an open state
+@param {dividers} options.dividers	Whether to place dividers between sections
+@param {number} 	options.tint	 		The color to use for links
 @param {Object} 	options.padding		Padding for positioning links
 
 	padding:
@@ -47,12 +47,14 @@ class exports.Menu extends ScrollComponent
 			color: black
 			backgroundColor: white
 			scrollHorizontal: false
+			marginTop: 0
 			
 			padding: {top: 56, bottom: 16, left: 20, right: 20, stack: 4}
 			tint: black
 			title: ""
 			open: false
 			dividers: true
+			keepHidden: true
 			structure:
 				0:
 					title: "Menu"
@@ -97,10 +99,11 @@ class exports.Menu extends ScrollComponent
 			name: 'Menu button'
 			parent: options.parent
 			x: options.x
-			y: @y + 2
+			y: @y + 2 + options.marginTop
 			size: 48
 			padding: 12
 			icon: "menu"
+			color: @color
 		
 		# header content
 
@@ -125,7 +128,7 @@ class exports.Menu extends ScrollComponent
 			color: @color
 			icon: "close"
 			x: options.x
-			y: 2
+			y: 2 + options.marginTop
 			size: 48
 			padding: 12
 
@@ -145,7 +148,7 @@ class exports.Menu extends ScrollComponent
 				name: "Links container"
 				color: @color
 				x: options.padding.left
-				y: options.padding.top
+				y: options.padding.top + options.marginTop
 				width: @width - options.padding.left - options.padding.right
 				height: 2
 				backgroundColor: null
@@ -155,11 +158,12 @@ class exports.Menu extends ScrollComponent
 				# section title
 
 				if value.title?
-					new H4
+					new Label
 						name: "Section title"
 						parent: @
 						text: value.title
 						width: @width
+						color: @color
 						padding: 
 							top: options.padding.stack
 							bottom: options.padding.stack
@@ -244,7 +248,7 @@ class exports.Menu extends ScrollComponent
 			@hidden = true
 
 		@app.on "transitionEnd", (prev, next, options) =>
-			unless @app.chrome
+			unless @app.chrome and options.keepHidden
 				@hidden = false
 				return
 

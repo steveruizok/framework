@@ -5,10 +5,10 @@ Toggle
 A two-button segment control that can be toggled on or off.
 
 @extends {Layer}
-@param {Object}		options 			The component's attributes.
+@param {Object}		options 					The component's attributes.
 @param {number}		options.toggled 	Whether to begin toggled or not.
 @param {array}		options.options	 	The toggle's options as strings, e.g. ["On", "Off"].
-@param {string} 	options.icon 		Whether to display the options strings as icons instead of labels.
+@param {string} 	options.icon 			Whether to display the options strings as icons instead of labels.
 
 ###
 
@@ -60,6 +60,7 @@ class exports.Toggle extends Layer
 				parent: @
 				text: if @icon then '' else option
 				icon: if @icon then option
+				dark: options.dark
 
 			radius = switch i
 				when 0 then "#{Utils.px(button.borderRadius)} 0px 0px #{Utils.px(button.borderRadius)}"
@@ -108,6 +109,7 @@ class exports.Toggle extends Layer
 		# Cleanup
 		
 		child.name = '.' for child in @children unless options.showSublayers
+		
 
 	# ---------------
 	# Private Methods
@@ -194,6 +196,7 @@ class exports.Toggle extends Layer
 	@define "active",
 		get: -> return @_active
 		set: (num) ->
+
 			return if @__constructor
 			return if num is @_active
 
@@ -209,5 +212,3 @@ class exports.Toggle extends Layer
 
 			@emit "change:active", num, @options[num], @children[num]
 			@emit "change:value", @toggled, @
-
-

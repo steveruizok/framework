@@ -58,6 +58,8 @@ class exports.Switch extends Layer
 			return if Math.abs(event.offset.y > 10)
 			@value = !@value
 
+		@onSwipeEnd () => @value = !@value
+
 		# ---------------
 		# Definitions
 		# 
@@ -107,5 +109,3 @@ class exports.Switch extends Layer
 		set: (bool) ->
 			return if @__constructor
 			@value = bool
-
-

@@ -23,7 +23,7 @@ class exports.TextInput extends Layer
 			placeholder: "Placeholder"
 			disabled: false
 			clip: true
-			value: ''
+			value: undefined
 			leftIcon: null
 			rightIcon: null
 			animationOptions:
@@ -47,21 +47,22 @@ class exports.TextInput extends Layer
 		# ---------------
 		# Layers
 
-		@textLayer = new Body2
-			name: '.'
-			parent: @
-			color: @color
-			y: Align.center()
-			width: @width
-			padding: theme[MODEL].default.padding ? 12
-			backgroundColor: 'none'
-			fontFamily: theme[MODEL].default.fontFamily ? "Helvetica"
-			fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
-			textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
-			textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
-			text: @placeholder
+		# @textLayer = new Body2
+		# 	name: '.'
+		# 	parent: @
+		# 	color: @color
+		# 	y: Align.center()
+		# 	width: @width
+		# 	padding: theme[MODEL].default.padding ? 12
+		# 	backgroundColor: 'none'
+		# 	fontFamily: theme[MODEL].default.fontFamily
+		# 	fontSize: options.fontSize ? theme[MODEL].default.fontSize ? 13
+		# 	textAlign: options.textAlign ? theme[MODEL].default.textAlign ? "left"
+		# 	textTransform: options.textTransform ? theme[MODEL].default.textTransform ? "none"
+		# 	text: @placeholder
+		# 	visible: false
 
-		Utils.linkProperties @, @textLayer, "color"
+		# Utils.linkProperties @, @textLayer, "color"
 
 		# Icons
 
@@ -92,8 +93,8 @@ class exports.TextInput extends Layer
 		@_element.appendChild @_input
 
 		_.assign @_input,
-			# placeholder: options.placeholder
-			value: options.value ? null
+			placeholder: options.placeholder
+			value: options.value
 			className: @name
 
 		for attr in ["autocorrect", "autocomplete", "autocapitalize", "spellcheck"]
@@ -110,6 +111,9 @@ class exports.TextInput extends Layer
 			fontSize: Utils.px(options.fontSize ? theme.typography.Body2.fontSize ? 13)
 			fontWeight: options.fontWeight ? theme[MODEL].default.fontWeight ? theme.typography.Body2.fontWeight ? 500
 			
+		@_input.autocorrect="off"
+		@_input.spellcheck=false
+		
 		# must be set before theme changes
 
 		Utils.linkProperties @, @_input.style, "color"
@@ -147,8 +151,8 @@ class exports.TextInput extends Layer
 			@app.focused = @_input
 			@focused = true
 
-		_.assign @,
-			value: options.value
+		# _.assign @,
+		# 	value: options.value
 
 		# ---------------
 		# Cleanup
@@ -168,6 +172,7 @@ class exports.TextInput extends Layer
 
 	_setValue: () =>
 		value = @_input.value
+		# @textLayer.visible = value is ""
 		@emit "change:value", value, @
 
 
@@ -200,7 +205,7 @@ class exports.TextInput extends Layer
 		if @rightIcon? then newPadding.right = defaultPadding + 36
 
 
-		@textLayer.padding = newPadding
+		# @textLayer.padding = newPadding
 		_.assign @_input.style,
 			width: Utils.px(@width - (newPadding.right + newPadding.left))
 			paddingRight: Utils.px(newPadding.right)
@@ -222,12 +227,12 @@ class exports.TextInput extends Layer
 		return if @disabled
 
 		if bool # focused is true
-			@textLayer.visible = false
+			# @textLayer.visible = false
 			@theme = "focused"
 			return
 
 		# focused is false
-		@textLayer.visible = @value is ""
+		# @textLayer.visible = @value is ""
 		@theme = "default"
 
 
@@ -256,7 +261,6 @@ class exports.TextInput extends Layer
 		get: -> return @_input.value
 		set: (value) ->
 			return if @__constructor
-			
-			@_input.value = value ? ""
-			@textLayer.visible = @value is ""
+			@_input.value = value ? @_input.defaultValue
+			# @textLayer.visible = @_input.value is ""
 			@emit "change:value", value, @
